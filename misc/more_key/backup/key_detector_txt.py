@@ -7,7 +7,7 @@ standard.
 
 The program expects a first argument indicating the route to a folder
 containing the audio to be analysed, and a second argument containing
-the route to the ground truth annotation as individual text files.
+the route to the ground truth annotation as individual text filesystem.
 
 The program expects that the file names of both the audio and the
 annotations are equal (except for the extension), skipping otherwise
@@ -39,7 +39,7 @@ def key_detector():
         line_writer = csv.writer(csv_file, delimiter=',')
     # retrieve files and filenames:
     analysis_files = os.listdir(audio_folder)
-    print len(analysis_files), '\ntotal files in folder.\n'
+    print len(analysis_files), '\ntotal filesystem in folder.\n'
     groundtruth_files = os.listdir(groundtruth_folder)
     # ANALYSIS
     # ========
@@ -160,7 +160,7 @@ def key_detector():
                     textfile.close()
     if RESULTS_TO_CSV:
         csv_file.close()
-    print len(mirex_scores), "files analysed in", reloj(), "secs.\n"
+    print len(mirex_scores), "filesystem analysed in", reloj(), "secs.\n"
     if CONFUSION_MATRIX:
         matrix = np.matrix(matrix)
         matrix = matrix.reshape(24,24)

@@ -1,13 +1,13 @@
 #!/usr/local/bin/python
 # -*- coding: UTF-8 -*-
 
-from fileutils import make_unique_dir
 from collections import Counter
-import essentia.standard as estd
 
+import essentia.standard as estd
 from conversions import *
 from pcp import *
 
+from filesystem import make_unique_dir
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #
@@ -265,7 +265,7 @@ if __name__ == "__main__":
         analysis_folder = args.input[1 + args.input.rfind('/'):]
         output_dir = make_unique_dir(output_dir, tag=analysis_folder)
         list_all_files = os.listdir(args.input)
-        print 'Analysing files...'
+        print 'Analysing filesystem...'
         count_files = 0
         for item in list_all_files:
             if any(soundfile_type in item for soundfile_type in VALID_FILE_TYPES):
@@ -274,7 +274,7 @@ if __name__ == "__main__":
                 if args.verbose:
                     print "{0} - {1}".format(audiofile, estimation)
                 count_files += 1
-        print "{0} audio files analysed in {1} secs.".format(count_files, clock())
+        print "{0} audio filesystem analysed in {1} secs.".format(count_files, clock())
     else:
         raise parser.error("'{0}' is not a valid argument.".format(args.input))
 

@@ -6,7 +6,6 @@ import sys
 import essentia.standard as estd
 
 from pcp import *
-from fileutils import *
 from templates import *
 
 # ======================= #
@@ -123,7 +122,7 @@ def estimate_key(input_audio_file, output_text_file):
         key_2 = estimation_2[0] + '\t' + estimation_2[1]
         key_verbose = key_1 + '\t' + key_2
         key = key_verbose.split('\t')
-        # Assign monotonic tracks to minor:
+        # Assign monotonic beatport to minor:
         if key[3] == 'monotonic' and key[0] == key[2]:
             key = '{0}\tminor'.format(key[0])
         else:
@@ -147,7 +146,7 @@ if __name__ == "__main__":
     parser.add_argument("output", help="file (dir if in --batch_mode) to write results to")
     parser.add_argument("-b", "--batch_mode", action="store_true", help="batch analyse a whole directory")
     parser.add_argument("-v", "--verbose", action="store_true", help="print progress to console")
-    parser.add_argument("-x", "--extra", action="store_true", help="generate extra analysis files")
+    parser.add_argument("-x", "--extra", action="store_true", help="generate extra analysis filesystem")
     parser.add_argument("-p", "--profile", help="specify a key template. Defaults to bgate")
     # parser.add_argument("-c", "--conf_file", help="specify a different configuration file")
 
@@ -186,7 +185,7 @@ if __name__ == "__main__":
                 sys.exit()
             output_dir = results_directory(args.output)
             list_all_files = os.listdir(args.input)
-            print("\nAnalysing audio files in:\t{0}".format(args.input))
+            print("\nAnalysing audio filesystem in:\t{0}".format(args.input))
             print("Writing results to:\t{0}\n".format(args.output))
             count_files = 0
             for a_file in list_all_files:
@@ -197,7 +196,7 @@ if __name__ == "__main__":
                     if args.verbose:
                         print("{0} - {1} ({2})".format(input_file, estimation, confidence))
                     count_files += 1
-            print("{0} audio files analysed".format(count_files, clock()))
+            print("{0} audio filesystem analysed".format(count_files, clock()))
         else:
             raise IOError("Unknown ERROR in batch mode")
     print("Finished in:\t{0} secs.\n".format(clock()))

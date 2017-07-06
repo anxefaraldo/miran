@@ -4,7 +4,7 @@
 import numpy as np
 from argparse import ArgumentParser
 
-parser = ArgumentParser(description="Semi automatic hypermeasure annotation of tracks")
+parser = ArgumentParser(description="Semi automatic hypermeasure annotation of beatport")
 parser.add_argument("input", help="file to annotate")
 args = parser.parse_args()
 

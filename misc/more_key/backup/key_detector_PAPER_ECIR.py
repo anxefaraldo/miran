@@ -8,7 +8,7 @@ There are two modes of operation: 'txt' and 'title'.
 In 'txt mode, the program expects a first argument indicating the route
 to a folder containing the audio to be analysed, and a second argument
 containing the route to the ground truth annotation as individual text
-files. The program expects that the file names of both the audio and the
+filesystem. The program expects that the file names of both the audio and the
 annotations are equal (except for the extension), and if the name do not
 match it will skip the evaluation for that file.
 In 'title' mode, the program looks for the ground-truth annotation embedded
@@ -244,8 +244,8 @@ if __name__ == "__main__":
                 sys.exit()
             output_dir = results_directory(args.output)
             list_all_files = os.listdir(args.input)
-            print "\nAnalysing audio files in:\t{0}".format(args.input)
-            print "Writing estimation files to:\t{0}\n".format(args.output)
+            print "\nAnalysing audio filesystem in:\t{0}".format(args.input)
+            print "Writing estimation filesystem to:\t{0}\n".format(args.output)
             count_files = 0
             for a_file in list_all_files:
                 if any(soundfile_type in a_file for soundfile_type in VALID_FILE_TYPES):
@@ -255,7 +255,7 @@ if __name__ == "__main__":
                     if args.verbose:
                         print "{0} - {1}".format(input_file, estimation)
                     count_files += 1
-            print "{0} audio files analysed".format(count_files, clock())
+            print "{0} audio filesystem analysed".format(count_files, clock())
         else:
             raise IOError("Unknown ERROR in batch mode")
     print "Finished in:\t{0} secs.\n".format(clock())

@@ -14,7 +14,7 @@ def change_file_extension(directory, in_ext='txt', out_ext='key'):
         if item[item.rfind('.') + 1:] == in_ext:
             os.rename(directory + '/' + item, directory + '/' + item[:item.rfind('.')] + '.' + out_ext)
             number_of_files += 1
-    print number_of_files, 'files converted.'
+    print number_of_files, 'filesystem converted.'
 
 
 if __name__ == "__main__":
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     if not os.path.isdir(args.dir):
         raise parser.error("Warning: {0} is not a directory.".format(args.dir))
     else:
-        print "Processing files..."
+        print "Processing filesystem..."
         change_file_extension(args.dir, args.old_ext, args.new_ext)
         print 'Done!'
 

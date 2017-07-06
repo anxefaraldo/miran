@@ -8,7 +8,7 @@ oef = xlrd.open_workbook(excelFile)
 
 s = oef.sheet_by_index(0)
 
-count = 0	
+count = 0
 for row in range(s.nrows):
 	vals = s.row_values(row)
 	if vals[4] == 'y' and 'KF100' in vals[5]:
@@ -18,10 +18,7 @@ for row in range(s.nrows):
 		txt.write(vals[2])
 		txt.close()
 
-print count, 'files exported.'
-
-
-
+print count, 'filesystem exported.'
 
 for row in range(s.nrows):
 	song = s.row_values(row)[1]

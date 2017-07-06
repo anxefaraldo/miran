@@ -1,6 +1,6 @@
 import os
 import sys
-from get_track import get_track
+from download_track import get_track
 
 
 try:
@@ -8,7 +8,7 @@ try:
     print track_list
 except ValueError:
     print "Error: You have to provide a list of track_id's as argument"
-    print "Usage: <get_track.py track_id>"
+    print "Usage: <download_track.py track_id>"
     sys.exit()
 arguments = sys.argv[2:]
 if '-d' in arguments:

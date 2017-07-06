@@ -9,7 +9,7 @@ if analysis_mode == 'title':
     collection     = ['KF100', 'KF1000', 'GSANG', 'ENDO100', 'DJTECHTOOLS60'] # ['KF100', 'KF1000', 'GSANG', 'ENDO100', 'DJTECHTOOLS60']
     genre          = ['edm'] # ['edm', 'non-edm']
     modality       = ['major'] # ['major', 'minor']
-    limit_analysis = 0 # Limit key to N random tracks. 0 = all samples matching above criteria.
+    limit_analysis = 0 # Limit key to N random beatport. 0 = all samples matching above criteria.
 
 # ANALYSIS PARAMETERS
 # ===================
@@ -93,7 +93,7 @@ if results_to_file:
     temp_folder = wd + '/KeyDetection_'+uniqueTime
     os.mkdir(temp_folder)
 """
-# retrieve files and filenames according to the desired settings:
+# retrieve filesystem and filenames according to the desired settings:
 if analysis_mode == 'title':
     allfiles = os.listdir(audio_folder)
     if '.DS_Store' in allfiles: allfiles.remove('.DS_Store')

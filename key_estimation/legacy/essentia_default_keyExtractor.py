@@ -1,7 +1,6 @@
 # !/usr/local/bin/python
 # -*- coding: UTF-8 -*-
 
-from fileutils import *
 import essentia.standard as estd
 
 
@@ -30,7 +29,7 @@ def essentia_key_extractor(soundfile, folder_to_write_results):
 
 def essentia_key_extractor_batch(directory, folder_to_write_results):
     """
-    Estimates the global key of all audio files in a folder
+    Estimates the global key of all audio filesystem in a folder
     :type directory: str
     :type folder_to_write_results: str
     """

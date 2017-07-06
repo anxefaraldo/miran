@@ -11,7 +11,7 @@ write_to_file = True
 
 samplerate = 44100
 window_size = 4096
-hop_size = 1024 
+hop_size = 1024
 magnitude_threshold = 1e-05
 min_frequency = 50
 max_frequency = 5000
@@ -20,7 +20,7 @@ write2file = False
 profile = 'tonictriad'
 
 #Command line interface
-print "\nUSAGE:", sys.argv[0], "<folder to write results> <folder to analyse>" 
+print "\nUSAGE:", sys.argv[0], "<folder to write results> <folder to analyse>"
 try:
     outfolder = sys.argv[1]
 except:
@@ -28,7 +28,7 @@ except:
     print "\nWARNING: Write folder NOT provided: Results will not be saved but still be printed onto the terminal window. If you want to save the key results to textfiles you must provide a destination folder as FIRST argument."
 try:
     infolder = sys.argv[2]
-    print '\nAnalysing audio files in "' + infolder + '"'
+    print '\nAnalysing audio filesystem in "' + infolder + '"'
 except:
     print "\nInput folder not provided. Set to default: " + default_folder
     infolder = default_folder
@@ -38,7 +38,7 @@ except:
 soundfiles = os.listdir(infolder)
 if '.DS_Store' in soundfiles:
     soundfiles.remove('.DS_Store')
-    
+
 print "\nANALYSIS..."
 
 for item in soundfiles:
@@ -51,11 +51,11 @@ for item in soundfiles:
     hpcp = estd.HPCP(size=12)
     key = estd.Key(useThreeChords=True, profileType=profile)
     pool = e.Pool()
-    # Chain them together    
+    # Chain them together
     audio = loader()
     lll = []
     for frame in estd.FrameGenerator(audio, frameSize=window_size, hopSize=hop_size):
         p1, p2 = speaks(rfft(window(frame)))
         lll.append(hpcp(p1,p2))
-        
+
         print kk

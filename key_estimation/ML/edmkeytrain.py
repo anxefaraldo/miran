@@ -19,7 +19,7 @@ clock()
 conf_file = open('./settings.py', 'r')
 parser = ArgumentParser(description="Key Estimation Algorithm")
 parser.add_argument("input_data_folder",
-                    help="dir with audio files to analyse")
+                    help="dir with audio filesystem to analyse")
 parser.add_argument("ground_truth",
                     help="dir with ground-truth annotations.")
 parser.add_argument("-v", "--verbose",
@@ -65,6 +65,6 @@ if os.path.isdir(args.input_data_folder):
             if args.verbose:
                 print "{0} - {1}".format(targets, features)
             count_files += 1
-    print "{0} audio files used for training in {1} secs.".format(count_files, clock())
+    print "{0} audio filesystem used for training in {1} secs.".format(count_files, clock())
 else:
     raise parser.error("'{0}' is not a valid argument.".format(args.input_data_folder))

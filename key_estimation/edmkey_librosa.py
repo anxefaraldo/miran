@@ -2,13 +2,12 @@
 #  -*- coding: UTF-8 -*-
 
 import sys
+
 import librosa
 import scipy.ndimage
 
 from pcp import *
-from fileutils import *
 from templates import *
-
 
 # ======== #
 # SETTINGS #
@@ -121,7 +120,7 @@ if __name__ == "__main__":
         parser.add_argument("output", help="file (dir if in --batch_mode) to write results to")
         parser.add_argument("-b", "--batch_mode", action="store_true", help="batch analyse a whole directory")
         parser.add_argument("-v", "--verbose", action="store_true", help="print progress to console")
-        parser.add_argument("-x", "--extra", action="store_true", help="generate extra analysis files")
+        parser.add_argument("-x", "--extra", action="store_true", help="generate extra analysis filesystem")
         parser.add_argument("-c", "--conf_file", help="specify a different configuration file")
         args = parser.parse_args()
 
@@ -150,7 +149,7 @@ if __name__ == "__main__":
                     sys.exit()
                 output_dir = results_directory(args.output)
                 list_all_files = os.listdir(args.input)
-                print("\nAnalysing audio files in:\t{0}".format(args.input))
+                print("\nAnalysing audio filesystem in:\t{0}".format(args.input))
                 print("Writing results to:\t{0}\n".format(args.output))
                 count_files = 0
                 for a_file in list_all_files:
@@ -161,7 +160,7 @@ if __name__ == "__main__":
                         if args.verbose:
                             print("{0} - {1}".format(input_file, estimation))
                         count_files += 1
-                print("{0} audio files analysed".format(count_files, clock()))
+                print("{0} audio filesystem analysed".format(count_files, clock()))
             else:
                 raise IOError("Unknown ERROR in batch mode")
         print("Finished in:\t{0} secs.\n".format(clock()))

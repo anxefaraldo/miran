@@ -5,9 +5,9 @@ This scripts looks for a beatport track (2 minutes, 96Kbps mp3) matching
 a given track id number. If the track exists in beatport, it will be
 downloaded and renamed with metadata information
 
-Usage: <get_track.py track_number_id>
+Usage: <download_track.py track_number_id>
 
-The numeric range where beatport tracks seem to be located is = 5000 - 6580000.
+The numeric range where beatport beatport seem to be located is = 5000 - 6580000.
 
 Ángel Faraldo,
 January 2017.
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         track_id = int(sys.argv[1])
     except ValueError:
         print "Error: You have to provide a track_id as argument"
-        print "Usage: <get_track.py track_id>"
+        print "Usage: <download_track.py track_id>"
         sys.exit()
     arguments = sys.argv[2:]
     if '-d' in arguments:

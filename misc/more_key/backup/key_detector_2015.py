@@ -9,7 +9,7 @@ There are two modes of operation: 'txt' and 'title'.
 In 'txt' mode, the program expects a first argument indicating the route
 to a folder containing the audio to be analysed, and a second argument
 containing the route to the ground truth annotation as individual text
-files. The program expects that the file names of both the audio and the
+filesystem. The program expects that the file names of both the audio and the
 annotations are equal (except for the extension), and if the name do not
 match it will skip the evaluation for that file.
 In 'title' mode, the program looks for the ground-truth annotation embedded
@@ -38,7 +38,7 @@ if analysis_mode == 'title':
     collection     = ['KF100', 'KF1000', 'GSANG', 'ENDO100', 'DJTECHTOOLS60']
     genre          = ['edm']  # ['edm', 'non-edm']
     modality       = ['minor', 'major']  # ['major', 'minor']
-    limit_analysis = 0  # Limit key to N random tracks. 0 = all samples matching above criteria.
+    limit_analysis = 0  # Limit key to N random beatport. 0 = all samples matching above criteria.
 
 # LOAD MODULES
 # ============
@@ -66,7 +66,7 @@ def key_detector():
         import csv
         csvFile = open(temp_folder + '/Estimation_&_PCP.csv', 'w')
         lineWriter = csv.writer(csvFile, delimiter=',')
-    # retrieve files and filenames according to the desired settings:
+    # retrieve filesystem and filenames according to the desired settings:
     if analysis_mode == 'title':
         allfiles = os.listdir(audio_folder)
         if '.DS_Store' in allfiles: allfiles.remove('.DS_Store')
@@ -226,7 +226,7 @@ def key_detector():
                 textfile.close()
     if RESULTS_TO_CSV:
         csvFile.close()
-    print len(mirex_scores), "files analysed in", reloj(), "secs.\n"
+    print len(mirex_scores), "filesystem analysed in", reloj(), "secs.\n"
     if CONFUSION_MATRIX:
         matrix = np.matrix(matrix)
         matrix = matrix.reshape(24,24)
@@ -245,7 +245,7 @@ def key_detector():
         write_to_file.write(settings)
         write_to_file.write(results_for_file)
         if analysis_mode == 'title':
-            corpus = "\n\nANALYSIS CORPUS\n===============\n" + str(collection) + '\n' + str(genre) + '\n' + str(modality) + '\n\n' + str(len(mirex_scores)) + " files analysed.\n"
+            corpus = "\n\nANALYSIS CORPUS\n===============\n" + str(collection) + '\n' + str(genre) + '\n' + str(modality) + '\n\n' + str(len(mirex_scores)) + " filesystem analysed.\n"
             write_to_file.write(corpus)
         write_to_file.close()
 

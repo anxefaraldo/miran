@@ -2,8 +2,9 @@
 #  -*- coding: UTF-8 -*-
 
 from numpy import divide, mean, array, zeros
+
 from conversions import *
-from fileutils import *
+
 
 def mirex_score(estimation, groundtruth):
     """

@@ -3,7 +3,7 @@
 
 import os
 import xlrd
-from utils.fileutils import *
+from fileutils import *
 
 
 x = '/Users/angel/GoogleDrive/EDM/EDM_Collections.xlsx'
@@ -16,7 +16,7 @@ def listfiles(d):
     l = os.listdir(d)
     if '.DS_Store' in l: l.remove('.DS_Store')
     return l
-    
+
 l = listfiles(d)
 
 atks = []
@@ -26,7 +26,7 @@ for item in l:
 	atk = item[:pos2]
 	atk = atk.lstrip()
 	atks.append(atk)
-    
+
 
 matches = 0
 for row in range(s.nrows):
@@ -34,11 +34,11 @@ for row in range(s.nrows):
         newString = s.row_values(row)[0] + ' - ' + s.row_values(row)[1] + ' = ' + s.row_values(row)[4]
         if newString in atks: matches += 1
         else: print newString
-print matches        
-        
-        
-    
-    
+print matches
+
+
+
+
 		key = s.row_values(row)[4]
 		idx = titles.index(song)
 		print "Sucesfully added key to", l[idx]

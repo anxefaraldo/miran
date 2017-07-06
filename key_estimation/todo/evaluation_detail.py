@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser(prog='evaluation_detail',
     are mandatory:
     "filename, key, confidence, pcp1, pcp2, ..., pcpn, pk1, pk2, ..., peakn, ..."
 
-    Ground truth annotations are expected as single files:
+    Ground truth annotations are expected as single filesystem:
     "Tonic (space) mode"
     ''')
 parser.add_argument("annotations",

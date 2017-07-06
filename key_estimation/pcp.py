@@ -2,10 +2,12 @@
 # coding=utf-8
 
 import os
-import numpy as np
-from conversions import name_to_class
-from matplotlib import pyplot as plt
+
 import librosa.display
+import numpy as np
+from matplotlib import pyplot as plt
+
+from conversions import name_to_class
 
 
 def plot_chroma(chromagram):
@@ -55,16 +57,16 @@ def standard_score(vector):
 
 
 def unit_vector(vector):
-    """ 
+    """
     Scale input vectors individually to unit norm (vector length = 1)
     The most commonly encountered vector norm is the L2-norm
     (sometimes called the magnitude of a vector)
 
-     The unit vector obtained by normalizing the normal vector 
+     The unit vector obtained by normalizing the normal vector
      (i.e., dividing a nonzero normal vector by its vector norm)
-      is the unit normal vector, often known simply as the "unit normal." 
+      is the unit normal vector, often known simply as the "unit normal."
 
-      Care should be taken to not confuse the terms "vector norm" (length of vector), 
+      Care should be taken to not confuse the terms "vector norm" (length of vector),
      "normal vector" (perpendicular vector) and "normalized vector" (unit-length vector).
 
     """

@@ -38,7 +38,7 @@ collection = ['KF100', 'KF1000', 'GSANG', 'ENDO100','DJTECHTOOLS60']
 # comma separated list: {'edm', 'non-edm'}
 genre = ['edm']
 # comma separated list: {'major', 'minor'}
-modality = ['minor', 'major'] 
+modality = ['minor', 'major']
 # Limit the key to n RANDOM songs. 0 analyses all the collection:
 limit_analysis = 0
 verbose = True
@@ -52,7 +52,7 @@ if results_to_file:
 
 # retrieve filenames according to the desired settings...
 allfiles = os.listdir(audio_folder)
-if '.DS_Store' in allfiles: 
+if '.DS_Store' in allfiles:
     allfiles.remove('.DS_Store')
 
 for item in collection:
@@ -85,9 +85,9 @@ elif limit_analysis < song_instances:
 # ========
 
 if verbose:
-    print "ANALYSING INDIVIDUAL SONGS..." 
-    print "============================" 
- 
+    print "ANALYSING INDIVIDUAL SONGS..."
+    print "============================"
+
 total = []
 matrix = 24 * 24 * [0]
 for item in analysis_files:
@@ -113,8 +113,8 @@ for item in analysis_files:
     if results_to_file:
         with open(temp_folder + '/' + item[:-3]+'txt', 'w') as textfile:
             textfile.write(result)
-    
-print len(total), "files analysed.\n"
+
+print len(total), "filesystem analysed.\n"
 matrix = np.matrix(matrix)
 matrix = matrix.reshape(24,24)
 print matrix

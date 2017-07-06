@@ -1,13 +1,13 @@
 #!/usr/local/bin/python
 # -*- coding: UTF-8 -*-
 """
-This scripts looks for random beatport tracks (2 minutes, 96Kbps mp3) matching
+This scripts looks for random beatport beatport (2 minutes, 96Kbps mp3) matching
 one ore more conditions (i.e. key, genre and/or tempo). When the track matches
 the given conditions and contains metadata about title, artist, genre, key
 and tempo, the track is downloaded and renamed with the above mentioned
 information.
 
-Usage: <get_random_tracks.py number_of_tracks_to_download>
+Usage: <download_random_tracks.py number_of_tracks_to_download>
 
 Optional flags (use quotes if more that one word):
 -d 'download directory'
@@ -21,14 +21,14 @@ You can enter one ore more conditions. Partial matches are also valid (e.g.
 looking for "House" in the genre tag, will return all genres containing the
 word "House" ("Deep House, "Progressive House, etc).
 You can also enter mode or root ONLY information in the key tag (e.g. "major"
-will only search for major tracks; "A" for songs either in A major or A minor).
+will only search for major beatport; "A" for songs either in A major or A minor).
 
-Ex: get_random_tracks.py 10 -d "~/Desktop" -k "A minor" -g "Deep House" -t "128"
+Ex: download_random_tracks.py 10 -d "~/Desktop" -k "A minor" -g "Deep House" -t "128"
 
 Beware that chromatic keys in Beatport are expressed only as sharps.
 For a list of valid genre tags have a look at the Beatport website.
 
-The numeric range where beatport tracks seem to be located is = 5000 - 6580000.
+The numeric range where beatport beatport seem to be located is = 5000 - 6580000.
 
 Ángel Faraldo,
 August 2015.
@@ -47,7 +47,7 @@ def urn(list_of_choices):
         out = random.choice(list_of_choices)
         return list_of_choices.pop(list_of_choices.index(out))
     except AttributeError:
-        print "(3) Done: No more tracks within the specified range."
+        print "(3) Done: No more beatport within the specified range."
         sys.exit()
 
 
@@ -61,7 +61,7 @@ def clip_list(raw_list, low_clip, high_clip):
 
 def download_random_tracks(n_tracks, choice_candidates):
     integer = 0
-    print "(2) Looking for Beatport tracks...\n"
+    print "(2) Looking for Beatport beatport...\n"
     while integer < int(n_tracks):
         track_id_number = str(urn(choice_candidates))
         print "\nLooking for audio file {} ...".format(track_id_number),
@@ -128,8 +128,8 @@ if __name__ == "__main__":
     try:
         how_many = int(sys.argv[1])
     except StandardError:
-        print "\nERROR: You must specify at least how many tracks you want (integer)."
-        print "Usage: <get_random_tracks.py number_of_tracks_to_download>"
+        print "\nERROR: You must specify at least how many beatport you want (integer)."
+        print "Usage: <download_random_tracks.py number_of_tracks_to_download>"
         print "\nOptional flags: (use quotes if more that one word)"
         print "-d 'download directory'"
         print "-f 'specify if you want to track the progress (and avoid downloading duplicates).'"

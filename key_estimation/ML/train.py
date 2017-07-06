@@ -117,7 +117,7 @@ training_file = '/home/angel/Desktop/20160705201411-bmtg-wav/merged_results.csv'
 features = features_from_csv(training_file, 2, 74)  # only 36 pcp values.
 targets = stringcell_from_csv(training_file, 78)    # ground-truth of the file if keyExtended!
 # filenames = stringcell_from_csv(training_file, 0)   # col. 0 stores the filename.
-print len(features), 'files used for training.'
+print len(features), 'filesystem used for training.'
 
 filenames
 # Split data in train and test datasets

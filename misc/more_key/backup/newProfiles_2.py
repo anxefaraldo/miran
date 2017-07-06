@@ -4,10 +4,10 @@
 # WHAT TO ANALYSE
 # ===============
 # ['KF100', 'KF1000', 'GSANG', 'ENDO100', 'DJTECHTOOLS60']
-collection     = ['KF100', 'KF1000', 'GSANG', 'ENDO100', 'DJTECHTOOLS60'] 
+collection     = ['KF100', 'KF1000', 'GSANG', 'ENDO100', 'DJTECHTOOLS60']
 genre          = ['edm'] # ['edm', 'non-edm']
 modality       = ['major'] # ['major', 'minor']
-limit_analysis = 0 # Limit key to N RANDOM tracks. 0 == all samples matching criteria
+limit_analysis = 0 # Limit key to N RANDOM beatport. 0 == all samples matching criteria
 
 # ANALYSIS PARAMETERS
 # ===================
@@ -74,22 +74,22 @@ for i in range(len(soundfiles)):
 	key = key.readline()
 	key = key[:key.find(' ')]
 	key = name2class[key]
-	loader = estd.MonoLoader(filename=audio_folder+'/'+soundfiles[i], 
+	loader = estd.MonoLoader(filename=audio_folder+'/'+soundfiles[i],
 		                     sampleRate=sample_rate)
-	cut    = estd.FrameCutter(frameSize=window_size, 
+	cut    = estd.FrameCutter(frameSize=window_size,
                               hopSize=hop_size)
 	window = estd.Windowing(size=window_size,
                             type=window_type)
 	rfft   = estd.Spectrum(size=window_size)
-	sw     = estd.SpectralWhitening(maxFrequency=max_frequency, 
+	sw     = estd.SpectralWhitening(maxFrequency=max_frequency,
                                     sampleRate=sample_rate)
 	speaks = estd.SpectralPeaks(magnitudeThreshold=magnitude_threshold,
                                 maxFrequency=max_frequency,
                                 minFrequency=min_frequency,
                                 maxPeaks=max_peaks,
                                 sampleRate=sample_rate)
-	hpcp   = estd.HPCP(harmonics=harmonics, 
-                       maxFrequency=max_frequency, 
+	hpcp   = estd.HPCP(harmonics=harmonics,
+                       maxFrequency=max_frequency,
                        minFrequency=min_frequency,
                        nonLinear=non_linear,
                        normalized=normalize,

@@ -20,11 +20,11 @@ if __name__ == "__main__":
 
     import argparse
 
-    parser = argparse.ArgumentParser(description="Merge multiple files into a single one")
+    parser = argparse.ArgumentParser(description="Merge multiple filesystem into a single one")
     parser.add_argument("dir", help="")
     parser.add_argument("filename", help="")
     args = parser.parse_args()
 
-    print "Merging files..."
+    print "Merging filesystem..."
     merge_files(args.dir, args.filename)
     print 'Done!'

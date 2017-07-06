@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This script processes midi files to have them in a common and regular format.
+This script processes midi filesystem to have them in a common and regular format.
 
 Ángel Faraldo, April 2017.
 
@@ -62,7 +62,7 @@ def reformat_midi(mid, name=None, verbose=True, write_to_file=False, override_ti
     if verbose:
         print("file type:", mid.type)
         print("ticks per quarter note:", mid.ticks_per_beat)
-        print("number of tracks", len(mid.tracks))
+        print("number of beatport", len(mid.tracks))
         print(mid.tracks)
 
     EXCLUDED_MSG_TYPES = {"sequence_number", "text", "copyright", "track_name", "instrument_name",
@@ -103,7 +103,7 @@ def reformat_midi(mid, name=None, verbose=True, write_to_file=False, override_ti
                 else:
                     flat_track.append(msg)
 
-        # replace the 'tracks' field with a single track containing all the messages.
+        # replace the 'beatport' field with a single track containing all the messages.
         # later on we can check for duplicates in certain fields (tempo, timesignature, key)
         mid.tracks.clear()
         mid.type = 0
@@ -178,7 +178,7 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
 
-    parser = ArgumentParser(description="Reformat midi files to be well-formed and type 0.")
+    parser = ArgumentParser(description="Reformat midi filesystem to be well-formed and type 0.")
     parser.add_argument("input", help="Midi file or directory to reformat.")
     parser.add_argument("-v", "--verbose", action="store_true", help="Print messages to the console while formatting.")
     parser.add_argument("-r", "--recursive", action="store_true", help="Analyse subdirectories recursively.")

@@ -25,6 +25,7 @@ SANITY CHECKS:
 
 """
 
+import sys
 import os.path
 import math
 import numpy as np
@@ -35,8 +36,8 @@ from mido import MidiFile, MidiTrack, Message, MetaMessage
 
 def parse_mid(mid):
     """
-    This function allows to pass midi files or streams
-    without reduntant reloading files from disk.
+    This function allows to pass midi filesystem or streams
+    without reduntant reloading filesystem from disk.
 
     """
     if type(mid) is str:
@@ -304,7 +305,7 @@ def matrix_to_mid(matrix, output_file=None, ticks_per_beat=96, vel=100):
 
 
 # def dur_in_ticks(m):
-#     for track in m.tracks:
+#     for track in m.beatport:
 #         duration = 0
 #         for message in track:
 #             duration += message.time
@@ -340,7 +341,7 @@ def split_in_half(mid, verbose=True, write_to_file=False):
         flat_track.pop(-1)
     flat_track.append(MetaMessage("end_of_track", time=0))
 
-    # replace the 'tracks' field with a single track containing all the messages.
+    # replace the 'beatport' field with a single track containing all the messages.
     # later on we can check for duplicates in certain fields (tempo, timesignature, key)
     mid.tracks.clear()
     mid.type = 0
@@ -489,7 +490,38 @@ def find_identical_rows(df, row_index):
             print(row[0])
 
 
-def copy_files_in_df(df, destination):
+# def copy_files_in_df(df, destination):
+#     """
+#     Move a row from a Pandas dataframe to a different location in the hard drive.
+#     This function assumes that each row represents a file in the filesystem and that
+#     its filepath is the index of the row.
+#
+#     """
+#     from shutil import copyfile
+#     if not os.path.isdir(destination):
+#         raise IOError
+#     rows = df.index
+#     for i in range(len(rows)):
+#         # os.rename(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
+#         copyfile(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
+
+# def move_rows(df, destination):
+#     """
+#     Move a row from a Pandas dataframe to a different location in the hard drive.
+#     This function assumes that each row represents a file in the filesystem and that
+#     its filepath is the index of the row.
+#
+#     """
+#     if not os.path.isdir(destination):
+#         raise IOError
+#     rows = df.index
+#     with open(os.path.join(destination, 'original_files.txt'), 'w') as f:
+#         f.writelines(rows + '\n')
+#     for i in range(len(rows)):
+#         os.rename(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
+
+
+def copy_files_in_df(df_column, destination):
     """
     Move a row from a Pandas dataframe to a different location in the hard drive.
     This function assumes that each row represents a file in the filesystem and that
@@ -499,13 +531,11 @@ def copy_files_in_df(df, destination):
     from shutil import copyfile
     if not os.path.isdir(destination):
         raise IOError
-    rows = df.index
-    for i in range(len(rows)):
-        # os.rename(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
-        copyfile(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
+    for row in df_column:
+        copyfile(row, os.path.join(destination, os.path.split(row)[1]))
 
 
-def move_rows(df, destination):
+def move_rows(df_column, destination):
     """
     Move a row from a Pandas dataframe to a different location in the hard drive.
     This function assumes that each row represents a file in the filesystem and that
@@ -514,70 +544,16 @@ def move_rows(df, destination):
     """
     if not os.path.isdir(destination):
         raise IOError
-    rows = df.index
-    with open(os.path.join(destination, 'original_files.txt'), 'w') as f:
-        f.writelines(rows + '\n')
-    for i in range(len(rows)):
-        os.rename(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
+    #with open(os.path.join(destination, 'original_files.txt'), 'w') as f:
+    #    f.writelines(df_column + '\n')
+    for row in df_column:
+        os.rename(row, os.path.join(destination, os.path.split(row)[1]))
+
 
 
 # File management and OS related functions
 # ========================================
 
-def index_files(my_dir):
-    """
-    Given a directory, it replaces the containing files with increasing numerical values.
-
-    """
-    dir_files = os.listdir(my_dir)
-    file_count = 0
-    for each_file in dir_files:
-        if os.path.splitext(each_file)[1] == '.mid':
-            int_name = "{:03d}.mid".format(file_count)
-            os.rename(os.path.join(my_dir, each_file), os.path.join(my_dir, int_name))
-            file_count += 1
-
-
-def finder(mid):
-    """
-    Show a file in the Mac OSX window system.
-
-    """
-    from appscript import app, mactypes
-    app("Finder").reveal(mactypes.Alias(mid).alias)
-
-
-def folderfiles(folderpath, ext=None, recursive=False):
-    """
-    Returns a list of absolute paths with the files in the specified folder.
-
-    """
-    if recursive:
-        def _rlistdir(path):
-            rlist = []
-            for root, subdirs, files in os.walk(path):
-                for file in files:
-                        rlist.append(os.path.join(root, file))
-            return rlist
-
-        list_of_files = _rlistdir(folderpath)
-
-    else:
-        list_of_files = [os.path.join(folderpath, item) for item in os.listdir(folderpath)]
-
-    my_files = []
-    for myFile in list_of_files:
-        if not ext:
-            my_files.append(myFile)
-        elif os.path.splitext(myFile)[1] == ext:
-            my_files.append(myFile)
-        else:
-            pass
-
-    if not my_files:
-        raise FileNotFoundError("Did not find any file with the given extension.")
-    else:
-        return my_files
 
 
 # def beat_hist(corpus_path, bars=1):

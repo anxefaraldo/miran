@@ -26,6 +26,6 @@ if __name__ == "__main__":
     parser.add_argument("annotations", help="dir with ground-truth annotations")
     args = parser.parse_args()
 
-    print "Processing files..."
+    print "Processing filesystem..."
     append_groundtruth(args.estimations, args.annotations)
     print 'Done!'

@@ -1,10 +1,11 @@
 import csv
 import os
 import shutil
-
 from datetime import datetime
+
 from numpy import array as nparray
-from conversions import key_to_int
+
+from .conversions import key_to_int
 
 
 def make_unique_dir(parent, tag=''):
@@ -123,3 +124,60 @@ def move_items(origin, destination):
             if e[0] == e[1]:
                 print('moving...', item, e)
                 shutil.move(origin + '/' + item, destination)
+
+
+def index_files(my_dir):
+    """
+    Given a directory, it replaces the containing filesystem with increasing numerical values.
+
+    """
+    dir_files = os.listdir(my_dir)
+    file_count = 0
+    for each_file in dir_files:
+        if os.path.splitext(each_file)[1] == '.mid':
+            int_name = "{:03d}.mid".format(file_count)
+            os.rename(os.path.join(my_dir, each_file), os.path.join(my_dir, int_name))
+            file_count += 1
+
+
+def finder(filepath):
+    """
+    Show a file in the Mac OSX window system.
+
+    """
+    from appscript import app, mactypes
+    app("Finder").reveal(mactypes.Alias(filepath).alias)
+
+
+def folderfiles(folderpath, ext=None, recursive=False):
+    """
+    Returns a list of absolute paths with the filesystem in the specified folder.
+
+    """
+    if recursive:
+        def _rlistdir(path):
+            rlist = []
+            for root, subdirs, files in os.walk(path):
+                for f in files:
+                    rlist.append(os.path.join(root, f))
+            return rlist
+
+        list_of_files = _rlistdir(folderpath)
+
+    else:
+        list_of_files = [os.path.join(folderpath, item) for item in os.listdir(folderpath)]
+
+    my_files = []
+    for myFile in list_of_files:
+        if not ext:
+            my_files.append(myFile)
+        elif os.path.splitext(myFile)[1] == ext:
+            my_files.append(myFile)
+        else:
+            pass
+
+    if not my_files:
+        # raise FileNotFoundError("Did not find any file with the given extension.") PYTHON3
+        raise IOError("Did not find any file with the given extension.")
+    else:
+        return my_files

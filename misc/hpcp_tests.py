@@ -64,7 +64,7 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
 
     parser = ArgumentParser(description="Generates tuned sine-tone mixtures")
-    parser.add_argument("--filepath", help="path to write files to")
+    parser.add_argument("--filepath", help="path to write filesystem to")
     args = parser.parse_args()
 
     if args.filepath:
