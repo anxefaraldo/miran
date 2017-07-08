@@ -5,55 +5,112 @@ import os
 import pandas as pd
 from ..fileutils import *
 
-# rewwrite the following as a function:
-# get track_ids_from_path
 
-#def get_ids_from_folder():
-# try:
-#     folder = [item[:item.find('.')] for item in os.listdir(sys.argv[1])]
-#     print folder
-# except ValueError:
-#     print "Error: You have to provide a valid path as argument"
-#     print "Usage: <get_trackids_from_path.py filepath>"
-#     sys.exit()
-# print "\nTaking track id from" + sys.argv[1]
-# idlist_file = open("list_of_track_ids.txt", "w")
-# [idlist_file.write(trackid + ' ') for trackid in folder]
+def filepath_to_column(dataframe, searchpath_or_pathlist):
+
+    if type(searchpath_or_pathlist) is not list:
+
+        if os.path.isdir(searchpath_or_pathlist):
+            searchpath_or_pathlist = folderfiles(searchpath_or_pathlist, ext='.mp3', recursive=False)
+
+        elif os.path.isfile(searchpath_or_pathlist):
+            searchpath_or_pathlist = [searchpath_or_pathlist]
+
+        else:
+            raise TypeError("searchpath_or_pathlist must be either a valid file, dir or a list of paths.")
+
+
+    dataframe['path'] = pd.Series()
+    for item in dataframe.iterrows():
+        file_path = find_file_by_id(item[1][0], searchpath_or_pathlist)
+        dataframe.set_value(dataframe.index[item[0]], ['path'], file_path)
+
+
+def find_file_by_id(beatport_id, searchpath_or_pathlist):
+    """beatport id can be a string or an int"""
+
+    if type(searchpath_or_pathlist) is not list:
+
+        if os.path.isdir(searchpath_or_pathlist):
+            searchpath_or_pathlist = folderfiles(searchpath_or_pathlist, ext='.mp3')
+
+        else:
+            raise TypeError("searchpath_or_pathlist must be either a valid path or a list.")
+
+
+    for item in searchpath_or_pathlist:
+        item_id = remove_leading_zeroes_from_beatport_id(os.path.split(item)[1].split()[0])
+
+        if item_id == remove_leading_zeroes_from_beatport_id(beatport_id):
+            return item
+
+
+def get_ids_from_files(searchpath_or_pathlist, recursive=False, save_to=None):
+
+    if type(searchpath_or_pathlist) is not list:
+
+        if os.path.isdir(searchpath_or_pathlist):
+            searchpath_or_pathlist = folderfiles(searchpath_or_pathlist, ext='.mp3', recursive=recursive)
+
+        elif os.path.isfile(searchpath_or_pathlist):
+            searchpath_or_pathlist = [searchpath_or_pathlist]
+
+        else:
+            raise TypeError("searchpath_or_pathlist must be either a valid file, dir or a list of paths.")
+
+
+    track_ids = []
+    for item in searchpath_or_pathlist:
+        track_ids.append(int(os.path.split(item)[1].split()[0]))
+
+    if save_to is not None:
+        idlist_file = open(save_to, "w")
+        [idlist_file.write(str(track_id) + ',') for track_id in track_ids]
+
+    return track_ids
+
+
+def rename_files_without_leading_zeroes(searchpath_or_pathlist, recursive=False):
+
+    if type(searchpath_or_pathlist) is not list:
+
+        if os.path.isdir(searchpath_or_pathlist):
+            searchpath_or_pathlist = folderfiles(searchpath_or_pathlist, ext='.mp3', recursive=recursive)
+
+        elif os.path.isfile(searchpath_or_pathlist):
+            searchpath_or_pathlist = [searchpath_or_pathlist]
+
+        else:
+            raise TypeError("searchpath_or_pathlist must be either a valid file, dir or a list of paths.")
+
+    for item in searchpath_or_pathlist:
+        my_dir, my_file = os.path.split(item)
+        os.rename(item, os.path.join(my_dir, str(int(my_file.split()[0])) + my_file[my_file.find(' '):]))
+
+
+def rename_files_without_beatport_data(searchpath_or_pathlist, ext='.mp3', recursive=False):
+    if type(searchpath_or_pathlist) is not list:
+
+        if os.path.isdir(searchpath_or_pathlist):
+            searchpath_or_pathlist = folderfiles(searchpath_or_pathlist, ext=ext, recursive=recursive)
+
+        elif os.path.isfile(searchpath_or_pathlist):
+            searchpath_or_pathlist = [searchpath_or_pathlist]
+
+        else:
+            raise TypeError("searchpath_or_pathlist must be either a valid file, dir or a list of paths.")
+
+    for item in searchpath_or_pathlist:
+        my_dir, my_file = os.path.split(item)
+        os.rename(item, os.path.join(my_dir, os.path.join(my_dir, my_file[:my_file.find(' =')] + ext)))
 
 
 def remove_leading_zeroes_from_beatport_id(beatport_id_string, out_type='int'):
     if out_type is 'str':
         return str(int(beatport_id_string))
+
     elif out_type is 'int':
         return int(beatport_id_string)
+
     else:
         raise TypeError("out_type must be either 'str' or 'int'.")
-
-
-def find_beatport_file_by_id(beatport_id, searchpath_or_pathlist):
-    """beatport id can be a string or an int"""
-
-    if type(searchpath_or_pathlist) is not list:
-        if os.path.isdir(searchpath_or_pathlist):
-            searchpath_or_pathlist = folderfiles(searchpath_or_pathlist, ext='.mp3')
-        else:
-            raise TypeError("searchpath_or_pathlist must be either a valid path or a list.")
-
-    for item in searchpath_or_pathlist:
-        item_id = remove_leading_zeroes_from_beatport_id(os.path.split(item)[1].split()[0])
-        if item_id == remove_leading_zeroes_from_beatport_id(beatport_id):
-            return item
-
-
-def filepath_to_column(dataframe, searchpath_or_pathlist):
-
-    if type(searchpath_or_pathlist) is not list:
-        if os.path.isdir(searchpath_or_pathlist):
-            searchpath_or_pathlist = folderfiles(searchpath_or_pathlist, ext='.mp3')
-        else:
-            raise TypeError("searchpath_or_pathlist must be either a valid path or a list.")
-
-    dataframe['path'] = pd.Series()
-    for item in dataframe.iterrows():
-        file_path = find_beatport_file_by_id(item[1][0], searchpath_or_pathlist)
-        dataframe.set_value(dataframe.index[item[0]], ['path'], file_path)
