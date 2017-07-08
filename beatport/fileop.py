@@ -1,7 +1,7 @@
 # from __future__ import division, print_function
 
-import sys
-import os
+# import sys
+# import os
 import pandas as pd
 from ..fileutils import *
 
@@ -45,7 +45,7 @@ def find_file_by_id(beatport_id, searchpath_or_pathlist):
             return item
 
 
-def get_ids_from_files(searchpath_or_pathlist, recursive=False, save_to=None):
+def get_ids_from_files(searchpath_or_pathlist, recursive=False, save_to=None, separator=" "):
 
     if type(searchpath_or_pathlist) is not list:
 
@@ -61,11 +61,15 @@ def get_ids_from_files(searchpath_or_pathlist, recursive=False, save_to=None):
 
     track_ids = []
     for item in searchpath_or_pathlist:
-        track_ids.append(int(os.path.split(item)[1].split()[0]))
+        if " " not in item:
+            track_id = os.path.split(item)[1].split('.')[0]
+        else:
+            track_id = os.path.split(item)[1].split()[0]
+        track_ids.append(int(track_id))
 
     if save_to is not None:
         idlist_file = open(save_to, "w")
-        [idlist_file.write(str(track_id) + ',') for track_id in track_ids]
+        [idlist_file.write(str(track_id) + separator) for track_id in track_ids]
 
     return track_ids
 
@@ -89,6 +93,7 @@ def rename_files_without_leading_zeroes(searchpath_or_pathlist, recursive=False)
 
 
 def rename_files_without_beatport_data(searchpath_or_pathlist, ext='.mp3', recursive=False):
+
     if type(searchpath_or_pathlist) is not list:
 
         if os.path.isdir(searchpath_or_pathlist):
@@ -106,6 +111,7 @@ def rename_files_without_beatport_data(searchpath_or_pathlist, ext='.mp3', recur
 
 
 def remove_leading_zeroes_from_beatport_id(beatport_id_string, out_type='int'):
+
     if out_type is 'str':
         return str(int(beatport_id_string))
 
