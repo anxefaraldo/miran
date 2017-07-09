@@ -120,3 +120,4 @@ def remove_leading_zeroes_from_beatport_id(beatport_id_string, out_type='int'):
 
     else:
         raise TypeError("out_type must be either 'str' or 'int'.")
+
