@@ -1,5 +1,6 @@
 #!/usr/local/bin/python
 # -*- coding: UTF-8 -*-
+
 """
 This scripts looks for beatport tracks (typically two-minute long, 96Kbps mp3 files)
 matching a given track id number. If the track id number exists in beatport,
@@ -25,10 +26,10 @@ import sys
 import json
 
 
-def get_track(trackid, output_dir=None):
+def get_track(trackid, output_dir=os.getcwd()):
 
     trackid = str(trackid)
-    print("\nLooking for audio file\t", trackid, "...\t", end=" ")
+    print("\nLooking for audio file", trackid, "...\t", end=" ")
 
     try:
         mp3file = url.urlopen('http://geo-samples.beatport.com/lofi/{}.LOFI.mp3'.format(trackid))
@@ -38,7 +39,7 @@ def get_track(trackid, output_dir=None):
         return
 
     try:
-        print("Looking for track's Beatport page\t...\t", end = " ")
+        print("Looking for track's Beatport page...\t", end = " ")
         data = url.urlopen("https://www.beatport.com/track/noche-de-san-juan-original-mix/" + trackid)
         print("found.")
 
@@ -63,8 +64,8 @@ def get_track(trackid, output_dir=None):
 
     except IOError:
         print("NOT found. Naming generically.")
-        title = "Title"
-        artist = "Artist"
+        title = "Unknown Title"
+        artist = "Unknown Artist"
         data = None
 
     filename = "{} {} - {}".format(trackid, artist, title)
@@ -72,7 +73,11 @@ def get_track(trackid, output_dir=None):
     # check for and remove double spaces
     filename = " ".join(filename.split())
 
-    # # check-and-replace illegal characters:
+    # # check-and-replace 'illegal' characters:
+    if "/" in filename:
+        filename = re.sub("/", ":", filename)
+
+    # UNUSED AFTER ENCODING TO UTF-8
     # if "&amp;" in filename:
     #     filename = re.sub("&amp;", "&", filename)
     # if "&apos;" in filename:
@@ -85,25 +90,23 @@ def get_track(trackid, output_dir=None):
     #     filename = re.sub("&#39;", "'", filename)
     # if '&#34;' in filename:
     #     filename = re.sub("&#34;", '"', filename)
-    if '/' in filename:
-         filename = re.sub("/", ' slash ', filename)
     # if '&gt;' in filename:
     #     filename = re.sub("&gt;", ">", filename)
     # # if "\(" in filename:
     # #     filename = re.sub("\(", " (", filename)
 
-    # if metadata available, save it to a json file
-    if data is not None:
-        jsonfile = os.path.join(output_dir, filename) + '.json'
-        with open(jsonfile, 'w') as j_out:
-            json.dump(json.loads(data), j_out, indent=1)
-        print("Saving metadata to", jsonfile)
-
     # save the mp3 file to hard disk
-    audiofile = os.path.join(output_dir, filename) + '.mp3'
+    audiofile = os.path.join(output_dir, filename) + ".mp3"
     with open(audiofile, 'w') as f:
         f.write(mp3file.read())
     print("Saving audio file to", audiofile)
+
+    # if metadata available, save it to a json file
+    if data is not None:
+        jsonfile = os.path.join(output_dir, filename) + ".json"
+        with open(jsonfile, 'w') as j_out:
+            json.dump(json.loads(data), j_out, indent=1)
+        print("Saving metadata to", jsonfile)
 
 
 if __name__ == "__main__":

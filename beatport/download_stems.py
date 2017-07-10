@@ -29,10 +29,10 @@ import json
 def get_stem(stemid, output_dir=None):
 
     stemid = str(stemid)
-    print("\nLooking for stem files\t", stemid, "...\t", end=" ")
+    print("\nLooking for STEM ", stemid, "...\t", end=" ")
 
     try:
-        print("Looking for stems's Beatport page\t...\t", end=" ")
+        print("Looking for stems's Beatport page...\t", end=" ")
         data = url.urlopen("https://www.beatport.com/stem/melt-feat-sorcha-richardson/" + stemid)
         print("found.")
     except IOError:
@@ -45,12 +45,10 @@ def get_stem(stemid, output_dir=None):
     data = data[data.find('{'):data.find('window.Sliders')]
     data = data[:1+ data.rfind('}')]
 
-    # find some data useful for naming things!
+    # some data useful for naming things!
     jdata = json.loads(data)
     jdata = jdata["stems"][0]
     mixfile = jdata["preview"]["mp3"]["url"]
-
-    # these are some of the fields in the json file to name the file informatively
     title = jdata["name"].encode('utf-8')
     artist = jdata["artists"][0]["name"].encode('utf-8')
     filename = "{}.0 {} - {}".format(stemid, artist, title)
@@ -58,24 +56,9 @@ def get_stem(stemid, output_dir=None):
     # check for and remove double spaces
     filename = " ".join(filename.split())
 
-    # check-and-replace illegal characters:
-
-    # if "&amp;" in filename:
-    #     filename = re.sub("&amp;", "&", filename)
-    # if "&apos;" in filename:
-    #     filename = re.sub("&apos;", "'", filename)
-    # if "♯" in filename:
-    #     filename = re.sub("♯", '#', filename)
-    # if '—' in filename:
-    #     filename = re.sub("—", "-", filename)
-    # if '&#39;' in filename:
-    #     filename = re.sub("&#39;", "'", filename)
-    # if '&#34;' in filename:
-    #     filename = re.sub("&#34;", '"', filename)
-    if '/' in filename:
-        filename = re.sub("/", ' slash ', filename)
-    # if '&gt;' in filename:
-    #     filename = re.sub("&gt;", ">", filename)
+    # # check-and-replace 'illegal' characters:
+    if "/" in filename:
+        filename = re.sub("/", ":", filename)
 
     parts = jdata["parts"]
 
@@ -83,6 +66,7 @@ def get_stem(stemid, output_dir=None):
         mp3file = url.urlopen(mixfile)
     except NameError:
         print("Could not find mp3 file.")
+        return
 
     # save the mp3 file in the hard disk
     audiofile = os.path.join(output_dir, filename + ".mp3")
@@ -101,25 +85,13 @@ def get_stem(stemid, output_dir=None):
 
         stemname = "{}.{} {} - {} - {}.mp3".format(stemid, stem_n, artist, title, instrument)
 
-        # # check-and-replace illegal characters:
-        # if "&amp;" in stemname:
-        #     stemname = re.sub("&amp;", "&", stemname)
-        # if "&apos;" in stemname:
-        #     stemname = re.sub("&apos;", "'", stemname)
-        # if "♯" in stemname:
-        #     stemname = re.sub("♯", '#', stemname)
-        # if '—' in stemname:
-        #     stemname = re.sub("—", "-", stemname)
-        # if '&#39;' in stemname:
-        #     stemname = re.sub("&#39;", "'", stemname)
-        # if '&#34;' in stemname:
-        #     stemname = re.sub("&#34;", '"', stemname)
-        if '/' in stemname:
-            stemname = re.sub("/", ',', stemname)
-        # if '&gt;' in stemname:
-        #     stemname = re.sub("&gt;", ">", stemname)
+        # check for and remove double spaces
+        filename = " ".join(filename.split())
 
-        # save the mp3 file in the hard disk
+        if "/" in filename:
+            filename = re.sub("/", ":", filename)
+
+        # save the mp3 file to the hard disk
         audiofile = os.path.join(output_dir, stemname)
         stem_n += 1
 
@@ -127,7 +99,7 @@ def get_stem(stemid, output_dir=None):
             f.write(mp3file.read())
         print("Saving audio file to", audiofile)
 
-    # save the raw json data to a file for later exploration
+    # save all metadata onto a json file
     jsonfile = os.path.join(output_dir, filename) + '.json'
     with open(jsonfile, 'w') as j_out:
         json.dump(json.loads(data), j_out, indent=1)
