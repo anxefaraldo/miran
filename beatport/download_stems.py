@@ -1,5 +1,6 @@
 #!/usr/local/bin/python
 # -*- coding: UTF-8 -*-
+
 """
 This scripts looks for beatport stems (typically two-minute long, 96Kbps mp3 files)
 matching a given track id number. If the track id number exists in beatport,
@@ -43,7 +44,7 @@ def get_stem(stemid, output_dir=None):
     data = data.read()
     data = data[data.find('window.Playables'):]
     data = data[data.find('{'):data.find('window.Sliders')]
-    data = data[:1+ data.rfind('}')]
+    data = data[:1 + data.rfind('}')]
 
     # some data useful for naming things!
     jdata = json.loads(data)
@@ -88,8 +89,8 @@ def get_stem(stemid, output_dir=None):
         # check for and remove double spaces
         filename = " ".join(filename.split())
 
-        if "/" in filename:
-            filename = re.sub("/", ":", filename)
+        if "/" in stemname:
+            stemname = re.sub("/", ":", stemname)
 
         # save the mp3 file to the hard disk
         audiofile = os.path.join(output_dir, stemname)
@@ -124,7 +125,8 @@ if __name__ == "__main__":
             get_stem(int(85), out_dir)
     else:
         print("Getting all available STEMS in Beatport!")
-        i = 0 # STEM to start with!
-        while i < 4500: # change this number if needed to scroll over all the collection!
+        i = 0
+        # STEM to start with!
+        while i < 5000:  # change this number if needed to scroll over all the collection!
             get_stem(i, out_dir)
             i += 1

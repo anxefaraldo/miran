@@ -26,7 +26,7 @@ import sys
 import json
 
 
-def get_track(trackid, output_dir=os.getcwd()):
+def get_track(trackid, output_dir=None):
 
     trackid = str(trackid)
     print("\nLooking for audio file", trackid, "...\t", end=" ")
