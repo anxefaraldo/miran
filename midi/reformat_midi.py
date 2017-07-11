@@ -9,7 +9,7 @@ This script processes midi filesystem to have them in a common and regular forma
 """
 
 import os.path
-from pymidifile import *
+from .pymidifile import *
 
 
 def reformat_midi(mid, name=None, verbose=True, write_to_file=False, override_time_info=True):

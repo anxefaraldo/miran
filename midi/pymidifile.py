@@ -521,9 +521,9 @@ def find_identical_rows(df, row_index):
 #         os.rename(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
 
 
-def copy_files_in_df(df_column, destination):
+def copy_files_in_df(pd_col_with_filename, destination):
     """
-    Move a row from a Pandas dataframe to a different location in the hard drive.
+    Copy a row from a Pandas dataframe to a different location in the hard drive.
     This function assumes that each row represents a file in the filesystem and that
     its filepath is the index of the row.
 
@@ -531,7 +531,7 @@ def copy_files_in_df(df_column, destination):
     from shutil import copyfile
     if not os.path.isdir(destination):
         raise IOError
-    for row in df_column:
+    for row in pd_col_with_filename:
         copyfile(row, os.path.join(destination, os.path.split(row)[1]))
 
 

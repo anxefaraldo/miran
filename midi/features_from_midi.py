@@ -11,7 +11,8 @@ a JSON file with the results of the analysis.
 
 """
 
-from pymidifile import *
+from ..fileutils import *
+from .pymidifile import *
 from pandas import Series as s, DataFrame as df
 
 

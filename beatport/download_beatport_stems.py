@@ -14,7 +14,7 @@ Updated in July 2017.
 """
 
 
-from __future__ import print_function
+from __future__ import division, print_function
 
 try:
     import urllib.request as url
@@ -51,8 +51,13 @@ def get_stem(stemid, output_dir=None):
     jdata = jdata["stems"][0]
     mixfile = jdata["preview"]["mp3"]["url"]
     title = jdata["name"].encode('utf-8')
-    artist = jdata["artists"][0]["name"].encode('utf-8')
-    filename = "{}.0 {} - {}".format(stemid, artist, title)
+    artists = []
+    for entry in jdata["artists"]:
+        if entry["name"] != 'None':
+            artists.append(entry["name"])
+    artists = str.join(', ', artists).encode('utf-8')
+
+    filename = "{}.0 {} - {}".format(stemid, artists, title)
 
     # check for and remove double spaces
     filename = " ".join(filename.split())
@@ -84,7 +89,7 @@ def get_stem(stemid, output_dir=None):
         except NameError:
             print("Could not find mp3 file.")
 
-        stemname = "{}.{} {} - {} - {}.mp3".format(stemid, stem_n, artist, title, instrument)
+        stemname = "{}.{} {} - {} - {}.mp3".format(stemid, stem_n, artists, title, instrument)
 
         # check for and remove double spaces
         filename = " ".join(filename.split())
@@ -126,7 +131,6 @@ if __name__ == "__main__":
     else:
         print("Getting all available STEMS in Beatport!")
         i = 0
-        # STEM to start with!
-        while i < 5000:  # change this number if needed to scroll over all the collection!
+        while i < 5000:
             get_stem(i, out_dir)
             i += 1

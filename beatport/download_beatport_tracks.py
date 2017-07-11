@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 """
-This scripts looks for beatport tracks (typically two-minute long, 96Kbps mp3 files)
+This scripts looks for Beatport tracks (typically two-minute long, 96Kbps mp3 files)
 matching a given track id number. If the track id number exists in beatport,
 it will be downloaded and renamed with metadata information.
 
@@ -13,7 +13,7 @@ Updated in July 2017.
 """
 
 
-from __future__ import print_function
+from __future__ import division, print_function
 
 try:
     import urllib.request as url
@@ -26,7 +26,7 @@ import sys
 import json
 
 
-def get_track(trackid, output_dir=None):
+def download_beatport_track(trackid, output_dir=None):
 
     trackid = str(trackid)
     print("\nLooking for audio file", trackid, "...\t", end=" ")
@@ -51,49 +51,26 @@ def get_track(trackid, output_dir=None):
         # load data to name a few things!
         jdata = json.loads(data)
         title = jdata["title"].encode('utf-8')
-        artist = jdata["artists"][0]["name"].encode('utf-8')
-
-        # OTHER FIELDS!
-        # genre = data["genres"][0]["name"]
-        # key = data["key"]
-        # mix = data["mix"]
-        # label = data["label"]["name"]
-        # remixer = data["remixers"][0]["name"]
-        # subgenre = data["sub_genres"][0]["name"]
-        # bpm = data["bpm"]
+        artists = []
+        for entry in jdata["artists"]:
+            if entry["name"] != 'None':
+                artists.append(entry["name"])
+        artists = str.join(', ', artists).encode('utf-8')
 
     except IOError:
         print("NOT found. Naming generically.")
         title = "Unknown Title"
-        artist = "Unknown Artist"
+        artists = "Unknown Artist"
         data = None
 
-    filename = "{} {} - {}".format(trackid, artist, title)
+    filename = "{} {} - {}".format(trackid, artists, title)
 
     # check for and remove double spaces
     filename = " ".join(filename.split())
 
-    # # check-and-replace 'illegal' characters:
+    # prevent mistaking name character for directory:
     if "/" in filename:
         filename = re.sub("/", ":", filename)
-
-    # UNUSED AFTER ENCODING TO UTF-8
-    # if "&amp;" in filename:
-    #     filename = re.sub("&amp;", "&", filename)
-    # if "&apos;" in filename:
-    #     filename = re.sub("&apos;", "'", filename)
-    # if "♯" in filename:
-    #     filename = re.sub("♯", '#', filename)
-    # if '—' in filename:
-    #     filename = re.sub("—", "-", filename)
-    # if '&#39;' in filename:
-    #     filename = re.sub("&#39;", "'", filename)
-    # if '&#34;' in filename:
-    #     filename = re.sub("&#34;", '"', filename)
-    # if '&gt;' in filename:
-    #     filename = re.sub("&gt;", ">", filename)
-    # # if "\(" in filename:
-    # #     filename = re.sub("\(", " (", filename)
 
     # save the mp3 file to hard disk
     audiofile = os.path.join(output_dir, filename) + ".mp3"
@@ -123,4 +100,4 @@ if __name__ == "__main__":
         out_dir = os.getcwd()
 
     for track_id in args:
-        get_track(int(track_id), out_dir)
+        download_beatport_track(int(track_id), out_dir)

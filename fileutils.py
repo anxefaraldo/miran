@@ -1,11 +1,15 @@
+#!/usr/local/bin/python
+# -*- coding: UTF-8 -*-
+
+from __future__ import division, print_function
+
 import csv
 import os
 import shutil
+import numpy as np
 from datetime import datetime
 
-from numpy import array as nparray
-
-from .conversions import key_to_int
+from .conversions import *
 
 
 def make_unique_dir(parent, tag=''):
@@ -61,7 +65,7 @@ def features_from_csv(csv_file, start_col=0, end_col=1):
     csv_file = csv.reader(csv_file, skipinitialspace=True)
     for row in csv_file:
         saved_values.append(map(float, row[start_col:end_col]))
-    return nparray(saved_values)
+    return np.array(saved_values)
 
 
 def stringcell_from_csv(csv_file, col=27):
@@ -70,7 +74,7 @@ def stringcell_from_csv(csv_file, col=27):
     csv_file = csv.reader(csv_file, skipinitialspace=True)
     for row in csv_file:
         saved_values.append(row[col])
-    return nparray(saved_values)
+    return np.array(saved_values)
 
 
 def keycell_from_csv(csv_file, col=27):
@@ -79,8 +83,7 @@ def keycell_from_csv(csv_file, col=27):
     csv_file = csv.reader(csv_file, skipinitialspace=True)
     for row in csv_file:
         saved_values.append(key_to_int(row[col]))
-    return nparray(saved_values)
-
+    return np.array(saved_values)
 
 
 def move_items_by_estimation(condition, destination, estimations_folder, origin):
@@ -181,3 +184,19 @@ def folderfiles(folderpath, ext=None, recursive=False):
         raise IOError("Did not find any file with the given extension.")
     else:
         return my_files
+
+
+def preparse_files(searchpath_or_pathlist, ext=None, recursive=False):
+
+    if type(searchpath_or_pathlist) is not list:
+
+        if os.path.isdir(searchpath_or_pathlist):
+            searchpath_or_pathlist = folderfiles(searchpath_or_pathlist, ext=ext, recursive=recursive)
+
+        elif os.path.isfile(searchpath_or_pathlist):
+            searchpath_or_pathlist = [searchpath_or_pathlist]
+
+        else:
+            raise TypeError("argument must be either a valid filepath, dirpath or a list of paths.")
+
+        return searchpath_or_pathlist

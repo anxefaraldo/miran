@@ -3,7 +3,8 @@
 
 
 from argparse import ArgumentParser
-from reformat_midi import *
+from .reformat_midi import *
+from ..fileutils import *
 
 parser = ArgumentParser(description="Performs quantisation and reformatting of midifiles.")
 parser.add_argument("input", help="Midi file or dir to reformat.")
