@@ -200,20 +200,24 @@ if __name__ == "__main__":
         estimation_files = os.listdir(args.estimations)
         for element in estimation_files:
             if element[-4:] == '.key' or element[-4:] == '.txt':
-                with open(args.estimations + '/' + element, 'r') as est_file:
+                with open(os.path.join(args.estimations, element), 'r') as est_file:
                     est_string = split_annotation(est_file.readline())
-
                 est = [name_to_class(est_string[0]), mode_to_num(est_string[1])]
+
+                # for ext in ['.key', '.txt']: # conseguir un método para tener varios formatos de anotacionees!
                 try:
                     # IMPORTANT!
                     # we assume that file names of estimations and annotations are equal!
-                    ann_file = open(args.references + '/' + element[:-4] + '.txt', 'r')
+                    ann_file = open(os.path.join(args.references, element[:-4] + '.txt'), 'r')
+
                 except IOError:
                     try:
-                        ann_file = open(args.references + '/' + element[:-4] + '.key', 'r')
+                        ann_file = open(os.path.join(args.references, element[:-4] + '.key'), 'r')
                     except IOError:
                         print("Didn't find a reference annotation for the current estimation...\n")
                         continue
+
+
                 ann_key = ann_file.readline()
 
                 ann = key_to_list(ann_key)
@@ -248,6 +252,7 @@ if __name__ == "__main__":
         # ==================
         mirex_results = mirex_evaluation(results_mirex)
         keys_matrix = np.array(keys_matrix).reshape(2 * 12, 2 * 12)
+        # todo:_ fix tix
         # for item in results_errors:
         #     error_matrix[item / 2.0, item % 2] += 1
 
