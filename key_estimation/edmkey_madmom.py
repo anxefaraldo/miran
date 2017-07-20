@@ -7,6 +7,7 @@ import madmom
 
 from pcp import *
 from templates import *
+from fileutils import results_directory
 
 # ======== #
 # SETTINGS #

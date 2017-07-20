@@ -1,5 +1,3 @@
-""""WARNING: Essentia only available for python 2.??"""
-
 import numpy as np
 import essentia.standard as estd
 

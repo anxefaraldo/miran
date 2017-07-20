@@ -9,7 +9,7 @@ import shutil
 import numpy as np
 from datetime import datetime
 
-from .conversions import *
+from conversions import *
 
 
 def make_unique_dir(parent, tag=''):

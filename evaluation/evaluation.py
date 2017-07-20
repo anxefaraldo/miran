@@ -1,11 +1,75 @@
 #!/usr/local/bin/python
 #  -*- coding: UTF-8 -*-
 
+from __future__ import division, print_function
+
+from fileutils import *
 from numpy import divide, mean, array, zeros
+import os
 
-from conversions import *
+# from conversions import *
+
+#### THIS ONE PUNCTUATES DESCENDING AND ASCENDING FIFTHS... DISREGARDING MODE
+# def mirex_score(estimation, groundtruth):
+#     """
+#     Performs an evaluation of the key estimation
+#     according to the MIREX score, assigning
+#     - 1.0 points to correctly identified keys,
+#     - 0.5 points to keys at a distance of a perfect fifth,
+#     - 0.3 points to relative keys,
+#     - 0.2 points to parallel keys, and
+#     - 0.0 points to other types of errors.
+#     :param estimation: list with numeric values for key and mode :type str
+#     :param groundtruth: list with numeric values for key and mode :type str
+#     """
+#     if estimation[0] == groundtruth[0] and estimation[1] == groundtruth[1]:
+#         points = 1.0
+#     elif estimation[0] == groundtruth[0] and estimation[1] + groundtruth[1] == 1:
+#         points = 0.2
+#     elif estimation[0] == (groundtruth[0] + 7) % 12:
+#         points = 0.5
+#     elif estimation[0] == (groundtruth[0] + 5) % 12:
+#         points = 0.5
+#     elif estimation[0] == (groundtruth[0] + 3) % 12 and estimation[1] == 0 and groundtruth[1] == 1:
+#         points = 0.3
+#     elif estimation[0] == (groundtruth[0] - 3) % 12 and estimation[1] == 1 and groundtruth[1] == 0:
+#         points = 0.3
+#     else:
+#         points = 0.0
+#     return points
 
 
+#### THIS ONE PUNCTUATES ASCENDING AND DESCENDING FIFTHS... WITH THE SAME MODE!
+# def mirex_score(estimation, groundtruth):
+#     """
+#     Performs an evaluation of the key estimation
+#     according to the MIREX score, assigning
+#     - 1.0 points to correctly identified keys,
+#     - 0.5 points to keys at a distance of a perfect fifth,
+#     - 0.3 points to relative keys,
+#     - 0.2 points to parallel keys, and
+#     - 0.0 points to other types of errors.
+#     :param estimation: list with numeric values for key and mode :type str
+#     :param groundtruth: list with numeric values for key and mode :type str
+#     """
+#     if estimation[0] == groundtruth[0] and estimation[1] == groundtruth[1]:
+#         points = 1.0
+#     elif estimation[0] == groundtruth[0] and estimation[1] + groundtruth[1] == 1:
+#         points = 0.2
+#     elif estimation[0] == (groundtruth[0] + 7) % 12 and estimation[1] == groundtruth[1]:
+#         points = 0.5
+#     elif estimation[0] == (groundtruth[0] + 5) % 12 and estimation[1] == groundtruth[1]:
+#         points = 0.5
+#     elif estimation[0] == (groundtruth[0] + 3) % 12 and estimation[1] == 0 and groundtruth[1] == 1:
+#         points = 0.3
+#     elif estimation[0] == (groundtruth[0] - 3) % 12 and estimation[1] == 1 and groundtruth[1] == 0:
+#         points = 0.3
+#     else:
+#         points = 0.0
+#     return points
+
+#
+#### THIS ONE PUNCTUATES ONLY ASCENDING FIFTHS WITH SAME MODE!
 def mirex_score(estimation, groundtruth):
     """
     Performs an evaluation of the key estimation
@@ -22,9 +86,7 @@ def mirex_score(estimation, groundtruth):
         points = 1.0
     elif estimation[0] == groundtruth[0] and estimation[1] + groundtruth[1] == 1:
         points = 0.2
-    elif estimation[0] == (groundtruth[0] + 7) % 12:
-        points = 0.5
-    elif estimation[0] == (groundtruth[0] + 5) % 12:
+    elif estimation[0] == (groundtruth[0] + 7) % 12 and estimation[1] == groundtruth[1]:
         points = 0.5
     elif estimation[0] == (groundtruth[0] + 3) % 12 and estimation[1] == 0 and groundtruth[1] == 1:
         points = 0.3
@@ -158,8 +220,9 @@ if __name__ == "__main__":
         # ==================
         mirex_results = mirex_evaluation(results_mirex)
         keys_matrix = array(keys_matrix).reshape(2 * 12, 2 * 12)
-        for item in results_errors:
-            error_matrix[item / 2, item % 2] += 1
+        # todo: FIX THIS!
+        #for item in results_errors:
+        #    error_matrix[item / 2, item % 2] += 1
 
         # WRITE RESULTS TO FILE
         # =====================

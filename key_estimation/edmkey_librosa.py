@@ -8,6 +8,7 @@ import scipy.ndimage
 
 from pcp import *
 from templates import *
+from fileutils import results_directory
 
 # ======== #
 # SETTINGS #
