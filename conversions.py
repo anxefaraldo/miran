@@ -4,7 +4,11 @@
 
 def name_to_class(key):
     """
-    Converts a note name to its pitch-class value.
+    Converts a pitch name to its pitch-class value.
+    Flat symbol is represented by a lower case 'b'
+    Sharp symbol is represented by the '#' character
+    The pitch name can be either upper of lower case
+
     :type key: str
     """
     name2class = {'B#': 0, 'C': 0,
@@ -19,25 +23,28 @@ def name_to_class(key):
                   'A':  9, 'A#': 10,
                   'Bb': 10, 'B': 11,
                   'Cb': 11,
-                  '??': 12, '-': 12}
+                  '??': 12, '-': 12, 'X': 12}
     try:
+        if key.islower():
+            key = key[0].upper() + key[1:]
         return name2class[key]
     except KeyError:
-        print('name not defined in dictionary')
+        print('KeyError: tonic name not recognised')
 
 
-def mode_to_num(mode):
+def mode_to_num(mode=''):
     """
-    Converts a scale type into numeric values (maj = 0, min = 1).
+    Converts a mode label into numeric values.
+
     :type mode: str
     """
-    mode2num = {'major':      0,
-                'minor':      1,
+    mode2num = {'':           0,
+                'major':      0,
                 'maj':        0,
-                'min':        1,
                 'M':          0,
+                'minor':      1,
+                'min':        1,
                 'm':          1,
-                '':           0,
                 'ionian':     2,
                 'harmonic':   3,
                 'mixolydian': 4,
@@ -47,10 +54,11 @@ def mode_to_num(mode):
                 'difficult':  8,
                 'peak':       9,
                 'flat':       10}
+
     try:
         return mode2num[mode]
     except KeyError:
-        print('mode type not defined in dictionary')
+        print('KeyError: mode type not recognised')
 
 
 def key_to_list(key):
