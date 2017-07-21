@@ -147,7 +147,7 @@ def estimate_key(soundfile, write_to):
             key = '{0} minor'.format(key[0])
         # 2)
         # 3)
-        # else we take the simple estimation as true:
+        # else we take the simple analysis as true:
         else:
             key = "{0} {1}".format(key[0], key[1])
             # keyn_2 = key_to_int(key)

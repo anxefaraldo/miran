@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 """
-This script evaluates the key estimation task according to the MIREX standard.
+This script evaluates the key each_file task according to the MIREX standard.
 Ángel Faraldo, March 2015.
 
 """
@@ -61,7 +61,7 @@ for i in range(len(ground_truth_list)):
     if es_filename == gt_filename:
         score = mirex_score(ground_truth, estimation)
     else:
-        print "ground-truth and estimation do not match. SKIPPING"
+        print "ground-truth and each_file do not match. SKIPPING"
     if VERBOSE: print "%03d" % (i + 1,), '- est:', estimation, '\tgt:', ground_truth, '\tScore:', score
     list_of_results.append(score)
     if CONFUSION_MATRIX:

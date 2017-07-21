@@ -2,7 +2,7 @@ from fodules.excel import *
 from sklearn import svm
 
 """
-Prior to these steps you have to run the estimation and evaluation
+Prior to these steps you have to run the each_file and evaluation
 algorithms, in order to have data to train with.
 """
 

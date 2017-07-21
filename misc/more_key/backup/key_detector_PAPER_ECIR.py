@@ -245,7 +245,7 @@ if __name__ == "__main__":
             output_dir = results_directory(args.output)
             list_all_files = os.listdir(args.input)
             print "\nAnalysing audio filesystem in:\t{0}".format(args.input)
-            print "Writing estimation filesystem to:\t{0}\n".format(args.output)
+            print "Writing each_file filesystem to:\t{0}\n".format(args.output)
             count_files = 0
             for a_file in list_all_files:
                 if any(soundfile_type in a_file for soundfile_type in VALID_FILE_TYPES):

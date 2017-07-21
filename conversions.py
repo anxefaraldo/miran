@@ -176,11 +176,11 @@ def xls_to_key_annotations(excel_file, sheet_index, export_directory):
 def matrix_to_excel(my_matrix,
                     label_rows=('C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'),
                     label_cols=('C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'),
-                    filename='matrix.xls'):
+                    filename='matrix.xls', sheet='Sheet1'):
     import xlwt
 
     wb = xlwt.Workbook()
-    ws = wb.add_sheet('Sheet1')
+    ws = wb.add_sheet(sheet)
 
     start_row = 1
     for label in label_rows:

@@ -36,7 +36,7 @@ def merge_files(dir_with_files, new_filename):
     o = open(new_filename, 'w')
     e = os.listdir(dir_with_files)
     for item in e:
-        if '.key' in item:
+        if '.key' or '.txt' in item:
             f = open(dir_with_files + '/' + item, 'r')
             l = f.read()
             o.write(l + '\n')

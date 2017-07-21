@@ -70,7 +70,7 @@ def key_to_list(key):
 
 
 def mirex_score(ground_truth, estimation):
-    """Performs an evaluation of the key estimation according to the MIREX competition,
+    """Performs an evaluation of the key each_file according to the MIREX competition,
     assigning a 1 to correctly identified keys, 0.5 to keys at a distance of a perfect fifth,
     0.3 to relative keys, 0.2 to parallel keys and 0 to other tyoes of errors."""
     if estimation[0] == ground_truth[0] and estimation[1] == ground_truth[1]:
