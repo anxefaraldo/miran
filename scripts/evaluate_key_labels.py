@@ -1,121 +1,8 @@
 #!/usr/local/bin/python
 #  -*- coding: UTF-8 -*-
 
-from __future__ import absolute_import, division, print_function
-
-import pandas as pd
-
-from tonaledm.fileutils import *
-
-
-def split_key_str(key_string):
-    """
-    Splits a key_string with various fields separated by
-    comma, tab or space, into separate fields.
-
-    This function will normally process a sungle line
-    from a text file, returning a list with individual
-    entries for each field.
-
-    """
-    key_string = key_string.replace("\n", "")
-    if "," in key_string:
-        key_string = key_string.replace("\t", "")
-        key_string = key_string.replace(' ', "")
-        key_string = key_string.split(",")
-    elif "\t" in key_string:
-        key_string = key_string.replace(' ', "")
-        key_string = key_string.split("\t")
-    elif " " in key_string:
-        key_string = key_string.split()
-    else:
-        raise ValueError("Unrecognised key_string format")
-    return key_string
-
-
-def key_eval_mirex(estimated_key_tuple, reference_key_tuple):
-    """
-    Performs an evaluation of the key estimation
-    according to the MIREX protocol, assigning:
-
-    - 1.0 point to correctly identified keys,
-    - 0.5 points to keys at a neighbouring keys
-    - 0.3 points to relative keys,
-    - 0.2 points to parallel keys, and
-    - 0.0 points to other types of errors.
-
-    :param estimated_key_tuple: tuple with values for estimated key and mode (tonic, mode) :type tuple
-    :param reference_key_tuple: tuple with values for reference key and mode (tonic, mode) :type tuple
-    """
-
-    estimated_tonic, estimated_mode = estimated_key_tuple
-    reference_tonic, reference_mode = reference_key_tuple
-
-    # if both tonic and mode are equal = 1
-    if estimated_tonic == reference_tonic and estimated_mode == reference_mode:
-        score = 1.
-
-    # fifth error = neighbouring keys in the circle of fifths with the same mode
-    elif estimated_tonic == (reference_tonic + 7) % 12 and estimated_mode == reference_mode:
-            score = 0.5
-    # mir_eval only considers ascending fifths, so next line does not apply for them
-    elif estimated_tonic == (reference_tonic + 5) % 12 and estimated_mode == reference_mode:
-            score = 0.5
-
-    # (relative error) = 0.3
-    elif estimated_tonic == (reference_tonic + 3) % 12 and estimated_mode == 0 and reference_mode == 1:
-        score = 0.3
-    elif estimated_tonic == (reference_tonic - 3) % 12 and estimated_mode == 1 and reference_mode == 0:
-        score = 0.3
-
-    # parallel error = 0.2
-    elif estimated_tonic == reference_tonic and estimated_mode != reference_mode:
-        score = 0.2
-
-    else:
-        score = 0.0
-
-    return score
-
-
-def key_eval_relative_errors(estimated_key_numlist, reference_key_numlist):
-    """
-    Performs a detailed evaluation of the key each_file.
-    :type estimated_key_numlist: tuple with numeric values for key and mode
-    :type reference_key_numlist: tuple with numeric values for key and mode
-    """
-    pc2degree = {0:  'I',
-                 1:  'bII',
-                 2:  'II',
-                 3:  'bIII',
-                 4:  'III',
-                 5:  'IV',
-                 6:  '#IV',
-                 7:  'V',
-                 8:  'bVI',
-                 9:  'VI',
-                 10: 'bVII',
-                 11: 'VII'}
-
-    estimated_tonic, estimated_mode = estimated_key_numlist
-    reference_tonic, reference_mode = reference_key_numlist
-
-    interval = (estimated_tonic - reference_tonic) % 12
-    degree = pc2degree[interval]
-    error_id = 2 * (interval + (estimated_mode * 12)) + reference_mode
-    if estimated_mode == 1:
-        degree = degree.lower()
-    else:
-        degree = degree.upper()
-        degree = degree.replace('B', 'b')
-    if reference_mode == 1:
-        degree = 'i as ' + degree
-    else:
-        degree = 'I as ' + degree
-    return error_id, degree
-
-
 if __name__ == "__main__":
+
 
     print("\nIMPORTANT: this script assumes that filenames of estimations\n"
           "and references are identical, except for the extensions,\n"
@@ -124,17 +11,19 @@ if __name__ == "__main__":
     EXTENSIONS = {'.txt', '.key', '.lab'}
 
     KEY_LABELS = ('C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B',
-                 'Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm')
+                  'Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm')
 
     DEGREE_LABELS = ('I', 'bII', 'II', 'bIII', 'III', 'IV', '#IV', 'V', 'bVI', 'VI', 'bVII', 'VII',
                      'i', 'bii', 'ii', 'biii', 'iii', 'iv', '#iv', 'v', 'bvi', 'vi', 'bvii', 'vii')
 
+
+    import pandas as pd
+    from tonaledm.evaluation import *
     from argparse import ArgumentParser
 
-    parser = ArgumentParser(description="Evaluation of key each_file algorithms.")
+    parser = ArgumentParser(description="Evaluation of key estimation algorithms.")
     parser.add_argument("references", help="dir with reference annotations.")
-    parser.add_argument("estimations", help="dir with estimated keys")
-    parser.add_argument("-t" "--analysis_type", help="type of analysis to perform ({'mirex', 'detailed'}.")
+    parser.add_argument("estimations", help="dir with estimated labels")
     parser.add_argument("-v", "--verbose", action="store_true", help="print results to console")
     parser.add_argument("-s", "--save_to_file", help="save the evaluation results to an excel spreadsheet")
 
@@ -192,7 +81,6 @@ if __name__ == "__main__":
                 mtx_key[row, col] += 1
 
                 file_count += 1
-
 
         # GENERAL EVALUATION
         # ==================

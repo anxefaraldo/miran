@@ -13,7 +13,7 @@ a JSON file with the results of the analysis.
 
 from pandas import Series as s, DataFrame as df
 
-from tonaledm.fileutils import *
+from tonaledm.fileutil import *
 from .pymidifile import *
 
 

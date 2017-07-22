@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from tonaledm.fileutils import *
+from tonaledm.fileutil import *
 from .reformat_midi import *
 
 parser = ArgumentParser(description="Performs quantisation and reformatting of midifiles.")

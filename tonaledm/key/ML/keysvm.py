@@ -3,7 +3,7 @@ import essentia.standard as estd
 from fodules.excel import *
 from fodules.pcp import *
 
-from tonaledm.conversions import *
+from tonaledm.conversion import *
 
 
 def estimate_key(soundfile, write_to):

@@ -7,7 +7,7 @@ import librosa.display
 import numpy as np
 from matplotlib import pyplot as plt
 
-from tonaledm.conversions import name_to_class
+from tonaledm.conversion import name_to_class
 
 
 def plot_chroma(chromagram):

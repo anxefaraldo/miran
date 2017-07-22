@@ -4,10 +4,10 @@
 import os
 
 
-def prepend_to_filename(directory, substring, prepend):
+def prepend_to_filename(directory, match_substring, prepend):
     list_of_files = os.listdir(directory)
     for item in list_of_files:
-        if substring in item:
+        if match_substring in item:
             filename = directory + '/' + item
             print 'Renaming', item
             os.rename(filename, directory + '/' + prepend + item)

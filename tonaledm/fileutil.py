@@ -9,7 +9,7 @@ import shutil
 import numpy as np
 from datetime import datetime
 
-from tonaledm.conversions import *
+from tonaledm.conversion import *
 
 
 def make_unique_dir(parent, tag=''):

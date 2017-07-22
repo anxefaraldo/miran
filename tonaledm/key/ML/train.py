@@ -2,7 +2,7 @@ import essentia.standard as estd
 from fodules.excel import *
 from fodules.pcp import *
 
-from tonaledm.conversions import *
+from tonaledm.conversion import *
 
 
 def get_features(soundfile, target):

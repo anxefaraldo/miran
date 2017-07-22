@@ -8,7 +8,7 @@ import scipy.ndimage
 
 from pcp import *
 from templates import *
-from tonaledm.fileutils import results_directory
+from tonaledm.fileutil import results_directory
 
 # ======== #
 # SETTINGS #

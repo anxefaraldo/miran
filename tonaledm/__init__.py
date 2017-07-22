@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 
 from tonaledm.beatport import *
-from tonaledm.conversions import *
-from tonaledm.fileutils import *
+from tonaledm.conversion import *
+from tonaledm.fileutil import *
 
 
 # from .evaluation import *
