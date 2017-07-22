@@ -1,6 +1,7 @@
 README.rst
 setup.py
 tonaledm/__init__.py
+tonaledm/beatport.py
 tonaledm/conversions.py
 tonaledm/fileutils.py
 tonaledm.egg-info/PKG-INFO

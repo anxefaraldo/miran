@@ -200,3 +200,33 @@ def preparse_files(searchpath_or_pathlist, ext=None, recursive=False):
             raise TypeError("argument must be either a valid filepath, dirpath or a list of paths.")
 
         return searchpath_or_pathlist
+
+
+def write_regular_timespans(textfile, duration=120):
+    """
+    This functions takes a textfile with a few time annotations and
+    propagates annotations based on the mean of the available time differences.
+
+    AT THE MOMENT IT ONLY TAKES TAB SEPARATED FIELDS!
+
+    """
+    instants = []
+    label = ''
+    with open(textfile, 'r') as f:
+        for line in f.readlines():
+            instants.append(float(line.split()[0]))
+            if len(line.split()) > 1:
+                if label == '':
+                    label = line[line.find('\t'):]
+
+    # calculate mean inter-instant time
+    avg_interonset = np.mean(np.diff(instants))
+
+    while (instants[-1] + avg_interonset) < duration:
+        instants.append(instants[-1] + avg_interonset)
+
+    with open(textfile, 'w') as f:
+        for instant in instants:
+            f.write(str(instant) + label)
+
+    return instants
