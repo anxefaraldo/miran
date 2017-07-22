@@ -1,7 +1,7 @@
 #!/usr/local/bin/python
 # -*- coding: UTF-8 -*-
 
-from __future__ import division, print_function
+from __future__ import absolute_import, division, print_function
 
 import csv
 import os
@@ -9,7 +9,7 @@ import shutil
 import numpy as np
 from datetime import datetime
 
-from conversions import *
+from tonaledm.conversions import *
 
 
 def make_unique_dir(parent, tag=''):

@@ -1,10 +1,9 @@
 # !/usr/local/bin/python
 #  -*- coding: UTF-8 -*-
 
-from __future__ import division, print_function
+from __future__ import absolute_import, division, print_function
 
 from tonaledm.fileutils import *
-
 
 #
 # ####### MIXED IN KEY !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

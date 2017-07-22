@@ -31,7 +31,9 @@ setup(
         'scipy >= 0.14.0',
         'pandas >= 0.18.1',
         'future',
-        urllib
+        urllib,
+        'xlrd',
+        'xlwt'
     ],
     extras_require={
         'display': ['matplotlib>=1.5.0',
