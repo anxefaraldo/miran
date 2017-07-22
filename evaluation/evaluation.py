@@ -5,7 +5,24 @@ from __future__ import division, print_function
 
 import pandas as pd
 from fileutils import *
-from annotations import split_annotation
+
+
+def split_annotation(annotation):
+    """Splits key annotation into separate fields"""
+
+    annotation = annotation.replace("\n", "")
+    if "," in annotation:
+        annotation = annotation.replace("\t", "")
+        annotation = annotation.replace(' ', "")
+        annotation = annotation.split(",")
+    elif "\t" in annotation:
+        annotation = annotation.replace(' ', "")
+        annotation = annotation.split("\t")
+    elif " " in annotation:
+        annotation = annotation.split()
+    else:
+        raise ValueError("Unrecognised annotation format")
+    return annotation
 
 
 def mirex_key_score(estimated_key_tuple, reference_key_tuple):
@@ -129,6 +146,7 @@ if __name__ == "__main__":
         results = {}
         estimations = os.listdir(args.estimations)
 
+        file_count = 0
         for each_file in estimations:
             reference = None
             if any(ext == os.path.splitext(each_file)[-1] for ext in EXTENSIONS):
@@ -164,6 +182,8 @@ if __name__ == "__main__":
                 col = reference_key[0] + (reference_key[1] * 12)
                 row = estimated_key[0] + (estimated_key[1] * 12)
                 mtx_key[row, col] += 1
+
+                file_count += 1
 
 
         # GENERAL EVALUATION
@@ -202,6 +222,8 @@ if __name__ == "__main__":
             print("\nMIREX RESULTS:")
             mirex = pd.DataFrame(mirex, index=['correct', 'fifth', 'relative', 'parallel', 'other', 'weighted'], columns=['%'])
             print(mirex)
+
+        print("\n{} files evaluated".format(file_count))
 
         # WRITE RESULTS TO FILE
         # =====================
