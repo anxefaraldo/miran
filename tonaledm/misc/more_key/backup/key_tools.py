@@ -58,7 +58,7 @@ def mode_to_num(mode):
 
 def key_to_list(key):
     """converts a key (i.e. C major) type into a numeric list containing [tonic, mode]
-    using the name_to_class and mode_to_num functions
+    using the pitchname_to_int and modename_to_int functions
     :type key: basestring"""
     key = key.split(' ')
     key[-1] = key[-1].strip()

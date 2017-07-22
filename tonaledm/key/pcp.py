@@ -7,7 +7,7 @@ import librosa.display
 import numpy as np
 from matplotlib import pyplot as plt
 
-from tonaledm.conversion import name_to_class
+from tonaledm.conversions import pitchname_to_int
 
 
 def plot_chroma(chromagram):
@@ -147,7 +147,7 @@ def extract_median_pcp(dir_estimations, dir_annotations, pcp_size=36):
             pcp = pcp[pcp.rfind('\t') + 1:].split(', ')
             for i in range(pcp_size):
                 pcp[i] = float(pcp[i])
-            pcp = transpose_pcp(pcp, name_to_class(root))
+            pcp = transpose_pcp(pcp, pitchname_to_int(root))
             accumulate_profiles.append(pcp)
     return np.median(accumulate_profiles, axis=0)
 

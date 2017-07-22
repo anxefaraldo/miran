@@ -55,21 +55,21 @@ if '.DS_Store' in soundfiles:
 
 print "\nANALYSIS..."
 for item in soundfiles:
-    loader = estr.MonoLoader(filename=audio_folder+'/'+item, 
+    loader = estr.MonoLoader(filename=audio_folder+'/'+item,
                              sampleRate=sample_rate)
-    framecutter = estr.FrameCutter(frameSize=window_size, 
+    framecutter = estr.FrameCutter(frameSize=window_size,
                                    hopSize=hop_size)
-    windowing = estr.Windowing(size=window_size, 
+    windowing = estr.Windowing(size=window_size,
                                type=window_type)
     spectrum = estr.Spectrum(size=window_size)
-    spectralpeaks = estr.SpectralPeaks(magnitudeThreshold=magnitude_threshold, 
-                                       minFrequency=min_frequency, 
-                                       maxFrequency=max_frequency, 
+    spectralpeaks = estr.SpectralPeaks(magnitudeThreshold=magnitude_threshold,
+                                       minFrequency=min_frequency,
+                                       maxFrequency=max_frequency,
                                        maxPeaks=max_peaks,
-                                       sampleRate=sample_rate)      
+                                       sampleRate=sample_rate)
     hpcp = estr.HPCP(bandPreset=band_preset,
                      harmonics = harmonics,
-                     minFrequency=min_frequency, 
+                     minFrequency=min_frequency,
                      maxFrequency=max_frequency,
                      nonLinear=non_linear,
                      normalized=normalize,
@@ -88,7 +88,7 @@ for item in soundfiles:
     result = pool['tonal.caca']
     print item[:15]+'...     \n', result
     with open(temp_folder + '/' + item[:-3]+'txt', 'w') as textfile: # and  write them to a textfile
-        textfile.write(result)    
+        textfile.write(result)
     e.reset(loader) # reset essentia
 """
 # EVALUATION!
@@ -109,11 +109,11 @@ name2class = {'B#':0,'C':0,
 mode2num = {'minor':0, 'major':1}
 
 # some function definitions
-def name_to_class(key):
+def pitchname_to_int(key):
     "converts a pitch name into its pitch-class value (c=0,...,b=11)"
     return name2class[key]
     
-def mode_to_num(mode):
+def modename_to_int(mode):
     "converts a chord type into an arbitrary numeric value (maj = 1, min = 0)"
     return mode2num[mode]
 
@@ -136,13 +136,13 @@ for i in range(len(GT)):
     lGT = GTS.readline()
     lGT = lGT.split(' ')
     lGT[-1] = lGT[-1].strip() # remove whitespace if existing
-    if len(lGT) == 1 : lGT = [name_to_class(lGT[0]), 1]
-    else: lGT = [name_to_class(lGT[0]), mode_to_num(lGT[1])]
+    if len(lGT) == 1 : lGT = [pitchname_to_int(lGT[0]), 1]
+    else: lGT = [pitchname_to_int(lGT[0]), modename_to_int(lGT[1])]
     PS = open(temp_folder+'/'+P[i], 'r')
     lP = PS.readline()
     lP = lP.split(' ')
     lP[-1] = lP[-1].strip()
-    lP = [name_to_class(lP[0]), mode_to_num(lP[1])]
+    lP = [pitchname_to_int(lP[0]), modename_to_int(lP[1])]
     if lP[0] == lGT[0] and lP[1] == lGT[1]: score = 1        # perfect match
     elif lP[0] == lGT[0] and lP[1]+lGT[1] == 1: score = 0.2  # parallel key
     elif lP[0] == (lGT[0]+7)%12 and lP[1]+lGT[1] == 2: score = 0.5  # Dominant (in major)

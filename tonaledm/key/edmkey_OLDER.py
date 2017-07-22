@@ -7,7 +7,7 @@ import essentia.standard as estd
 from filesystem import make_unique_dir
 
 from pcp import *
-from tonaledm.conversion import *
+from tonaledm.conversions import *
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #
@@ -171,13 +171,13 @@ def estimate_key(soundfile, write_to):
         key_1 = estimation_1[0] + ' ' + estimation_1[1]
         # keyn_1 = key_to_int(key_1)
         # tonic_1 = name_to_class(estimation_1[0])
-        # scale_1 = mode_to_num(estimation_1[1])
+        # scale_1 = modename_to_int(estimation_1[1])
         # confidence_1 = estimation_1[2]
         if WITH_MODAL_DETAILS:
             estimation_2 = key_2(chroma)
             key_2 = estimation_2[0] + ' ' + estimation_2[1]
             # tonic_2 = name_to_class(estimation_2[0])
-            # scale_2 = mode_to_num(estimation_2[1])
+            # scale_2 = modename_to_int(estimation_2[1])
             # confidence_2 = estimation_2[2]
         # chroma = str(chroma)[1:-1]
     elif ANALYSIS_TYPE == 'local':

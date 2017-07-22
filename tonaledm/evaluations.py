@@ -9,6 +9,8 @@ key estimation algorithms.
 
 from __future__ import absolute_import, division, print_function
 
+from tonaledm.definitions import pc2degree
+
 
 def key_eval_mirex(estimated_key_tuple, reference_key_tuple):
     """
@@ -60,20 +62,8 @@ def key_eval_relative_errors(estimated_key_numlist, reference_key_numlist):
     Performs a detailed evaluation of the key each_file.
     :type estimated_key_numlist: tuple with numeric values for key and mode
     :type reference_key_numlist: tuple with numeric values for key and mode
-    """
-    pc2degree = {0:  'I',
-                 1:  'bII',
-                 2:  'II',
-                 3:  'bIII',
-                 4:  'III',
-                 5:  'IV',
-                 6:  '#IV',
-                 7:  'V',
-                 8:  'bVI',
-                 9:  'VI',
-                 10: 'bVII',
-                 11: 'VII'}
 
+    """
     estimated_tonic, estimated_mode = estimated_key_numlist
     reference_tonic, reference_mode = reference_key_numlist
 

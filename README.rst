@@ -15,6 +15,3 @@ Dependencies:
 * `Scipy/Numpy <http://www.scipy.org/>`_
 * future
 * pandas
-
-
-

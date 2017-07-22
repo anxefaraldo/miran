@@ -1,24 +1,21 @@
 #!/usr/local/bin/python
 #  -*- coding: UTF-8 -*-
 
+"""IMPORTANT: This script assumes that filenames of estimations and references
+are identical, except for the extensions, which can be any of the ones defined
+in ANNOTATION_EXT.
+
+Ángel Faraldo, July 2017.
+"""
+
 if __name__ == "__main__":
 
-
-    print("\nIMPORTANT: this script assumes that filenames of estimations\n"
-          "and references are identical, except for the extensions,\n"
-          "which can be any of the ones defined in EXTENSIONS.")
-
-    EXTENSIONS = {'.txt', '.key', '.lab'}
-
-    KEY_LABELS = ('C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B',
-                  'Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm')
-
-    DEGREE_LABELS = ('I', 'bII', 'II', 'bIII', 'III', 'IV', '#IV', 'V', 'bVI', 'VI', 'bVII', 'VII',
-                     'i', 'bii', 'ii', 'biii', 'iii', 'iv', '#iv', 'v', 'bvi', 'vi', 'bvii', 'vii')
-
-
+    import os.path
+    import numpy as np
     import pandas as pd
-    from tonaledm.evaluation import *
+    from tonaledm.conversions import *
+    from tonaledm.evaluations import *
+    from tonaledm.annotations import split_key_str
     from argparse import ArgumentParser
 
     parser = ArgumentParser(description="Evaluation of key estimation algorithms.")
@@ -46,12 +43,12 @@ if __name__ == "__main__":
         file_count = 0
         for each_file in estimations:
             reference = None
-            if any(ext == os.path.splitext(each_file)[-1] for ext in EXTENSIONS):
+            if any(ext == os.path.splitext(each_file)[-1] for ext in ANNOTATION_EXT):
 
                 with open(os.path.join(args.estimations, each_file), 'r') as analysis:
                     analysis = split_key_str(analysis.readline())
 
-                for ext in EXTENSIONS:
+                for ext in ANNOTATION_EXT:
                     try:
                         with open(os.path.join(args.references, os.path.splitext(each_file)[0] + ext), 'r') as reference:
                             reference = split_key_str(reference.readline())
@@ -64,8 +61,8 @@ if __name__ == "__main__":
                     print("{} - Didn't find reference annotation".format(each_file))
                     continue
 
-                estimated_key = (name_to_class(analysis[0]), mode_to_num(analysis[1]))
-                reference_key = (name_to_class(reference[0]), mode_to_num(reference[1]))
+                estimated_key = (pitchname_to_int(analysis[0]), modename_to_int(analysis[1]))
+                reference_key = (pitchname_to_int(reference[0]), modename_to_int(reference[1]))
 
                 score_mirex = key_eval_mirex(estimated_key, reference_key)
                 mirex.append(score_mirex)

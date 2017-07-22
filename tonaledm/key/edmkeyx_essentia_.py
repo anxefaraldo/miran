@@ -7,7 +7,7 @@ import essentia.standard as estd
 
 from pcp import *
 from templates import *
-from tonaledm.fileutil import results_directory
+from tonaledm.utils import results_directory
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #

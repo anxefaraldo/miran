@@ -10,7 +10,7 @@ except ImportError:
 
 import re, json
 import pandas as pd
-from tonaledm.fileutil import *
+from tonaledm.utils import *
 
 
 def beatport_metadata_file_to_pdrow(fp_or_s):

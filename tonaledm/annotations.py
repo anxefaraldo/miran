@@ -3,7 +3,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from tonaledm.fileutil import *
+from tonaledm.utils import *
 
 
 def split_key_str(key_string):

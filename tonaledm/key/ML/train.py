@@ -2,7 +2,7 @@ import essentia.standard as estd
 from fodules.excel import *
 from fodules.pcp import *
 
-from tonaledm.conversion import *
+from tonaledm.conversions import *
 
 
 def get_features(soundfile, target):
@@ -90,13 +90,13 @@ def get_features(soundfile, target):
     estimation_1 = key_1(chroma)
     key_1 = estimation_1[0] + ' ' + estimation_1[1]
     feature_vector.append(key_to_int(key_1))               # key1 as int
-    feature_vector.append(name_to_class(estimation_1[0]))  # tonic1 as int
-    feature_vector.append(mode_to_num(estimation_1[1]))    # scale1 as int
+    feature_vector.append(pitchname_to_int(estimation_1[0]))  # tonic1 as int
+    feature_vector.append(modename_to_int(estimation_1[1]))    # scale1 as int
     feature_vector.append(estimation_1[2])                 # confidence1
     estimation_2 = key_2(chroma)
     # key_2 = estimation_2[0] + ' ' + estimation_2[1]
-    feature_vector.append(name_to_class(estimation_2[0]))  # tonic2 as int
-    feature_vector.append(mode_to_num(estimation_2[1]))    # mode2 as int
+    feature_vector.append(pitchname_to_int(estimation_2[0]))  # tonic2 as int
+    feature_vector.append(modename_to_int(estimation_2[1]))    # mode2 as int
     feature_vector.append(estimation_2[2])                 # confidence2
     # feature_vector.append(chroma)
     filename = soundfile[soundfile.rfind('/') + 1:soundfile.rfind('.')]
