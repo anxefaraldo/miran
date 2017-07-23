@@ -10,6 +10,7 @@ def eucl_dist(series1, series2):
         D.append((series1[i] - series2[i])**2)
     return m.sqrt(np.sum(D))
 
+
 def eucl_dist_2(series1, series2):
     """calculates the squared euclidean distance, which is less CPU consuming"""
     D = []
