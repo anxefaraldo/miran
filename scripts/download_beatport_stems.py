@@ -15,7 +15,7 @@ Last check (2017/07/08) seems to indicate that the number of STEMS is under 4800
 if __name__ == "__main__":
 
     import os, sys
-    from tonaledm.beatport import download_beatport_stem
+    from tonaledm.beatport import download_stem
 
     args = sys.argv[1:]
 
@@ -30,10 +30,10 @@ if __name__ == "__main__":
 
     if len(args) > 0:
         for stem_id in args:
-            download_beatport_stem(stem_id, out_dir)
+            download_stem(stem_id, out_dir)
     else:
         print("Getting all available STEMS in Beatport!")
         i = 0
         while i < 5000:
-            download_beatport_stem(i, out_dir)
+            download_stem(i, out_dir)
             i += 1

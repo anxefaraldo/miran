@@ -6,7 +6,7 @@ import sys
 import essentia.standard as estd
 
 from pcp import *
-from tonaledm.utils import *
+from tonaledm.filesystem import *
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #

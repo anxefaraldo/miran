@@ -14,7 +14,7 @@ The numeric range where Beatport tracks seem to be allocated is between 5000 and
 if __name__ == "__main__":
 
     import os, sys
-    from tonaledm.beatport import download_beatport_track
+    from tonaledm.beatport import download_track
 
     args = sys.argv[1:]
 
@@ -28,4 +28,5 @@ if __name__ == "__main__":
         out_dir = os.getcwd()
 
     for track_id in args:
-        download_beatport_track(int(track_id), out_dir)
+        download_track(int(track_id), out_dir)
+

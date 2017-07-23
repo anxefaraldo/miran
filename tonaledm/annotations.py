@@ -3,7 +3,17 @@
 
 from __future__ import absolute_import, division, print_function
 
-from tonaledm.utils import *
+from tonaledm.filesystem import *
+
+
+def replace_chars(my_str, chars={"&", "<", ">", '"', "'"}, replacement=''):
+    """Replaces characters in a string."""
+
+    if any(illegal_char in my_str for illegal_char in chars):
+        for char in chars:
+            my_str = my_str.replace(char, replacement)
+
+    return my_str
 
 
 def split_key_str(key_string):

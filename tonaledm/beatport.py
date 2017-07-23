@@ -10,15 +10,18 @@ except ImportError:
 
 import re, json
 import pandas as pd
-from tonaledm.utils import *
+from tonaledm.filesystem import *
 
 
-def beatport_metadata_file_to_pdrow(fp_or_s):
-    if os.path.isfile(fp_or_s):
-        with open(fp_or_s, 'r') as jsonfile:
+def metafile_to_series(filepath_or_string):
+    """
+    Takes a json file or string and creates a pandas Series with it.
+    """
+    if os.path.isfile(filepath_or_string):
+        with open(filepath_or_string, 'r') as jsonfile:
             metadata = json.load(jsonfile)
     else:
-        metadata = json.loads(fp_or_s)
+        metadata = json.loads(filepath_or_string)
 
     # unfold arguments containing lists:
     artists = []
@@ -52,17 +55,19 @@ def beatport_metadata_file_to_pdrow(fp_or_s):
                      index=['id', 'artists', 'title', 'mix', 'label', 'genres', 'subgenres', 'key'])
 
 
-def beatport_corpus_to_dataframe(dir_or_listOfFiles, ext='.json'):
-    list_of_files = preparse_files(dir_or_listOfFiles, ext=ext)
+def metadir_to_dataframe(dir_or_listOfFilepaths, ext='.json'):
+
+    list_of_files = preparse_files(dir_or_listOfFilepaths, ext=ext)
 
     dataframe = []
     for item in list_of_files:
-        dataframe.append(beatport_metadata_file_to_pdrow(item))
+        dataframe.append(metafile_to_series(item))
 
     # put the results in a pandas dataframe:
     return pd.DataFrame(dataframe)
 
-def download_beatport_stem(stemid, output_dir=None):
+
+def download_stem(stemid, output_dir=None):
     """
     Attempts to download the chosed stem (by ID) from Beatport.com
 
@@ -150,7 +155,7 @@ def download_beatport_stem(stemid, output_dir=None):
     print("Saving metadata to", jsonfile)
 
 
-def download_beatport_track(trackid, output_dir=None):
+def download_track(trackid, output_dir=None):
     """
     Attempts to download the chosen track (by ID) from Beatport.com
 
@@ -228,9 +233,9 @@ def find_file_by_id(beatport_id, searchpath_or_pathlist, ext='.mp3'):
     filelist = preparse_files(searchpath_or_pathlist, ext=ext)
 
     for item in filelist:
-        item_id = remove_leading_zeroes_from_beatport_id(os.path.split(item)[1].split()[0])
+        item_id = remove_leading_zeroes_from_id(os.path.split(item)[1].split()[0])
 
-        if item_id == remove_leading_zeroes_from_beatport_id(beatport_id):
+        if item_id == remove_leading_zeroes_from_id(beatport_id):
             return item
 
 
@@ -260,7 +265,7 @@ def rename_files_without_leading_zeroes(searchpath_or_pathlist, ext=None, recurs
         os.rename(item, os.path.join(my_dir, str(int(my_file.split()[0])) + my_file[my_file.find(' '):]))
 
 
-def rename_files_without_beatport_data(searchpath_or_pathlist, ext=None, recursive=False):
+def rename_files_without_beatport_metadata(searchpath_or_pathlist, ext=None, recursive=False):
     filelist = preparse_files(searchpath_or_pathlist, ext=ext, recursive=recursive)
 
     for item in filelist:
@@ -268,7 +273,7 @@ def rename_files_without_beatport_data(searchpath_or_pathlist, ext=None, recursi
         os.rename(item, os.path.join(my_dir, os.path.join(my_dir, my_file[:my_file.find(' =')] + ext)))
 
 
-def remove_leading_zeroes_from_beatport_id(beatport_id_string, out_type='int'):
+def remove_leading_zeroes_from_id(beatport_id_string, out_type='int'):
     if out_type is 'str':
         return str(int(beatport_id_string))
 
@@ -277,5 +282,3 @@ def remove_leading_zeroes_from_beatport_id(beatport_id_string, out_type='int'):
 
     else:
         raise TypeError("out_type must be either 'str' or 'int'.")
-
-

@@ -25,10 +25,8 @@ SANITY CHECKS:
 
 """
 
-import sys
 import os.path
 import math
-import numpy as np
 from pandas import DataFrame as pddf
 import music21 as m21
 from mido import MidiFile, MidiTrack, Message, MetaMessage
@@ -476,85 +474,9 @@ def astext(mid):
     m21.converter.parseFile(mid, format('midi')).show('text')
 
 
-# Pandas related functions
-# ========================
-
-def find_identical_rows(df, row_index):
-    """
-    Search an entire Pandas dataframe for rows with identical content to a given row.
-
-    """
-    find_row = df.loc[row_index]
-    for row in df.iterrows():
-        if all(find_row == row[1]):
-            print(row[0])
-
-
-# def copy_files_in_df(df, destination):
-#     """
-#     Move a row from a Pandas dataframe to a different location in the hard drive.
-#     This function assumes that each row represents a file in the filesystem and that
-#     its filepath is the index of the row.
-#
-#     """
-#     from shutil import copyfile
-#     if not os.path.isdir(destination):
-#         raise IOError
-#     rows = df.index
-#     for i in range(len(rows)):
-#         # os.rename(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
-#         copyfile(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
-
-# def move_rows(df, destination):
-#     """
-#     Move a row from a Pandas dataframe to a different location in the hard drive.
-#     This function assumes that each row represents a file in the filesystem and that
-#     its filepath is the index of the row.
-#
-#     """
-#     if not os.path.isdir(destination):
-#         raise IOError
-#     rows = df.index
-#     with open(os.path.join(destination, 'original_files.txt'), 'w') as f:
-#         f.writelines(rows + '\n')
-#     for i in range(len(rows)):
-#         os.rename(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
-
-
-def copy_files_in_df(pd_col_with_filename, destination):
-    """
-    Copy a row from a Pandas dataframe to a different location in the hard drive.
-    This function assumes that each row represents a file in the filesystem and that
-    its filepath is the index of the row.
-
-    """
-    from shutil import copyfile
-    if not os.path.isdir(destination):
-        raise IOError
-    for row in pd_col_with_filename:
-        copyfile(row, os.path.join(destination, os.path.split(row)[1]))
-
-
-def move_rows(df_column, destination):
-    """
-    Move a row from a Pandas dataframe to a different location in the hard drive.
-    This function assumes that each row represents a file in the filesystem and that
-    its filepath is the index of the row.
-
-    """
-    if not os.path.isdir(destination):
-        raise IOError
-    #with open(os.path.join(destination, 'original_files.txt'), 'w') as f:
-    #    f.writelines(df_column + '\n')
-    for row in df_column:
-        os.rename(row, os.path.join(destination, os.path.split(row)[1]))
-
-
 
 # File management and OS related functions
 # ========================================
-
-
 
 # def beat_hist(corpus_path, bars=1):
 #     """

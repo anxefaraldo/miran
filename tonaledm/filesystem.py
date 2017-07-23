@@ -3,33 +3,11 @@
 
 from __future__ import absolute_import, division, print_function
 
-import csv
-import os
-import shutil
+import csv, os, shutil
 import numpy as np
-from datetime import datetime
 
 from tonaledm.conversions import *
 
-
-def make_unique_dir(parent, tag=''):
-    """
-    creates a sub-folder in the specified directory
-    with some of the algorithm parameters.
-    :type parent: str
-    :type tag: str
-    """
-    now = str(datetime.now())
-    now = now[:now.rfind('.')]
-    now = now.replace(':', '')
-    now = now.replace(' ', '')
-    now = now.replace('-', '')
-    temp_folder = "{0}/{1}-{2}".format(parent, now, tag)
-    try:  # TODO remove parameter info and allow to write it from script as tags
-        os.mkdir(temp_folder)
-    except OSError:
-        print("'{}' already exists.".format(temp_folder))
-    return temp_folder
 
 
 def merge_files(dir_with_files, new_filename):
@@ -131,7 +109,7 @@ def move_items(origin, destination):
 
 def index_files(my_dir):
     """
-    Given a directory, it replaces the containing filesystem with increasing numerical values.
+    Replaces the containing files in the specified directory with increasing integers.
 
     """
     dir_files = os.listdir(my_dir)
@@ -230,3 +208,108 @@ def write_regular_timespans(textfile, duration=120):
             f.write(str(instant) + label)
 
     return instants
+
+
+# Pandas related functions
+# ========================
+
+def find_identical_rows(df, row_index):
+    """
+    Search an entire Pandas dataframe for rows with identical content to a given row.
+
+    """
+    find_row = df.loc[row_index]
+    for row in df.iterrows():
+        if all(find_row == row[1]):
+            print(row[0])
+
+
+# def copy_files_in_df(df, destination):
+#     """
+#     Move a row from a Pandas dataframe to a different location in the hard drive.
+#     This function assumes that each row represents a file in the filesystem and that
+#     its filepath is the index of the row.
+#
+#     """
+#     from shutil import copyfile
+#     if not os.path.isdir(destination):
+#         raise IOError
+#     rows = df.index
+#     for i in range(len(rows)):
+#         # os.rename(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
+#         copyfile(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
+
+# def move_rows(df, destination):
+#     """
+#     Move a row from a Pandas dataframe to a different location in the hard drive.
+#     This function assumes that each row represents a file in the filesystem and that
+#     its filepath is the index of the row.
+#
+#     """
+#     if not os.path.isdir(destination):
+#         raise IOError
+#     rows = df.index
+#     with open(os.path.join(destination, 'original_files.txt'), 'w') as f:
+#         f.writelines(rows + '\n')
+#     for i in range(len(rows)):
+#         os.rename(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
+
+
+def copy_files_in_df(pd_col_with_filename, destination):
+    """
+    Copy a row from a Pandas dataframe to a different location in the hard drive.
+    This function assumes that each row represents a file in the filesystem and that
+    its filepath is the index of the row.
+
+    """
+    if not os.path.isdir(destination):
+        raise IOError
+    for row in pd_col_with_filename:
+        shutil.copyfile(row, os.path.join(destination, os.path.split(row)[1]))
+
+
+
+def move_rows(df_column, destination):
+    """
+    Move a row from a Pandas dataframe to a different location in the hard drive.
+    This function assumes that each row represents a file in the filesystem and that
+    its filepath is the index of the row.
+
+    """
+    if not os.path.isdir(destination):
+        raise IOError
+    # with open(os.path.join(destination, 'original_files.txt'), 'w') as f:
+    #    f.writelines(df_column + '\n')
+    for row in df_column:
+        os.rename(row, os.path.join(destination, os.path.split(row)[1]))
+
+
+
+def prepend_to_filename(directory, matching_substring, string_to_prepend):
+    """Prepend a string to an existing filename if it contains a matching substring.
+
+    """
+    list_of_files = folderfiles(directory)
+    for item in list_of_files:
+        if matching_substring in item:
+            print('Renaming', item)
+            d, f = os.path.split(item)
+            os.rename(item, os.path.join(d, string_to_prepend + f))
+
+
+def change_file_extension(directory, in_ext='.txt', out_ext='.key', recursive=False):
+    """
+    Looks for specific file types in a directory and changes their
+    extension to a new given one.
+    """
+    number_of_files = 0
+    list_of_files = folderfiles(directory, recursive=recursive)
+    for item in list_of_files:
+        f, e = os.path.splitext(item)
+
+        if in_ext == e:
+            os.rename(item, f + out_ext)
+
+            number_of_files += 1
+
+    print('{} files processed'.format(number_of_files))
