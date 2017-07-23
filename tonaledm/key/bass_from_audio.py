@@ -2,8 +2,11 @@ import numpy as np
 import essentia.standard as estd
 
 
+# ============
+# = SETTINGS =
+# ============
+
 SAMPLE_RATE                 = 44100
-VALID_FILE_TYPES            = {'.wav', '.mp3', 'flac', '.aiff', '.ogg'}
 LOWPASS_CUTOFF              = 400
 BIN_RESOLUTION              = 10
 FILTER_ITERATIONS           = 3
@@ -70,7 +73,6 @@ def ftomi(frequency, tuning_reference=440):
         return int(0.5 + (12 * (np.log2(frequency) - np.log2(tuning_reference)) + 69))
     else:
         return 0
-
 
 
 if __name__ == "__main__":

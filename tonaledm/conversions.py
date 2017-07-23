@@ -3,7 +3,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from tonaledm.definitions import *
+from tonaledm.labels import *
 
 
 def pitchname_to_int(key):

@@ -7,7 +7,7 @@ import madmom
 
 from pcp import *
 from templates import *
-from tonaledm.filesystem import results_directory
+from tonaledm.filesystem import create_dir
 
 # ======== #
 # SETTINGS #
@@ -145,7 +145,7 @@ if __name__ == "__main__":
                     print("In batch_mode, the output argument must be a directory".format(args.output))
                     print("Type 'fkey -h' for help\n")
                     sys.exit()
-                output_dir = results_directory(args.output)
+                output_dir = create_dir(args.output)
                 list_all_files = os.listdir(args.input)
                 print("\nAnalysing audio filesystem in:\t{0}".format(args.input))
                 print("Writing results to:\t{0}\n".format(args.output))

@@ -9,7 +9,7 @@ key estimation algorithms.
 
 from __future__ import absolute_import, division, print_function
 
-from tonaledm.definitions import pc2degree
+from tonaledm.labels import pc2degree
 
 
 def key_eval_mirex(estimated_key_tuple, reference_key_tuple):

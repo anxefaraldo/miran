@@ -9,59 +9,38 @@ import numpy as np
 from tonaledm.conversions import *
 
 
-
-def merge_files(dir_with_files, new_filename):
-    o = open(new_filename, 'w')
-    e = os.listdir(dir_with_files)
-    for item in e:
-        if '.key' or '.txt' in item:
-            f = open(dir_with_files + '/' + item, 'r')
-            l = f.read()
-            o.write(l + '\n')
-            f.close()
-    o.close()
-
-
-def results_directory(out_dir):
+def create_dir(dir_name):
     """
-    creates a sub-folder in the specified directory
-    with some of the algorithm parameters.
-    :type out_dir: str
+    Creates a new directory.
+
+    If dir_name is a valid abspath it will create it where specified,
+    if dir_name is a NOT a valid abspath but a valid name, it will
+     create a dir in the current directory.
+
+    :type dir_name: str
     """
-    if not os.path.isdir(out_dir):
-        print("CREATING DIRECTORY '{0}'.".format(out_dir))
-        if not os.path.isabs(out_dir):
-            raise IOError("Not a valid path name.")
+    if not os.path.isdir(dir_name):
+
+        print("not a dir")
+
+        root_folder, new_folder = os.path.split(dir_name)
+        if os.path.isdir(root_folder):
+
+            os.mkdir(dir_name)
+            print("Creating dir '{}' in '{}'".format(new_folder, root_folder))
+            return dir_name
+
+        elif os.path.split(dir_name)[0] == '':
+
+            root_folder = os.getcwd()
+            print("Creating dir '{}' in '{}'".format(dir_name, root_folder))
+            os.mkdir(os.path.join(root_folder, dir_name))
+
         else:
-            os.mkdir(out_dir)
-    return out_dir
+            raise NameError("Not a valid path name.")
 
-
-def features_from_csv(csv_file, start_col=0, end_col=1):
-    saved_values = []
-    csv_file = open(csv_file, 'r')
-    csv_file = csv.reader(csv_file, skipinitialspace=True)
-    for row in csv_file:
-        saved_values.append(map(float, row[start_col:end_col]))
-    return np.array(saved_values)
-
-
-def stringcell_from_csv(csv_file, col=27):
-    saved_values = []
-    csv_file = open(csv_file, 'r')
-    csv_file = csv.reader(csv_file, skipinitialspace=True)
-    for row in csv_file:
-        saved_values.append(row[col])
-    return np.array(saved_values)
-
-
-def keycell_from_csv(csv_file, col=27):
-    saved_values = []
-    csv_file = open(csv_file, 'r')
-    csv_file = csv.reader(csv_file, skipinitialspace=True)
-    for row in csv_file:
-        saved_values.append(key_to_int(row[col]))
-    return np.array(saved_values)
+    else:
+        print("WARNING: '{}' already exists!".format(dir_name))
 
 
 def move_items_by_estimation(condition, destination, estimations_folder, origin):
@@ -107,23 +86,9 @@ def move_items(origin, destination):
                 shutil.move(origin + '/' + item, destination)
 
 
-def index_files(my_dir):
+def show_in_finder(filepath):
     """
-    Replaces the containing files in the specified directory with increasing integers.
-
-    """
-    dir_files = os.listdir(my_dir)
-    file_count = 0
-    for each_file in dir_files:
-        if os.path.splitext(each_file)[1] == '.mid':
-            int_name = "{:03d}.mid".format(file_count)
-            os.rename(os.path.join(my_dir, each_file), os.path.join(my_dir, int_name))
-            file_count += 1
-
-
-def finder(filepath):
-    """
-    Show a file in the Mac OSX window system.
+    Show a file in OSX's Finder.
 
     """
     from appscript import app, mactypes
@@ -285,8 +250,9 @@ def move_rows(df_column, destination):
 
 
 
-def prepend_to_filename(directory, matching_substring, string_to_prepend):
-    """Prepend a string to an existing filename if it contains a matching substring.
+def prepend_str_to_filename(directory, matching_substring, string_to_prepend):
+    """
+    Prepend a string to an existing filename if it contains a matching substring.
 
     """
     list_of_files = folderfiles(directory)

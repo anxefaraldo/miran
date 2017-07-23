@@ -4,7 +4,7 @@
 if __name__ == "__main__":
 
     from argparse import ArgumentParser
-    from tonaledm.filesystem import prepend_to_filename
+    from tonaledm.filesystem import prepend_str_to_filename
 
     parser = ArgumentParser(description="Prepends a string to files matching a "
                                         "criteria in a given directory.")
@@ -14,5 +14,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print "Processing filesystem..."
-    prepend_to_filename(args.dir, args.matching_string, args.prepend)
+    prepend_str_to_filename(args.dir, args.matching_string, args.prepend)
     print 'Done!'

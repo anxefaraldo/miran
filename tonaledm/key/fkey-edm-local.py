@@ -1,16 +1,18 @@
 #!/usr/local/bin/python
 #  -*- coding: UTF-8 -*-
 
+import os
 import sys
-
+import numpy as np
 import essentia.standard as estd
+from fodules.pcp import *
+from fodules.folder import *
 
-from pcp import *
-from tonaledm.filesystem import *
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #
 # ======================= #
+
 # File Settings
 # -------------
 SAMPLE_RATE                  = 44100
@@ -22,7 +24,7 @@ HIGHPASS_CUTOFF              = 200
 SPECTRAL_WHITENING           = True
 DETUNING_CORRECTION          = True
 DETUNING_CORRECTION_SCOPE    = 'average'  # {'average', 'frame'}
-PCP_THRESHOLD                = 0.2
+PCP_THRESHOLD                = 0    # set to 0 to bypass parameter # we could assume than highuer ->> bmtg3
 WINDOW_SIZE                  = 4096
 HOP_SIZE                     = 4096
 WINDOW_SHAPE                 = 'hann'
@@ -34,18 +36,25 @@ HPCP_BAND_PRESET             = False
 HPCP_SPLIT_HZ                = 250       # if HPCP_BAND_PRESET is True
 HPCP_HARMONICS               = 4
 HPCP_NON_LINEAR              = False
-HPCP_NORMALIZE               = 'none'  # {none, unitSum, unitMax}
+HPCP_NORMALIZE               = 'none' # {none, unitSum, unitMax}
 HPCP_SHIFT                   = False
 HPCP_REFERENCE_HZ            = 440
 HPCP_SIZE                    = 12
 HPCP_WEIGHT_WINDOW_SEMITONES = 1         # semitones
 HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 
-# Key Detector Method
-# -------------------
-KEY_PROFILE                  = 'bgate'  # {'bgate', 'braw', 'edma', 'edmm'}
+# Scope and Key Detector Method
+# -----------------------------
+AVOID_TIME_EDGES             = 0          # percentage of track-length not analysed on the edges.
+FIRST_N_SECS                 = 0          # analyse first n seconds of each track (0 = full track)
+SKIP_FIRST_MINUTE            = False
+ANALYSIS_TYPE                = 'local'  # {'local', 'global'}
+N_WINDOWS                    = 100       # if ANALYSIS_TYPE is 'local'
+WINDOW_INCREMENT             = 100       # if ANALYSIS_TYPE is 'local'
+KEY_PROFILE                  = 'bmtg3'    # {'edma', 'edmm', 'bmtg1', 'bmtg2', 'bmtg3'}
 USE_THREE_PROFILES           = True
 WITH_MODAL_DETAILS           = True
+
 
 
 def estimate_key(input_audio_file, output_text_file):
@@ -57,10 +66,11 @@ def estimate_key(input_audio_file, output_text_file):
     """
     loader = estd.MonoLoader(filename=input_audio_file,
                              sampleRate=SAMPLE_RATE)
-    cut = estd.FrameCutter(frameSize=WINDOW_SIZE,
-                           hopSize=HOP_SIZE)
+    hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF,
+                        sampleRate=SAMPLE_RATE)
     window = estd.Windowing(size=WINDOW_SIZE,
-                            type=WINDOW_SHAPE)
+                            type=WINDOW_SHAPE,
+                            zeroPhase=False)
     rfft = estd.Spectrum(size=WINDOW_SIZE)
     sw = estd.SpectralWhitening(maxFrequency=MAX_HZ,
                                 sampleRate=SAMPLE_RATE)
@@ -86,53 +96,69 @@ def estimate_key(input_audio_file, output_text_file):
         key_1 = estd.KeyEDM3(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
     else:
         key_1 = estd.KeyEDM(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
-    if HIGHPASS_CUTOFF is not None:
-        hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF, sampleRate=SAMPLE_RATE)
-        audio = hpf(hpf(hpf(loader())))
-    else:
-        audio = loader()
+    if WITH_MODAL_DETAILS:
+        key_2 = estd.KeyExtended(pcpSize=HPCP_SIZE)
+    audio = hpf(hpf(hpf(loader())))
+    frame_start = 0
     duration = len(audio)
-    n_slices = 1 + (duration / HOP_SIZE)
-    chroma = np.empty([n_slices, HPCP_SIZE], dtype='float32')
-    for slice_n in range(n_slices):
-        spek = rfft(window(cut(audio)))
+    chroma = []
+    if SKIP_FIRST_MINUTE and duration > (SAMPLE_RATE * 60):
+        audio = audio[SAMPLE_RATE * 60:]
+        duration = len(audio)
+    if FIRST_N_SECS > 0:
+        if duration > (FIRST_N_SECS * SAMPLE_RATE):
+            audio = audio[:FIRST_N_SECS * SAMPLE_RATE]
+            duration = len(audio)
+    if AVOID_TIME_EDGES > 0:
+        initial_sample = (AVOID_TIME_EDGES * duration) / 100
+        final_sample = duration - initial_sample
+        audio = audio[initial_sample:final_sample]
+        duration = len(audio)
+    while frame_start <= (duration - WINDOW_SIZE):
+        spek = rfft(window(audio[frame_start:frame_start + WINDOW_SIZE]))
+        if sum(spek) <= 0.01: # esto consume bastante!
+            frame_start += HOP_SIZE
+            continue
         p1, p2 = speaks(spek)
         if SPECTRAL_WHITENING:
             p2 = sw(spek, p1, p2)
         pcp = hpcp(p1, p2)
-        if not DETUNING_CORRECTION or DETUNING_CORRECTION_SCOPE == 'average':
-            chroma[slice_n] = pcp
-        elif DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'frame':
-            pcp = shift_pcp(pcp, HPCP_SIZE)
-            chroma[slice_n] = pcp
-        else:
-            raise NameError("SHIFT_SCOPE must be set to 'frame' or 'average'.")
+        if np.sum(pcp) > 0:
+            if not DETUNING_CORRECTION or DETUNING_CORRECTION_SCOPE == 'average':
+                chroma.append(pcp)
+            elif DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'frame':
+                pcp = shift_pcp(pcp, HPCP_SIZE)
+                chroma.append(pcp)
+            else:
+                raise NameError("SHIFT_SCOPE must be set to 'frame' or 'average'.")
+        frame_start += HOP_SIZE
+    if not chroma:
+        return 'Silence'
     chroma = np.sum(chroma, axis=0)
-    if PCP_THRESHOLD is not None:
-        chroma = normalize_pcp_peak(chroma)
-        chroma = pcp_gate(chroma, PCP_THRESHOLD)
+    chroma = normalize_pcp_peak(chroma)
+    chroma = pcp_gate(chroma, PCP_THRESHOLD)
     if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
-        chroma = shift_pcp(chroma, HPCP_SIZE)
+        chroma = shift_pcp(list(chroma), HPCP_SIZE)
+    chroma = chroma.tolist()
     estimation_1 = key_1(chroma)
     key_1 = estimation_1[0] + '\t' + estimation_1[1]
     if WITH_MODAL_DETAILS:
-        key_2 = estd.KeyExtended(pcpSize=HPCP_SIZE)
         estimation_2 = key_2(chroma)
         key_2 = estimation_2[0] + '\t' + estimation_2[1]
+    if WITH_MODAL_DETAILS:
         key_verbose = key_1 + '\t' + key_2
         key = key_verbose.split('\t')
-        # Assign monotonic beatport to minor:
+        # SIMPLE RULES BASED ON THE MULTIPLE ESTIMATIONS TO IMPROVE THE RESULTS:
         if key[3] == 'monotonic' and key[0] == key[2]:
             key = '{0}\tminor'.format(key[0])
         else:
-            key = key_1
+            key = "{0}\t{1}".format(key[0], key[1])
     else:
         key = key_1
     textfile = open(output_text_file, 'w')
     textfile.write(key + '\n')
     textfile.close()
     return key
-
 
 
 if __name__ == "__main__":
@@ -142,12 +168,21 @@ if __name__ == "__main__":
 
     clock()
     parser = ArgumentParser(description="Key Estimation Algorithm")
-    parser.add_argument("input", help="file (dir if in --batch_mode) to analyse")
-    parser.add_argument("output", help="file (dir if in --batch_mode) to write results to")
-    parser.add_argument("-b", "--batch_mode", action="store_true", help="batch analyse a whole directory")
-    parser.add_argument("-v", "--verbose", action="store_true", help="print progress to console")
-    parser.add_argument("-x", "--extra", action="store_true", help="generate extra analysis filesystem")
-    parser.add_argument("-c", "--conf_file", help="specify a different configuration file")
+    parser.add_argument("input",
+                        help="file (dir if in --batch_mode) to analyse")
+    parser.add_argument("output",
+                        help="file (dir if in --batch_mode) to write results to")
+    parser.add_argument("-b", "--batch_mode",
+                        action="store_true",
+                        help="batch analyse a whole directory")
+    parser.add_argument("-v", "--verbose",
+                        action="store_true",
+                        help="print progress to console")
+    parser.add_argument("-x", "--extra",
+                        action="store_true",
+                        help="generate extra analysis filesystem")
+    parser.add_argument("-c", "--conf_file",
+                        help="specify a different configuration file")
     args = parser.parse_args()
 
     if not args.batch_mode:
@@ -173,7 +208,7 @@ if __name__ == "__main__":
                 print("In batch_mode, the output argument must be a directory".format(args.output))
                 print("Type 'fkey -h' for help\n")
                 sys.exit()
-            output_dir = create_dir(args.output)
+            output_dir = results_directory(args.output)
             list_all_files = os.listdir(args.input)
             print("\nAnalysing audio filesystem in:\t{0}".format(args.input))
             print("Writing results to:\t{0}\n".format(args.output))

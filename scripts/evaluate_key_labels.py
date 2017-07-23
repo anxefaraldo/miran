@@ -3,7 +3,7 @@
 
 """IMPORTANT: This script assumes that filenames of estimations and references
 are identical, except for the extensions, which can be any of the ones defined
-in ANNOTATION_EXT.
+in ANNOTATION_FILE_EXT.
 
 Ángel Faraldo, July 2017.
 """
@@ -43,12 +43,12 @@ if __name__ == "__main__":
         file_count = 0
         for each_file in estimations:
             reference = None
-            if any(ext == os.path.splitext(each_file)[-1] for ext in ANNOTATION_EXT):
+            if any(ext == os.path.splitext(each_file)[-1] for ext in ANNOTATION_FILE_EXT):
 
                 with open(os.path.join(args.estimations, each_file), 'r') as analysis:
                     analysis = split_key_str(analysis.readline())
 
-                for ext in ANNOTATION_EXT:
+                for ext in ANNOTATION_FILE_EXT:
                     try:
                         with open(os.path.join(args.references, os.path.splitext(each_file)[0] + ext), 'r') as reference:
                             reference = split_key_str(reference.readline())
