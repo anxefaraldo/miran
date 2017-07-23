@@ -5,8 +5,8 @@
 if __name__ == "__main__":
 
     from argparse import ArgumentParser
-    from tonaledm.annotations import *
-    from tonaledm.labels import CONVERSION_TYPES
+    from miran.annotations import *
+    from miran.labels import CONVERSION_TYPES
 
     parser = ArgumentParser(description="Conversion different annotation formats into our regular  format.")
     parser.add_argument("input", help="file or dir to convert to a regular format")

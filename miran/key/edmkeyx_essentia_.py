@@ -7,7 +7,7 @@ import essentia.standard as estd
 
 from pcp import *
 from templates import *
-from tonaledm.filesystem import create_dir
+from miran.filesystem import create_dir
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #
@@ -43,8 +43,14 @@ HPCP_SIZE                    = 12
 HPCP_WEIGHT_WINDOW_SEMITONES = 1         # semitones
 HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 
-# Key Detector Method
-# -------------------
+# Scope and Key Detector Method
+# -----------------------------
+AVOID_TIME_EDGES             = 0  # percentage of track-length not analysed on the edges.
+FIRST_N_SECS                 = 0  # analyse first n seconds of each track (0 = full track)
+SKIP_FIRST_MINUTE            = False
+ANALYSIS_TYPE                = 'global'  # {'local', 'global'}
+N_WINDOWS                    = 100  # if ANALYSIS_TYPE is 'local'
+WINDOW_INCREMENT             = 100  # if ANALYSIS_TYPE is 'local'
 KEY_PROFILE                  = 'bgate'  # {'bgate', 'braw', 'edma', 'edmm'}
 USE_THREE_PROFILES           = True
 WITH_MODAL_DETAILS           = True

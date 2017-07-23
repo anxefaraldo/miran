@@ -1,8 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 
-
+__pycache__/
 /dist/
 /build/
-.idea/*
-__pycache__/
-/tonaledm.egg-info/
+.idea/
+miran.egg-info/

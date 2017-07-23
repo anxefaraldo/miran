@@ -7,7 +7,7 @@ import essentia.standard as estd
 from filesystem import make_unique_dir
 
 from pcp import *
-from tonaledm.conversions import *
+from miran.conversions import *
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #

@@ -13,9 +13,9 @@ if __name__ == "__main__":
     import os.path
     import numpy as np
     import pandas as pd
-    from tonaledm.conversions import *
-    from tonaledm.evaluations import *
-    from tonaledm.annotations import split_key_str
+    from miran.conversions import *
+    from miran.evaluations import *
+    from miran.annotations import split_key_str
     from argparse import ArgumentParser
 
     parser = ArgumentParser(description="Evaluation of key estimation algorithms.")

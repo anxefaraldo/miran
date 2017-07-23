@@ -7,7 +7,7 @@ import librosa.display
 import numpy as np
 from matplotlib import pyplot as plt
 
-from tonaledm.conversions import pitchname_to_int
+from miran.conversions import pitchname_to_int
 
 
 def plot_chroma(chromagram):

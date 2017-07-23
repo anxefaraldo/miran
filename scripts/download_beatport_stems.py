@@ -15,7 +15,7 @@ Last check (2017/07/08) seems to indicate that the number of STEMS is under 4800
 if __name__ == "__main__":
 
     import os, sys
-    from tonaledm.beatport import download_stem
+    from miran.beatport import download_stem
 
     args = sys.argv[1:]
 

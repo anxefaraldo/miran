@@ -7,13 +7,13 @@ with open('README.rst') as f:
 urllib = 'urllib' if sys.version_info >= (3, 0) else 'urllib2'
 
 setup(
-    name='tonaledm',
+    name='miran',
     version='0.1',
-    description='Tools for key estimation and evaluation in EDM',
+    description='mir and music analysis tools in python.',
     author='Angel Faraldo',
     author_email='angelfaraldo@gmail.com',
-    url='https://github.com/angelfaraldo/tonaledm',
-    packages=['tonaledm'],
+    url='https://github.com/angelfaraldo/miran',
+    packages=['miran'],
     long_description=long_description,
     classifiers=[
         "License :: OSI Approved :: MIT License",
@@ -24,7 +24,7 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
     ],
-    keywords='audio music mir dsp',
+    keywords='music analysis mir',
     license='MIT',
     install_requires=[
         'appscript',

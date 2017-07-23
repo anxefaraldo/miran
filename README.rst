@@ -1,17 +1,19 @@
-.. image:: https://travis-ci.org/angelfaraldo/tonaledm.svg?branch=master
-    :target: https://travis-ci.org/angelfaraldo/tonaledm
-.. image:: https://coveralls.io/repos/angelfaraldo/tonaledm/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/angelfaraldo/tonaledm?branch=master
+.. image:: https://travis-ci.org/angelfaraldo/miran.svg?branch=master
+    :target: https://travis-ci.org/angelfaraldo/miran
+.. image:: https://coveralls.io/repos/angelfaraldo/miran/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/angelfaraldo/miran?branch=master
 
-tonaledm
-========
+miran
+=====
 
-Python library for tonality related study of edm
+mir and music analysis tools in python. Mostly tonality related stuff for EDM.
 
-Documentation, including installation and usage information: http://angelfaraldo.github.io/tonaledm/
+Documentation, including installation and usage information: http://angelfaraldo.github.io/mira/
 
 Dependencies:
 
-* `Scipy/Numpy <http://www.scipy.org/>`_
+* numpy
+* scipy
 * future
 * pandas
+* music21

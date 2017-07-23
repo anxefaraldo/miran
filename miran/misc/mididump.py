@@ -6,7 +6,7 @@ import os
 
 import numpy as np
 
-from tonaledm import midi
+from miran import midi
 
 cwd = '/Users/angel/GoogleDrive/midiBasslinePacks/5Pin Media - Deep House Bass/DBS_MIDI'
 
@@ -58,7 +58,7 @@ for item in archivos:
 	ticksum = 0
 	for item2 in mf:
 		ticksum += item2.tick
-	print ticksum	
+	print ticksum
 		if type(item2) == midi.events.NoteOnEvent:
 			print item2.tick
 			pc.append(item2.data[0])
@@ -67,7 +67,7 @@ for item in archivos:
 	key = key2class[fileKey]
 	tc = key%12
 	if key > 11: mode = 1
-	else: mode = 0	
+	else: mode = 0
 	pc = np.subtract(pc,tc)
 	# print pc # full down to 2
 	pc = np.mod(pc,12)

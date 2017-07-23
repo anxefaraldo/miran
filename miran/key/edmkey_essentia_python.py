@@ -6,11 +6,13 @@ import sys
 import essentia.standard as estd
 
 from pcp import *
-from tonaledm.filesystem import *
+from templates import *
+from miran.filesystem import create_dir
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #
 # ======================= #
+
 # File Settings
 # -------------
 SAMPLE_RATE                  = 44100
@@ -34,7 +36,7 @@ HPCP_BAND_PRESET             = False
 HPCP_SPLIT_HZ                = 250       # if HPCP_BAND_PRESET is True
 HPCP_HARMONICS               = 4
 HPCP_NON_LINEAR              = False
-HPCP_NORMALIZE               = 'none'  # {none, unitSum, unitMax}
+HPCP_NORMALIZE               = 'none'    # {none, unitSum, unitMax}
 HPCP_SHIFT                   = False
 HPCP_REFERENCE_HZ            = 440
 HPCP_SIZE                    = 12
@@ -82,10 +84,6 @@ def estimate_key(input_audio_file, output_text_file):
                      weightType=HPCP_WEIGHT_TYPE,
                      windowSize=HPCP_WEIGHT_WINDOW_SEMITONES,
                      maxShifted=HPCP_SHIFT)
-    if USE_THREE_PROFILES:
-        key_1 = estd.KeyEDM3(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
-    else:
-        key_1 = estd.KeyEDM(pcpSize=HPCP_SIZE, profileType=KEY_PROFILE)
     if HIGHPASS_CUTOFF is not None:
         hpf = estd.HighPass(cutoffFrequency=HIGHPASS_CUTOFF, sampleRate=SAMPLE_RATE)
         audio = hpf(hpf(hpf(loader())))
@@ -93,7 +91,7 @@ def estimate_key(input_audio_file, output_text_file):
         audio = loader()
     duration = len(audio)
     n_slices = 1 + (duration / HOP_SIZE)
-    chroma = np.empty([n_slices, HPCP_SIZE], dtype='float32')
+    chroma = np.empty([n_slices, HPCP_SIZE], dtype='float64')
     for slice_n in range(n_slices):
         spek = rfft(window(cut(audio)))
         p1, p2 = speaks(spek)
@@ -113,11 +111,15 @@ def estimate_key(input_audio_file, output_text_file):
         chroma = pcp_gate(chroma, PCP_THRESHOLD)
     if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
         chroma = shift_pcp(chroma, HPCP_SIZE)
-    estimation_1 = key_1(chroma)
+    chroma = np.roll(chroma, -3)  # Adjust to essentia's HPCP calculation starting on A...
+    if USE_THREE_PROFILES:
+        estimation_1 = template_matching_3(chroma, KEY_PROFILE)
+    else:
+        estimation_1 = template_matching_2(chroma, KEY_PROFILE)
     key_1 = estimation_1[0] + '\t' + estimation_1[1]
+    correlation_value = estimation_1[2]
     if WITH_MODAL_DETAILS:
-        key_2 = estd.KeyExtended(pcpSize=HPCP_SIZE)
-        estimation_2 = key_2(chroma)
+        estimation_2 = template_matching_modal(chroma)
         key_2 = estimation_2[0] + '\t' + estimation_2[1]
         key_verbose = key_1 + '\t' + key_2
         key = key_verbose.split('\t')
@@ -129,10 +131,9 @@ def estimate_key(input_audio_file, output_text_file):
     else:
         key = key_1
     textfile = open(output_text_file, 'w')
-    textfile.write(key + '\n')
+    textfile.write(key + '\t' + str(correlation_value) + '\n')
     textfile.close()
-    return key
-
+    return key, correlation_value
 
 
 if __name__ == "__main__":
@@ -147,8 +148,18 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--batch_mode", action="store_true", help="batch analyse a whole directory")
     parser.add_argument("-v", "--verbose", action="store_true", help="print progress to console")
     parser.add_argument("-x", "--extra", action="store_true", help="generate extra analysis filesystem")
-    parser.add_argument("-c", "--conf_file", help="specify a different configuration file")
+    parser.add_argument("-p", "--profile", help="specify a key template. Defaults to bgate")
+    # parser.add_argument("-c", "--conf_file", help="specify a different configuration file")
+
     args = parser.parse_args()
+
+    if args.profile:
+        KEY_PROFILE = args.profile
+    if args.verbose:
+        print("key profile used:", KEY_PROFILE)
+
+    args = parser.parse_args()
+    # todo: add optional profiles!
 
     if not args.batch_mode:
         if not os.path.isfile(args.input):
@@ -159,9 +170,9 @@ if __name__ == "__main__":
         elif os.path.isfile(args.input):
             print("\nAnalysing:\t{0}".format(args.input))
             print("Exporting to:\t{0}.".format(args.output))
-            estimation = estimate_key(args.input, args.output)
+            estimation, confidence = estimate_key(args.input, args.output)
             if args.verbose:
-                print(":\t{0}".format(estimation)),
+                print(":\t{0} ({})".format(estimation, confidence)),
         else:
             raise IOError("Unknown ERROR in single file mode")
     else:
@@ -182,9 +193,9 @@ if __name__ == "__main__":
                 if any(soundfile_type in a_file for soundfile_type in VALID_FILE_TYPES):
                     input_file = args.input + '/' + a_file
                     output_file = args.output + '/' + a_file[:-4] + '.txt'
-                    estimation = estimate_key(input_file, output_file)
+                    estimation, confidence = estimate_key(input_file, output_file)
                     if args.verbose:
-                        print("{0} - {1}".format(input_file, estimation))
+                        print("{0} - {1} ({2})".format(input_file, estimation, confidence))
                     count_files += 1
             print("{0} audio filesystem analysed".format(count_files, clock()))
         else:

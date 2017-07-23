@@ -4,7 +4,7 @@
 if __name__ == "__main__":
 
     from argparse import ArgumentParser
-    from tonaledm.filesystem import write_regular_timespans
+    from miran.filesystem import write_regular_timespans
 
     parser = ArgumentParser(description="Semi-automatic time interval annotation tool")
     parser.add_argument("input", help="file to annotate")

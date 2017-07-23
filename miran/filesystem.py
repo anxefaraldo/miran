@@ -6,7 +6,7 @@ from __future__ import absolute_import, division, print_function
 import csv, os, shutil
 import numpy as np
 
-from tonaledm.conversions import *
+from miran.conversions import *
 
 
 def create_dir(dir_name):
