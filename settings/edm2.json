@@ -33,9 +33,9 @@
   "N_WINDOWS": 100,
   "WINDOW_INCREMENT": 100,
 
-  "KEY_PROFILE": "bgate",
-  "USE_THREE_PROFILES": true,
-  "WITH_MODAL_DETAILS": true,
+  "KEY_PROFILE": "edma",
+  "USE_THREE_PROFILES": false,
+  "WITH_MODAL_DETAILS": false,
 
   "OPTIONS": {
     "DETUNING_CORRECTION_SCOPE": [
