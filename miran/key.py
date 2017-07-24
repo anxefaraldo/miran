@@ -687,4 +687,4 @@ def _select_profile_type(profile, templates_dict):
     try:
         return templates_dict[profile]
     except:
-        raise KeyError("Unsupported profile: {0}\nvalid profiles are:\n{1}".format(profile, templates_dict.keys()))
+        raise KeyError("Unsupported profile: {}\nvalid profiles are:\n{}".format(profile, templates_dict.keys()))

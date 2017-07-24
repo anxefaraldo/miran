@@ -48,7 +48,7 @@ USE_THREE_PROFILES           = True
 WITH_MODAL_DETAILS           = True
 
 
-def estimate_key(input_audio_file, output_text_file):
+def essentia_legacy(input_audio_file, output_text_file):
     """
     This function estimates the overall key of an audio track
     optionaly with extra modal information.
@@ -159,7 +159,7 @@ if __name__ == "__main__":
         elif os.path.isfile(args.input):
             print("\nAnalysing:\t{0}".format(args.input))
             print("Exporting to:\t{0}.".format(args.output))
-            estimation = estimate_key(args.input, args.output)
+            estimation = essentia_legacy(args.input, args.output)
             if args.verbose:
                 print(":\t{0}".format(estimation)),
         else:
@@ -182,7 +182,7 @@ if __name__ == "__main__":
                 if any(soundfile_type in a_file for soundfile_type in VALID_FILE_TYPES):
                     input_file = args.input + '/' + a_file
                     output_file = args.output + '/' + a_file[:-4] + '.txt'
-                    estimation = estimate_key(input_file, output_file)
+                    estimation = essentia_legacy(input_file, output_file)
                     if args.verbose:
                         print("{0} - {1}".format(input_file, estimation))
                     count_files += 1
