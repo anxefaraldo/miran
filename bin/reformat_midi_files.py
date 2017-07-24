@@ -10,7 +10,7 @@ if __name__ == "__main__":
     from miran.midi import reformat_midi
 
 
-    parser = ArgumentParser(description="Reformat midi filesystem to be well-formed and type 0.")
+    parser = ArgumentParser(description="Reformat midi files to be well-formed and type 0.")
     parser.add_argument("input", help="Midi file or directory to reformat.")
     parser.add_argument("-v", "--verbose", action="store_true", help="Print messages to the console while formatting.")
     parser.add_argument("-r", "--recursive", action="store_true", help="Analyse subdirectories recursively.")

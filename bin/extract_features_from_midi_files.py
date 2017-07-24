@@ -19,7 +19,7 @@ if __name__ == "__main__":
     from miran.midi import *
     from argparse import ArgumentParser
 
-    parser = ArgumentParser(description="Extract musical features from midi filesystem, writing the results to a JSON file.")
+    parser = ArgumentParser(description="Extract musical features from midi files, writing the results to a JSON file.")
     parser.add_argument("input", help="Midi file or directory to analyse.")
     parser.add_argument("-o", "--output", help="Specify a JSON file to write analysis results.")
     parser.add_argument("-r", "--recursive", action="store_true", help="Analyse subdirectories recursively.")

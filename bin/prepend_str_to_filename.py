@@ -13,6 +13,6 @@ if __name__ == "__main__":
     parser.add_argument("prepend", help="string to prepend")
     args = parser.parse_args()
 
-    print "Processing filesystem..."
+    print "Processing files..."
     prepend_str_to_filename(args.dir, args.matching_string, args.prepend)
     print 'Done!'

@@ -19,7 +19,6 @@ def key_librosa(input_audio_file, output_text_file, **kwargs):
     import librosa
     import scipy.ndimage
 
-
     if not kwargs:
         kwargs = KEY_SETTINGS
 
@@ -55,6 +54,7 @@ def key_librosa(input_audio_file, output_text_file, **kwargs):
         estimation_1 = profile_matching_2(chroma, kwargs["KEY_PROFILE"])
 
     key_1 = estimation_1[0] + '\t' + estimation_1[1]
+    correlation_value = estimation_1[2]
 
     if kwargs["WITH_MODAL_DETAILS"]:
         estimation_2 = profile_matching_3(chroma)
@@ -74,7 +74,7 @@ def key_librosa(input_audio_file, output_text_file, **kwargs):
     textfile = open(output_text_file, 'w')
     textfile.write(key + '\n')
     textfile.close()
-    return key
+    return key, correlation_value
 
 
 def key_madmom(input_audio_file, output_text_file, **kwargs):
@@ -98,7 +98,7 @@ def key_madmom(input_audio_file, output_text_file, **kwargs):
     #filterbank=<class 'madmom.audio.filters.PitchClassProfileFilterbank'>,
     #num_classes=12, fmin=100.0, fmax=5000.0, fref=440.0, **kwargs)
 
-    chroma = madmom.audio.chroma.CLPChroma(input_audio_file,
+    chroma = madmom.audio.chroma.CLPChroma (input_audio_file,
                                            fps=kwargs["SAMPLE_RATE"] / kwargs["HOP_SIZE"],
                                            fmin=kwargs["MIN_HZ"],
                                            fmax=kwargs["MAX_HZ"],
