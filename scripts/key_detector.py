@@ -49,8 +49,8 @@ if __name__ == "__main__":
             sys.exit()
 
         elif os.path.isfile(args.input):
-            # estimation, confidence = essentia_python(args.input, args.output, **settings)
-            estimation, confidence = eval(args.algorithm)(args.input, args.output, **settings)
+            estimation, confidence = essentia_python(args.input, args.output, **settings)
+            # estimation, confidence = eval(args.algorithm)(args.input, args.output, **settings)
             print("\nAnalysing:\t{0}".format(args.input))
             print("Exporting to:\t{0}.".format(args.output))
             print(":\t{0} ({})".format(estimation, confidence))
@@ -77,8 +77,8 @@ if __name__ == "__main__":
                 if any(soundfile_type in a_file for soundfile_type in AUDIO_FILE_EXT):
                     input_file = args.input + '/' + a_file
                     output_file = args.output + '/' + a_file[:-4] + '.txt'
-                    estimation, confidence = eval(args.algorithm)(input_file, output_file, **settings)
-                    # estimation, confidence = essentia_python(input_file, output_file, **settings)
+                    # estimation, confidence = eval(args.algorithm)(input_file, output_file, **settings)
+                    estimation, confidence = essentia_python(input_file, output_file, **settings)
                     print("{0} - {1} ({2})".format(input_file, estimation, confidence))
                     count_files += 1
 
