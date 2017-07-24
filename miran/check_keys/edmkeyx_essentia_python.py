@@ -5,8 +5,7 @@ import sys
 
 import essentia.standard as estd
 
-from pcp import *
-from templates import *
+from miran.key import *
 from miran.filesystem import create_dir
 
 # ======================= #
@@ -43,8 +42,14 @@ HPCP_SIZE                    = 12
 HPCP_WEIGHT_WINDOW_SEMITONES = 1         # semitones
 HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
 
-# Key Detector Method
-# -------------------
+# Scope and Key Detector Method
+# -----------------------------
+AVOID_TIME_EDGES             = 0  # percentage of track-length not analysed on the edges.
+FIRST_N_SECS                 = 0  # analyse first n seconds of each track (0 = full track)
+SKIP_FIRST_MINUTE            = False
+ANALYSIS_TYPE                = 'global'  # {'local', 'global'}
+N_WINDOWS                    = 100  # if ANALYSIS_TYPE is 'local'
+WINDOW_INCREMENT             = 100  # if ANALYSIS_TYPE is 'local'
 KEY_PROFILE                  = 'bgate'  # {'bgate', 'braw', 'edma', 'edmm'}
 USE_THREE_PROFILES           = True
 WITH_MODAL_DETAILS           = True
@@ -113,17 +118,17 @@ def estimate_key(input_audio_file, output_text_file):
         chroma = shift_pcp(chroma, HPCP_SIZE)
     chroma = np.roll(chroma, -3)  # Adjust to essentia's HPCP calculation starting on A...
     if USE_THREE_PROFILES:
-        estimation_1 = template_matching_3(chroma, KEY_PROFILE)
+        estimation_1 = profile_matching_3(chroma, KEY_PROFILE)
     else:
-        estimation_1 = template_matching_2(chroma, KEY_PROFILE)
+        estimation_1 = profile_matching_2(chroma, KEY_PROFILE)
     key_1 = estimation_1[0] + '\t' + estimation_1[1]
     correlation_value = estimation_1[2]
     if WITH_MODAL_DETAILS:
-        estimation_2 = template_matching_modal(chroma)
+        estimation_2 = profile_matching_modal(chroma)
         key_2 = estimation_2[0] + '\t' + estimation_2[1]
         key_verbose = key_1 + '\t' + key_2
         key = key_verbose.split('\t')
-        # Assign monotonic beatport to minor:
+        # Assign monotonic tracks to minor:
         if key[3] == 'monotonic' and key[0] == key[2]:
             key = '{0}\tminor'.format(key[0])
         else:

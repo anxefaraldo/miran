@@ -10,7 +10,7 @@ import numpy as np
 sample_rate = 44100
 window_size = 4096
 window_type = 'hann' #{hamming, hann, triangular, square, blackmanharris62, blackmanharris70, blackmanharris74, blackmanharris92}
-hop_size = 1024 
+hop_size = 1024
 min_frequency = 50
 max_frequency = 5000
 #spectral_peaks

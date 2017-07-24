@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 sample_rate = 44100
 window_size = 4096
 window_type = 'hann' #{hamming, hann, triangular, square, blackmanharris62, blackmanharris70, blackmanharris74, blackmanharris92}
-hop_size = 1024 
+hop_size = 1024
 min_frequency = 32
 max_frequency = 3000
 #spectral_peaks
@@ -77,7 +77,7 @@ max_val_index = max_val_index[0][0] % tuning_resolution
 shiftDistance = 0
 if max_val_index > (tuning_resolution / 2):
 	shiftDistance = tuning_resolution - max_val_index
-else: 
+else:
 	shiftDistance = max_val_index
 
 print "shift_distance =", shiftDistance

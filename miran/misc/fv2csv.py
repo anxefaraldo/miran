@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import sys
-import os            
+import os
 import csv
 import time
 from fv1folder import *
@@ -18,7 +18,7 @@ def find_files2(dir):
             info = song_info(*tags)
             if info:
                 dataset.append(t2l + info)
-    return dataset        
+    return dataset
 
 def write_files(dir, outputFile):
     "takes multiple analysis and writes them to a csv file"
@@ -29,14 +29,13 @@ def write_files(dir, outputFile):
     wr = csv.writer(file, quoting=csv.QUOTE_ALL)
     wr.writerow(['artist','song','time signature','tempo','key','mode','loudness','energy','speachiness','acousticness','liveliness', 'danceability', 'valence'])
     wr.writerows(data)
-    
-    
+
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         print "usage: python fv_toFile.py 'input Directory' 'output filename'"
     else:
         write_files(sys.argv[1],sys.argv[2])
-        
 
-        
+

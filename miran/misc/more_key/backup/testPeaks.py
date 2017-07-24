@@ -48,21 +48,21 @@ window = estd.Windowing(
 rfft = estd.Spectrum(
     size=window_size)
 peaks = estd.PeakDetection(
-    interpolate=interpolate, 
-    threshold=threshold, 
+    interpolate=interpolate,
+    threshold=threshold,
     minPosition=(min_frequency/nyquist),
     maxPosition=(max_frequency/nyquist),
     maxPeaks=maxPeaks)
 hpcp = estd.HPCP(
-    bandPreset=band_preset, 
-    harmonics = harmonics, 
-    minFrequency=min_frequency, 
-    maxFrequency=max_frequency, 
-    nonLinear=non_linear, 
-    normalized=normalize, 
-    sampleRate=sample_rate, 
+    bandPreset=band_preset,
+    harmonics = harmonics,
+    minFrequency=min_frequency,
+    maxFrequency=max_frequency,
+    nonLinear=non_linear,
+    normalized=normalize,
+    sampleRate=sample_rate,
     referenceFrequency=reference_frequency,
-    weightType=weight_type, 
+    weightType=weight_type,
     windowSize=weight_window_size)
 key = estd.Key(
     numHarmonics=harmonics_key,
@@ -90,7 +90,7 @@ imshow(chroma, aspect='auto', origin='lower', interpolation='nearest')
 hpcp_average = [0] * 12
 for vector in hpcp_list : hpcp_average = np.add(hpcp_average,vector)
 hpcp_average = np.divide(hpcp_average,np.max(hpcp_average))
-print hpcp_average  
+print hpcp_average
 plot(hpcp_average, '.')
 estimation = key(hpcp_average.tolist())
 result = estimation[0] + " " + estimation[1]

@@ -12,7 +12,7 @@ except:
 import os
 import essentia as e
 import essentia.standard as estd
-import numpy as np    
+import numpy as np
 
 # PARAMETERS
 verbose = True
@@ -41,13 +41,13 @@ three_chords = False
 soundfiles = os.listdir(audio_folder)
 if '.DS_Store' in soundfiles:
     soundfiles.remove('.DS_Store')
-    
+
 # ANALYSIS
 print "\nANALYSIS..."
 for item in soundfiles:
     loader = estd.MonoLoader(filename=audio_folder + '/' +item,
                              sampleRate=sample_rate)
-    window = estd.Windowing(size=window_size, 
+    window = estd.Windowing(size=window_size,
                             type="blackmanharris62")
     rfft = estd.Spectrum(size=window_size)
     speaks = estd.SpectralPeaks(orderBy="magnitude",
@@ -80,7 +80,7 @@ for item in soundfiles:
     for vector in hpcp_list:
         hpcp_average = np.add(hpcp_average,vector)
         # hpcp_average = np.divide(hpcp_average,np.max(hpcp_average))
-    print hpcp_average    
+    print hpcp_average
     estimation = key(hpcp_average.tolist())
     result = estimation[0] + " " + estimation[1]
     print item[:15]+'...     ' + result

@@ -27,7 +27,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if not os.path.isdir(args.estimations) and not os.path.isdir(args.references):
-        raise parser.error("Warning: '{0}' or '{1}' not a directory.".format(args.references, args.estimations))
+        raise parser.error("Warning: '{}' or '{}' not a directory.".format(args.references, args.estimations))
 
     else:
         if args.verbose:

@@ -26,7 +26,7 @@ tuning_frequency = 440
 soundfiles = os.listdir(audio_folder)
 if '.DS_Store' in soundfiles:
     soundfiles.remove('.DS_Store')
-    
+
 # ANALYSIS
 # ================================================================================
 print "\nANALYSIS..."

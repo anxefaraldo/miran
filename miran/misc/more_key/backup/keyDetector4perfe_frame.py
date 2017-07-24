@@ -28,7 +28,7 @@ from time import time as tiempo
 
 # PARAMETERS
 # ==========
-# Ángel 
+# Ángel
 analysis_portion = 0 # in seconds. 0 == full track
 shift_spectrum = False
 spectral_whitening = True
@@ -62,7 +62,7 @@ use_three_chords = False
 # self-derived
 tuning_resolution = (size / 12)
 
-    
+
 # ANALYSIS
 # ========
 print "\nANALYSING..."
@@ -75,30 +75,30 @@ csvFile = open('csvResults.csv', 'w')
 lineWriter = csv.writer(csvFile, delimiter=',')
 # retrieve filenames from folder
 soundfiles = os.listdir(audio_folder)
-if '.DS_Store' in soundfiles: 
+if '.DS_Store' in soundfiles:
     soundfiles.remove('.DS_Store')
-if verbose: 
-    print "\nestimation of individual songs:" 
-    print "-------------------------------" 
+if verbose:
+    print "\nestimation of individual songs:"
+    print "-------------------------------"
 track = -1
 for item in soundfiles:
     loader = estd.MonoLoader(filename=audio_folder+'/'+item,
     						 sampleRate=sample_rate)
-    cut    = estd.FrameCutter(frameSize=window_size, 
+    cut    = estd.FrameCutter(frameSize=window_size,
                               hopSize=hop_size)
     window = estd.Windowing(size=window_size,
                             type=window_type)
     rfft   = estd.Spectrum(size=window_size)
-    sw     = estd.SpectralWhitening(maxFrequency=max_frequency, 
+    sw     = estd.SpectralWhitening(maxFrequency=max_frequency,
                                     sampleRate=sample_rate)
     speaks = estd.SpectralPeaks(magnitudeThreshold=magnitude_threshold,
                                 maxFrequency=max_frequency,
                                 minFrequency=min_frequency,
                                 maxPeaks=max_peaks,
                                 sampleRate=sample_rate)
-    hpcp   = estd.HPCP(bandPreset=band_preset, 
-                       harmonics=harmonics, 
-                       maxFrequency=max_frequency, 
+    hpcp   = estd.HPCP(bandPreset=band_preset,
+                       harmonics=harmonics,
+                       maxFrequency=max_frequency,
                        minFrequency=min_frequency,
                        nonLinear=non_linear,
                        normalized=normalize,
@@ -108,11 +108,11 @@ for item in soundfiles:
                        splitFrequency=split_frequency,
                        weightType=weight_type,
                        windowSize=weight_window_size)
-    key    = estd.Key(numHarmonics=num_harmonics, 
+    key    = estd.Key(numHarmonics=num_harmonics,
                       pcpSize=size,
                       profileType=profile_type,
-                      slope=slope, 
-                      usePolyphony=use_polyphony, 
+                      slope=slope,
+                      usePolyphony=use_polyphony,
                       useThreeChords=use_three_chords)
     audio = loader()
     track += 1
@@ -124,7 +124,7 @@ for item in soundfiles:
     		number_of_frames = (sample_rate * analysis_portion) / hop_size
     else:
     	number_of_frames = duration / hop_size
-    frame = 0			
+    frame = 0
     for bang in range(number_of_frames):
         spek = rfft(window(cut(audio)))
         p1, p2 = speaks(spek)
@@ -144,4 +144,4 @@ for item in soundfiles:
     	lineWriter.writerow([track, frame, chroma, result, confidence])
     	frame += 1
 
-csvFile.close() 
+csvFile.close()

@@ -7,7 +7,7 @@
 collection     = ['KF100', 'KF1000', 'GSANG', 'ENDO100', 'DJTECHTOOLS60']
 genre          = ['edm'] # ['edm', 'non-edm']
 modality       = ['major'] # ['major', 'minor']
-limit_analysis = 0 # Limit key to N RANDOM beatport. 0 == all samples matching criteria
+limit_analysis = 0 # Limit key to N RANDOM tracks. 0 == all samples matching criteria
 
 # ANALYSIS PARAMETERS
 # ===================

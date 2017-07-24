@@ -36,7 +36,7 @@ if analysis_mode == 'title':
     collection     = ['KF100', 'KF1000', 'GSANG', 'ENDO100', 'DJTECHTOOLS60']
     genre          = ['edm']  # ['edm', 'non-edm']
     modality       = ['minor', 'major']  # ['major', 'minor']
-    limit_analysis = 0  # Limit key to N random beatport. 0 = all samples matching above criteria.
+    limit_analysis = 0  # Limit key to N random tracks. 0 = all samples matching above criteria.
 
 """
 Settings for Classical Music:

@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-Useful funtions related to directory and file management, Pandas and music21.
+This script processes midi filesystem to have them in a common and regular format.
+
+
+Useful funtions related to midi files, directory and file management, Pandas and music21.
 
 THINGS TO LOOK AT (some implemented, some not yet):
 
@@ -23,11 +26,14 @@ SANITY CHECKS:
  - simultaneous attacks and/or sounding notes (chords, octavations...)
  - overlapping notes (possibly glissandi?)
 
+Ángel Faraldo, April 2017.
+
 """
 
-import os.path
 import math
-from pandas import DataFrame as pddf
+import os.path
+import pandas as pd
+import numpy as np
 import music21 as m21
 from mido import MidiFile, MidiTrack, Message, MetaMessage
 
@@ -45,7 +51,7 @@ def parse_mid(mid):
         return mid
 
     else:
-        raise(IOError("Not valid midi file or path."))
+        raise (IOError("Not valid midi file or path."))
 
 
 def dur_in_bars(mid):
@@ -119,7 +125,7 @@ def mid_to_matrix(mid, output='nested_list'):  # {"nested_list", "pandas"}
         if output is 'nested_list':
             return mnotes
         elif output is 'pandas':
-            return pddf(mnotes, columns=['pitch', 'offset', 'duration'])
+            return pd.DataFrame(mnotes, columns=['pitch', 'offset', 'duration'])
 
 
 def quantize_matrix(matrix, stepSize=0.25, quantizeOffsets=True, quantizeDurations=True):
@@ -208,7 +214,6 @@ def onset_vector(matrix, stepsize=0.25, n_beats=None, fold=False):
     return vector
 
 
-
 def dur_matrix(matrix, stepsize=0.25, n_beats=None, fold=False):
     onsets = []
     for event in matrix:
@@ -267,7 +272,6 @@ def dur_matrix(matrix, stepsize=0.25, n_beats=None, fold=False):
 
 
 def matrix_to_mid(matrix, output_file=None, ticks_per_beat=96, vel=100):
-
     mid = MidiFile()
     mid.ticks_per_beat = ticks_per_beat
     mid.type = 0
@@ -303,7 +307,7 @@ def matrix_to_mid(matrix, output_file=None, ticks_per_beat=96, vel=100):
 
 
 # def dur_in_ticks(m):
-#     for track in m.beatport:
+#     for track in m.tracks:
 #         duration = 0
 #         for message in track:
 #             duration += message.time
@@ -311,7 +315,6 @@ def matrix_to_mid(matrix, output_file=None, ticks_per_beat=96, vel=100):
 
 
 def split_in_half(mid, verbose=True, write_to_file=False):
-
     mid = parse_mid(mid)
 
     if mid.type != 0:
@@ -339,7 +342,7 @@ def split_in_half(mid, verbose=True, write_to_file=False):
         flat_track.pop(-1)
     flat_track.append(MetaMessage("end_of_track", time=0))
 
-    # replace the 'beatport' field with a single track containing all the messages.
+    # replace the 'tracks' field with a single track containing all the messages.
     # later on we can check for duplicates in certain fields (tempo, timesignature, key)
     mid.tracks.clear()
     mid.type = 0
@@ -403,7 +406,6 @@ def force_4_bar(m21_stream):
 
 
 def duration_to_bars(stream, remove_tempo=True):
-
     if remove_tempo:
         stream[0].removeByClass('music21.tempo.MetronomeMark')
 
@@ -474,7 +476,6 @@ def astext(mid):
     m21.converter.parseFile(mid, format('midi')).show('text')
 
 
-
 # File management and OS related functions
 # ========================================
 
@@ -540,7 +541,7 @@ def values_greater_than(my_dataframe, my_col, threshold=0):
         if counts[i] > threshold:
             fields_kept.append(counts.index[i])
     print("Keeping:", fields_kept)
-    temp = pddf()
+    temp = pd.DataFrame()
     for item in fields_kept:
         temp = temp.append(my_dataframe[my_dataframe[my_col] == item])
     return temp
@@ -556,7 +557,316 @@ def n_most_frequent_values(my_dataframe, my_col, n_most_freq=6):
         counts = counts[:n_most_freq]
         print("Keeping:", counts.index)
 
-    temp = pddf()
+    temp = pd.DataFrame()
     for item in counts.index:
         temp = temp.append(my_dataframe[my_dataframe[my_col] == item])
     return temp
+
+
+def reformat_midi(mid, name=None, verbose=True, write_to_file=False, override_time_info=True):
+    """
+    Performs sanity check and reformats a midi file based on the following criteria:
+
+    - Flattens all messages onto a single track, making it of midi file type 0.
+    - Converts 'note_on' messages with velocity=0 to 'note_off' messages.
+    - Checks if the last 'note_on' has a corresponding 'note_off' message, adding one if needed.
+    - Adds an 'end_of_track' metamessage that is a multiple of the time_signature.
+
+    Reformatting will make the file load better (i.e. nicer looking) in music21 and other musicxml programs.
+
+    Parameters
+    ----------
+    mid: str or mido.MidiFile:
+        Valid path to a midi file or midi stream.
+    name: str
+        different name...
+    verbose: bool
+        Print messages to the console while formatting
+    write_to_file: bool
+        Overwrite the original midi file with the newly formatted data.
+    override_time_info: bool
+        Override original tempo and time signature.
+
+    Return
+    ------
+    mid: mido.MidiFile
+        A pythonised midi file for further manipulation.
+
+    Notes
+    -----
+    override_time_info ignores the original tempo and time signature,
+    forcing them to 'set_tempo' = 125 bmp's and 'time_signature' = 4/4.
+    This is useful for most cases of analysis of EDM content.
+
+    """
+
+    mid = parse_mid(mid)
+
+    if not mid.filename:
+        mid.filename = "midi_track"
+
+    if not name:
+        name = os.path.join(os.getcwd(), mid.filename)
+
+    print("file name:", mid.filename)
+
+    if verbose:
+        print("file type:", mid.type)
+        print("ticks per quarter note:", mid.ticks_per_beat)
+        print("number of tracks", len(mid.tracks))
+        print(mid.tracks)
+
+    EXCLUDED_MSG_TYPES = {"sequence_number", "text", "copyright", "track_name", "instrument_name",
+                          "lyrics", "marker", "cue_marker", "device_name", "channel_prefix",
+                          "midi_port", "sequencer_specific", "end_of_track", 'smpte_offset'}
+
+    if override_time_info:
+        EXCLUDED_MSG_TYPES.add('time_signature')
+        EXCLUDED_MSG_TYPES.add('set_tempo')
+
+    # if type 2, do nothing!
+    if mid.type == 2:
+        print("Midi file type {}. I did not dare to change anything.".format(mid.type))
+        return None
+
+    else:
+        if verbose and mid.type == 1:
+            # if type 1, convert to type 0
+            print("Converting file type 1 to file type 0 (single track).")
+
+        flat_track = MidiTrack()
+        flat_track.append(MetaMessage("track_name", name=os.path.split(name)[1], time=0))
+        print("NAME", os.path.split(name)[1])
+        flat_track.append(MetaMessage("track_name", name="unnamed", time=0))
+        flat_track.append(MetaMessage("instrument_name", name="Bass", time=0))
+
+        if override_time_info:
+            if verbose:
+                print('WARNING: Ignoring Tempo and Time Signature Information.')
+            flat_track.append(MetaMessage("set_tempo", tempo=480000, time=0))
+            flat_track.append(MetaMessage("time_signature", numerator=4, denominator=4, time=0))
+
+        for track in mid.tracks:
+            for msg in track:
+                if any(msg.type == msg_type for msg_type in EXCLUDED_MSG_TYPES):
+                    if verbose:
+                        print("IGNORING", msg)
+                else:
+                    flat_track.append(msg)
+
+        # replace the 'tracks' field with a single track containing all the messages.
+        # later on we can check for duplicates in certain fields (tempo, timesignature, key)
+        mid.tracks.clear()
+        mid.type = 0
+        mid.tracks.append(flat_track)
+
+    # Convert 'note_on' messages with velocity 0 to note_off messages:
+    for msg in mid.tracks[0]:
+        if msg.type == 'note_on' and msg.velocity == 0:
+            if verbose:
+                print("Replacing 'note_on' with velocity=0 with a 'note_off' message (track[{}])".format(mid.tracks[0].index(msg)))
+            mid.tracks[0].insert(mid.tracks[0].index(msg), Message('note_off', note=msg.note, velocity=msg.velocity, time=msg.time))
+            mid.tracks[0].remove(msg)
+
+    # Add a 'note_off' event at the end of track if it were missing:
+    events = []
+    for msg in mid.tracks[0]:
+        if msg.type == 'note_on' or msg.type == 'note_off':
+            events.append(msg)
+    if len(events) > 0:
+        if events[-1].type == 'note_on':
+            mid.tracks[0].append(Message('note_off', note=events[-1].note, velocity=0, time=0))
+            if verbose:
+                print("WARNING: 'note_off' missing at the end of file. Adding 'note_off' message.")
+
+    # Set the duration of the file to a multiple of the Time Signature:
+    ticks_per_beat = mid.ticks_per_beat
+    beats_per_bar = 4
+    dur_in_ticks = 0
+    for msg in mid.tracks[0]:
+        dur_in_ticks += msg.time
+        if msg.type == 'set_tempo':
+            if verbose:
+                print("Tempo: {} BPM".format(60000000 / msg.tempo))
+        if msg.type == 'time_signature':
+            beats_per_bar = msg.numerator
+            ticks_per_beat = (4 / msg.denominator) * mid.ticks_per_beat
+            if verbose:
+                print("Time Signature: {}/{}".format(msg.numerator, msg.denominator))
+
+    ticks_per_bar = beats_per_bar * ticks_per_beat
+    dur_in_measures = dur_in_ticks / ticks_per_bar
+    expected_dur_in_ticks = int(math.ceil(dur_in_measures) * ticks_per_bar)
+    ticks_to_end_of_bar = expected_dur_in_ticks - dur_in_ticks
+    print(ticks_to_end_of_bar)
+
+    if mid.tracks[0][-1].type == "end_of_track":
+        ticks_to_end_of_bar += mid.tracks[0][-1].time
+        mid.tracks[0].pop(-1)
+
+    mid.tracks[0].append(MetaMessage('end_of_track', time=ticks_to_end_of_bar))
+
+    if verbose:
+        if dur_in_ticks == expected_dur_in_ticks:
+            print("Original duration already a multiple of Time Signature.")
+            print(dur_in_ticks, "ticks,", dur_in_measures, "bars.")
+        else:
+            print("Original duration:", dur_in_ticks, "ticks,", dur_in_measures, "bars.")
+            new_dur_in_ticks = 0
+            for msg in mid.tracks[0]:
+                new_dur_in_ticks += msg.time
+            print("Final duration:", new_dur_in_ticks, "ticks,", new_dur_in_ticks / ticks_per_bar, "bars.")
+
+    if write_to_file:
+        mid.save(name)
+        if verbose:
+            print("(Over)writting mid file with changes.\n")
+
+    return mid
+
+
+def extract_features(mid):
+    """
+    Extract musical features from a midi file.
+
+    Parameters
+    ----------
+    mid: str
+        Valid path to a midi file.
+
+    Return
+    ------
+    features
+        a pandas series with the results of the analysis
+
+    """
+
+    music = m21.converter.parseFile(mid, format('midi'))
+    midi_raw = parse_mid(mid)
+    note_matrix = mid_to_matrix(midi_raw)
+
+    features = dict()
+    features['path'] = mid
+    print("file path: {}".format(mid))
+
+    # look for simoultaneous attacks of two or more notes
+    features['poly'] = music.flat.hasElementOfClass('Chord')
+
+    # chech for pitchwheel messages (aka glissandi)
+    features['pw'] = has_pitchwheel(midi_raw)
+
+    # the raw sequence
+    seq = m21.chord.Chord(music.flat.pitches)
+    midi_seq = [event.midi for event in seq.pitches]
+    features['seq'] = midi_seq
+
+    # first pitch in the sequence
+    features['fst'] = seq[0].pitch.midi
+
+    # last pitch in the sequence
+    features['lst'] = seq[-1].pitch.midi
+
+    # interval between last and first note
+    features['li'] = features['fst'] - features['lst']
+
+    # all melodic intervals
+    features['mis'] = np.append(np.diff(midi_seq), (features['li']))
+
+    # sequence of non redundant pitch events
+    p_seq = [event.pitch.midi for event in seq.removeRedundantPitches(inPlace=False)]
+    features['seqp'] = p_seq
+
+    # 'compact' form, normal order
+    n_order = seq.normalOrder
+    features['no'] = seq.formatVectorString(n_order)
+
+    # normal form... that is, in the most compact form without interval equivalence
+    n_form = [(pc - n_order[0]) % 12 for pc in n_order]
+    features['nf'] = seq.formatVectorString(n_form)
+
+    # prime form
+    features['pf'] = seq.primeFormString
+
+    # interval vector
+    features['iv'] = seq.intervalVectorString
+
+    # forte name
+    features['forte'] = seq.forteClass
+
+    # descriptive name
+    features['name'] = seq.commonName
+
+    # length in bars
+    features['bars'] = dur_in_bars(midi_raw)
+
+    # total number of events
+    features['ne'] = len(seq)
+
+    # average events per bar
+    features['aveb'] = features['ne'] / features['bars']
+
+    # number of different pitches (octaves count)
+    features['np'] = len(p_seq)
+
+    # number of chromas
+    features['npc'] = seq.pitchClassCardinality
+
+    # lowest tone in sequence
+    features['lo'] = min(midi_seq)
+
+    # highest tone
+    features['hi'] = max(midi_seq)
+
+    # range interval in semitones
+    features['rng'] = features['hi'] - features['lo']
+
+    # central pitch
+    features['cp'] = int(features['lo'] + (features['rng'] * 0.5))
+
+    # first pitch to central pitch interval
+    features['ftc'] = features['fst'] - features['cp']
+
+    # min inter-onset time
+    features['miot'] = min_iot(music)
+
+    # find overlapping notes
+    features['ovl'] = find_overlap(music)
+
+    # average time between attacks
+    # features['ata'] = m21.features.jSymbolic.AverageTimeBetweenAttacksFeature(music).extract().vector
+
+    # std time between attacks
+    # features['vata'] = m21.features.jSymbolic.VariabilityOfTimeBetweenAttacksFeature(music).extract().vector
+
+    # Note Density Feature
+    # features['nd'] = m21.features.jSymbolic.NoteDensityFeature(music).extract().vector
+
+    # tonal certainty (as implemented in m21)!
+    # features['tc'] = m21.features.native.TonalCertainty(music).extract().vector
+
+    # amount of arpeggiation
+    # features['arp'] = m21.features.jSymbolic.AmountOfArpeggiationFeature(music).extract().vector
+
+    # highest time in file according to music21
+    # features['dur'] = music.highestTime
+
+    # average melodic interval
+    # features['ami'] = m21.features.jSymbolic.AverageMelodicIntervalFeature(music).extract().vector
+
+    # most common melodic interval
+    # features['mcmi'] = m21.features.jSymbolic.MostCommonMelodicIntervalFeature(music).extract().vector
+
+    # repeated notes
+    # features['rn'] = m21.features.jSymbolic.RepeatedNotesFeature(music).extract().vector
+
+    # melodic octave
+    # features['ami'] = m21.features.jSymbolic.MelodicOctavesFeature(music).extract().vector
+
+    # stepwise motion
+    # features['swm'] = m21.features.jSymbolic.StepwiseMotionFeature(music).extract().vector
+
+    # Chromatic Motion
+    # features['chrm'] = m21.features.jSymbolic.ChromaticMotionFeature(music).extract().vector
+
+    # returns a Pandas Series
+    return pd.Series(features, name=mid)

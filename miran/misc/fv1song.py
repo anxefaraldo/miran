@@ -31,11 +31,11 @@ def song_info(artist, title):
     if len(results) > 0:
         s = results[0].audio_summary
         fv = [s['time_signature'], s['tempo'], s['key'], s['mode'], s['speechiness'], s['loudness'], s['energy'], s['danceability'], s['valence'], s['acousticness'], s['liveness']]
-        return fv    
+        return fv
     else:
         return None
-                  
-                  
+
+
 if __name__ == '__main__':
     if len(sys.argv) <> 3:
         print "Usage: python fv1song.py 'artist name' 'song title'"
