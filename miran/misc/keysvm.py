@@ -3,7 +3,7 @@ import essentia.standard as estd
 from fodules.excel import *
 from fodules.pcp import *
 
-from miran.conversions import *
+from miran.translate import *
 
 
 def estimate_key(soundfile, write_to):

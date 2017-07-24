@@ -15,7 +15,7 @@ a JSON file with the results of the analysis.
 if __name__ == "__main__":
 
     import os
-    from miran.filesystem import *
+    from miran.base import *
     from miran.midi import *
     from argparse import ArgumentParser
 

@@ -14,9 +14,9 @@ if __name__ == "__main__":
     from time import clock
     from argparse import ArgumentParser
 
-    from miran.filesystem import *
+    from miran.base import *
     from miran.labels import *
-    from miran.key import *
+    from miran.key.find import *
 
     clock()
     parser = ArgumentParser(description="Key estimation algorithm.")
@@ -34,7 +34,7 @@ if __name__ == "__main__":
         settings = load_settings_as_dict(args.settings)
         print("Using key estimation settings in {}".format(args.settings))
     else:
-        settings = key_estimation_defaults
+        settings = dekey_defs
         print("Using default key estimation settings")
 
     if args.profile:
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         print("Key profile:", settings["KEY_PROFILE"])
 
     if os.path.isfile(args.input):
-        estimation, confidence = essentia_python(args.input, args.output, **settings)
+        estimation, confidence = key_angel(args.input, args.output, **settings)
         print("\nAnalysing:\t{0}".format(args.input))
         print("Exporting to:\t{0}.".format(args.output))
         print(":\t{0} ({})".format(estimation, confidence))

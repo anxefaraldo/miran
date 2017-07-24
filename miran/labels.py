@@ -11,11 +11,10 @@ ANNOTATION_FILE_EXT = {'.txt', '.key', '.lab'}
 # audio files accepted
 AUDIO_FILE_EXT = {'.wav', '.mp3', 'flac', '.aiff', '.ogg'}
 
-#
 CONVERSION_TYPES = {'KeyFinder', 'MIK', 'VirtualDJ', 'Traktor', 'Rekordbox', 'Beatunes'}
 
 # default key labels for tables, and matrixes
-KEY_LABELS = ('C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B',
+KEY_LABELS = ('C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B',
               'Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm')
 
 # default degree labels for tables, and matrixes
@@ -23,32 +22,11 @@ DEGREE_LABELS = ('I', 'bII', 'II', 'bIII', 'III', 'IV', '#IV', 'V', 'bVI', 'VI',
                  'i', 'bii', 'ii', 'biii', 'iii', 'iv', '#iv', 'v', 'bvi', 'vi', 'bvii', 'vii')
 
 
-int2key = {0: 'C major',
-           1: 'C# major',
-           2: 'D major',
-           3: 'Eb major',
-           4: 'E major',
-           5: 'F major',
-           6: 'F# major',
-           7: 'G major',
-           8: 'Ab major',
-           9: 'A major',
-           10: 'Bb major',
-           11: 'B major',
-
-           12: 'C minor',
-           13: 'C# minor',
-           14: 'D minor',
-           15: 'Eb minor',
-           16: 'E minor',
-           17: 'F minor',
-           18: 'F# minor',
-           19: 'G minor',
-           20: 'Ab minor',
-           21: 'A minor',
-           22: 'Bb minor',
-           23: 'B minor',
-           }
+int2key = {0: 'C major', 1: 'C# major', 2: 'D major', 3: 'Eb major', 4: 'E major',
+           5: 'F major', 6: 'F# major', 7: 'G major', 8: 'Ab major', 9: 'A major',
+           10: 'Bb major', 11: 'B major', 12: 'C minor', 13: 'C# minor', 14: 'D minor',
+           15: 'Eb minor', 16: 'E minor', 17: 'F minor', 18: 'F# minor', 19: 'G minor',
+           20: 'Ab minor', 21: 'A minor', 22: 'Bb minor', 23: 'B minor'}
 
 
 key2int = {'C major': 0,
@@ -75,13 +53,10 @@ key2int = {'C major': 0,
            'G# minor': 20, 'Ab minor': 20,
            'A minor': 21,
            'A# minor': 22, 'Bb minor': 22,
-           'B minor': 23
-           }
+           'B minor': 23}
 
 
-mode2int = {'': 0, 'major': 0, 'maj': 0, 'M': 0,
-
-            'minor': 1, 'min': 1, 'm': 1,
+mode2int = {'': 0, 'major': 0, 'maj': 0, 'M': 0, 'minor': 1, 'min': 1, 'm': 1,
 
             'ionian': 11,
             'dorian': 12,
@@ -90,9 +65,7 @@ mode2int = {'': 0, 'major': 0, 'maj': 0, 'M': 0,
             'mixolydian': 15,
             'aeolian': 16,
             'locrian': 17,
-
             'harmonic': 21,
-
             'fifth': 31,
             'monotonic': 32,
             'difficult': 33,
@@ -100,18 +73,8 @@ mode2int = {'': 0, 'major': 0, 'maj': 0, 'M': 0,
             'flat': 35
             }
 
-pc2degree = {0: 'I',
-             1: 'bII',
-             2: 'II',
-             3: 'bIII',
-             4: 'III',
-             5: 'IV',
-             6: '#IV',
-             7: 'V',
-             8: 'bVI',
-             9: 'VI',
-             10: 'bVII',
-             11: 'VII'}
+pc2degree = {0: 'I', 1: 'bII', 2: 'II', 3: 'bIII', 4: 'III', 5: 'IV',
+             6: '#IV', 7: 'V', 8: 'bVI', 9: 'VI', 10: 'bVII', 11: 'VII'}
 
 
 pitch2int = {'B#': 0, 'C': 0, 'Dbb': 0,
@@ -126,42 +89,7 @@ pitch2int = {'B#': 0, 'C': 0, 'Dbb': 0,
              'A': 9, 'A#': 10,
              'Bb': 10, 'B': 11,
              'Cb': 11,
-             '??': 12, '-': 12, 'X': 12
-             }
+             '??': 12, '-': 12, 'X': 12}
 
 
-key_estimation_defaults = {"SAMPLE_RATE": 44100,
-                           "WINDOW_SIZE": 4096,
-                           "HOP_SIZE": 4096,
-                           "WINDOW_SHAPE": "hann",
-                           "PCP_THRESHOLD": 0.2,
-                           "HIGHPASS_CUTOFF": 200,
-                           "SPECTRAL_WHITENING": True,
-                           "DETUNING_CORRECTION": True,
-                           "DETUNING_CORRECTION_SCOPE": "average",
-                           "MIN_HZ": 25,
-                           "MAX_HZ": 3500,
-                           "SPECTRAL_PEAKS_THRESHOLD": 0.0001,
-                           "SPECTRAL_PEAKS_MAX": 60,
-                           "HPCP_BAND_PRESET": False,
-                           "HPCP_SPLIT_HZ": 250,
-                           "HPCP_HARMONICS": 4,
-                           "HPCP_REFERENCE_HZ": 440,
-                           "HPCP_NON_LINEAR": False,
-                           "HPCP_NORMALIZE": "none",
-                           "HPCP_SHIFT": False,
-                           "HPCP_SIZE": 12,
-                           "HPCP_WEIGHT_WINDOW_SEMITONES": 1,
-                           "HPCP_WEIGHT_TYPE": "cosine",
-                           "DURATION": None,
-                           "OFFSET": 0,
-                           "ANALYSIS_TYPE": "global",
-                           "AVOID_TIME_EDGES": 0,
-                           "FIRST_N_SECS": 0,
-                           "SKIP_FIRST_MINUTE": False,
-                           "N_WINDOWS": 100,
-                           "WINDOW_INCREMENT": 100,
-                           "KEY_PROFILE": "bgate",
-                           "USE_THREE_PROFILES": True,
-                           "WITH_MODAL_DETAILS": True
-                           }
+

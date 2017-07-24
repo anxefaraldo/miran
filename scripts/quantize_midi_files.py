@@ -5,7 +5,7 @@
 if __name__ == "__main__":
 
     from argparse import ArgumentParser
-    from miran.filesystem import *
+    from miran.base import *
     from miran.midi import *
 
     parser = ArgumentParser(description="Performs quantisation and reformatting of midifiles.")

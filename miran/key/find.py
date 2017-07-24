@@ -3,9 +3,11 @@
 
 from __future__ import absolute_import, division, print_function
 
-
+import madmom
 import essentia.standard as estd
 
+import librosa
+import scipy.ndimage
 import librosa.display
 from matplotlib import pyplot as plt
 
@@ -13,10 +15,153 @@ import os
 import json
 import numpy as np
 from scipy.stats import pearsonr
-from miran.conversions import *
+from miran.translate import *
+
+dekey_defs = {"SAMPLE_RATE": 44100,
+              "WINDOW_SIZE": 4096,
+              "HOP_SIZE": 4096,
+              "WINDOW_SHAPE": "hann",
+              "PCP_THRESHOLD": 0.2,
+              "HIGHPASS_CUTOFF": 200,
+              "SPECTRAL_WHITENING": True,
+              "DETUNING_CORRECTION": True,
+              "DETUNING_CORRECTION_SCOPE": "average",
+              "MIN_HZ": 25,
+              "MAX_HZ": 3500,
+              "SPECTRAL_PEAKS_THRESHOLD": 0.0001,
+              "SPECTRAL_PEAKS_MAX": 60,
+              "HPCP_BAND_PRESET": False, "HPCP_SPLIT_HZ": 250, "HPCP_HARMONICS": 4,
+              "HPCP_REFERENCE_HZ": 440, "HPCP_NON_LINEAR": False,
+              "HPCP_NORMALIZE": "none", "HPCP_SHIFT": False,
+              "HPCP_SIZE": 12, "HPCP_WEIGHT_WINDOW_SEMITONES": 1,
+              "HPCP_WEIGHT_TYPE": "cosine", "DURATION": None, "OFFSET": 0,
+              "ANALYSIS_TYPE": "global", "AVOID_TIME_EDGES": 0, "FIRST_N_SECS": 0,
+              "SKIP_FIRST_MINUTE": False, "N_WINDOWS": 100, "WINDOW_INCREMENT": 100,
+              "KEY_PROFILE": "bgate", "USE_THREE_PROFILES": True,
+              "WITH_MODAL_DETAILS": True}
 
 
-def essentia_key(input_audio_file, output_text_file, **kwargs):
+def key_librosa(input_audio_file, output_text_file, **kwargs):
+    """
+    This function estimates the overall key of an audio track
+    optionaly with extra modal information.
+    :type input_audio_file: str
+    :type output_text_file: str
+    """
+    audio, sr = librosa.load(path=input_audio_file, sr=kwargs["SAMPLE_RATE"], duration=kwargs["DURATION"], offset=kwargs["OFFSET"])
+
+    # isolate the harmonic component. We’ll use a large margin for separating harmonics from percussives:
+    audio = librosa.effects.harmonic(y=audio, margin=8)  # harmonic percussive separation
+
+    # We can correct for minor tuning deviations by using 3 CQT bins per semi-tone, instead of one:
+    chroma = librosa.feature.chroma_cqt(y=audio, sr=kwargs["SAMPLE_RATE"], bins_per_octave=36)
+
+    #  We can clean it up using non-local filtering. This removes any sparse additive noise from the features:
+    chroma = np.minimum(chroma, librosa.decompose.nn_filter(chroma, aggregate=np.median, metric='cosine'))
+
+    #  Local discontinuities and transients can be suppressed by using a horizontal median filter:
+    chroma = scipy.ndimage.median_filter(chroma, size=(1, 9))
+
+    # change axis distribution
+    chroma = chroma.transpose()
+
+    chroma = np.sum(chroma, axis=0)
+
+    if kwargs["PCP_THRESHOLD"] is not None:
+        chroma = normalize_pcp_peak(chroma)
+        chroma = pcp_gate(chroma, kwargs["PCP_THRESHOLD"])
+
+    if kwargs["DETUNING_CORRECTION"]:
+        chroma = shift_pcp(chroma, kwargs["HPCP_SIZE"])
+
+    if kwargs["USE_THREE_PROFILES"]:
+        estimation_1 = profile_matching_3(chroma, kwargs["KEY_PROFILE"])
+    else:
+        estimation_1 = profile_matching_2(chroma, kwargs["KEY_PROFILE"])
+
+    key_1 = estimation_1[0] + '\t' + estimation_1[1]
+
+    if kwargs["WITH_MODAL_DETAILS"]:
+        estimation_2 = profile_matching_3(chroma)
+        key_2 = estimation_2[0] + '\t' + estimation_2[1]
+
+        key_verbose = key_1 + '\t' + key_2
+        key = key_verbose.split('\t')
+
+        if key[3] == 'monotonic' and key[0] == key[2]:
+            key = '{0}\tminor'.format(key[0])
+        else:
+            key = key_1
+
+    else:
+        key = key_1
+
+    textfile = open(output_text_file, 'w')
+    textfile.write(key + '\n')
+    textfile.close()
+    return key
+
+
+def key_madmom(input_audio_file, output_text_file, **kwargs):
+    """
+    This function estimates the overall key of an audio track
+    optionaly with extra modal information.
+    :type input_audio_file: str
+    :type output_text_file: str
+    """
+    #audio = madmom.audio.signal.Signal(input_audio_file, sample_rate=SAMPLE_RATE, num_channels=1)
+    #fs = madmom.audio.signal.FramedSignal(audio, frame_size=WINDOW_SIZE, hop_size=HOP_SIZE)
+
+    #class madmom.audio.chroma.PitchClassProfile(spectrogram,
+    #filterbank=<class 'madmom.audio.filters.PitchClassProfileFilterbank'>,
+    #num_classes=12, fmin=100.0, fmax=5000.0, fref=440.0, **kwargs)
+
+    chroma = madmom.audio.chroma.CLPChroma(input_audio_file,
+                                           fps=kwargs["SAMPLE_RATE"] / kwargs["HOP_SIZE"],
+                                           fmin=kwargs["MIN_HZ"],
+                                           fmax=kwargs["MAX_HZ"],
+                                           norm=kwargs["HPCP_NORMALIZE"],
+                                           threshold=kwargs["PCP_THRESHOLD"])
+
+    chroma = np.sum(chroma, axis=0)
+
+    if kwargs["PCP_THRESHOLD"] is not None:
+        chroma = normalize_pcp_peak(chroma)
+        chroma = pcp_gate(chroma, kwargs["PCP_THRESHOLD"])
+
+    if kwargs["DETUNING_CORRECTION"]:
+        chroma = shift_pcp(chroma, kwargs["HPCP_SIZE"])
+
+    if kwargs["USE_THREE_PROFILES"]:
+        estimation_1 = profile_matching_3(chroma, kwargs["KEY_PROFILE"])
+    else:
+        estimation_1 = profile_matching_2(chroma, kwargs["KEY_PROFILE"])
+
+    key_1 = estimation_1[0] + '\t' + estimation_1[1]
+    correlation_value = estimation_1[2]
+
+    if kwargs["WITH_MODAL_DETAILS"]:
+        estimation_2 = profile_matching_3(chroma)
+        key_2 = estimation_2[0] + '\t' + estimation_2[1]
+        key_verbose = key_1 + '\t' + key_2
+        key = key_verbose.split('\t')
+
+        if key[3] == 'monotonic' and key[0] == key[2]:
+            key = '{0}\tminor'.format(key[0])
+        else:
+            key = key_1
+
+    else:
+        key = key_1
+
+    textfile = open(output_text_file, 'w')
+    textfile.write(key + '\n')
+    textfile.close()
+
+    return key, correlation_value
+
+
+def key_essentia(input_audio_file, output_text_file, **kwargs):
     """
     This function estimates the overall key of an audio track
     optionaly with extra modal information.
@@ -25,7 +170,7 @@ def essentia_key(input_audio_file, output_text_file, **kwargs):
 
     """
     if not kwargs:
-        kwargs = key_estimation_defaults
+        kwargs = dekey_defs
 
     loader = estd.MonoLoader(filename=input_audio_file,
                              sampleRate=kwargs["SAMPLE_RATE"])
@@ -107,7 +252,7 @@ def essentia_key(input_audio_file, output_text_file, **kwargs):
     return key, correlation_value
 
 
-def essentia_python(input_audio_file, output_text_file, **kwargs):
+def key_angel(input_audio_file, output_text_file, **kwargs):
     """
     This function estimates the overall key of an audio track
     optionaly with extra modal information.
@@ -116,7 +261,7 @@ def essentia_python(input_audio_file, output_text_file, **kwargs):
 
     """
     if not kwargs:
-        kwargs = key_estimation_defaults
+        kwargs = dekey_defs
 
     loader = estd.MonoLoader(filename=input_audio_file,
                              sampleRate=kwargs["SAMPLE_RATE"])

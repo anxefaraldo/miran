@@ -5,10 +5,10 @@
 if __name__ == "__main__":
 
     from argparse import ArgumentParser
-    from miran.annotations import *
+    from miran.key.format import *
     from miran.labels import CONVERSION_TYPES
 
-    parser = ArgumentParser(description="Conversion different annotation formats into our regular  format.")
+    parser = ArgumentParser(description="Conversion different annotation formats into our regular txt format.")
     parser.add_argument("input", help="file or dir to convert to a regular format")
     parser.add_argument("source", help="source format of the files to convert")
     parser.add_argument("-o", "--output_dir", help="dir to save the reformatted annotation files")

@@ -3,11 +3,10 @@
 
 import sys
 
-import madmom
+import scipy.ndimage
 
-from pcp import *
-from templates import *
-from miran.filesystem import create_dir
+from miran.base import create_dir
+from miran.key.find import *
 
 # ======== #
 # SETTINGS #
@@ -31,7 +30,6 @@ HPCP_SIZE                    = 12
 HPCP_REFERENCE_HZ            = 440
 HPCP_WEIGHT_WINDOW_SEMITONES = 1  # semitones
 HPCP_WEIGHT_TYPE             = 'cosine'  # {'none', 'cosine', 'squaredCosine'}
-HPCP_NORMALIZE               = False
 
 # Scope and Key Detector Method
 # -----------------------------
@@ -56,21 +54,24 @@ def get_key(input_audio_file, output_text_file):
     :type input_audio_file: str
     :type output_text_file: str
     """
-    #audio = madmom.audio.signal.Signal(input_audio_file, sample_rate=SAMPLE_RATE, num_channels=1)
-    #fs = madmom.audio.signal.FramedSignal(audio, frame_size=WINDOW_SIZE, hop_size=HOP_SIZE)
+    audio, sr = librosa.load(path=input_audio_file, sr=SAMPLE_RATE, duration=DURATION, offset=OFFSET)
 
-    #class madmom.audio.chroma.PitchClassProfile(spectrogram,
-    #filterbank=<class 'madmom.audio.filters.PitchClassProfileFilterbank'>,
-    #num_classes=12, fmin=100.0, fmax=5000.0, fref=440.0, **kwargs)
+    # isolate the harmonic component. We’ll use a large margin for separating harmonics from percussives:
+    audio = librosa.effects.harmonic(y=audio, margin=8) # harmonic percussive separation
 
-    chroma = madmom.audio.chroma.CLPChroma(input_audio_file,
-                                           fps=SAMPLE_RATE / HOP_SIZE,
-                                           fmin=MIN_HZ,
-                                           fmax=MAX_HZ,
-                                           norm=HPCP_NORMALIZE,
-                                           threshold=PCP_THRESHOLD)
+    # We can correct for minor tuning deviations by using 3 CQT bins per semi-tone, instead of one:
+    chroma = librosa.feature.chroma_cqt(y=audio, sr=SAMPLE_RATE, bins_per_octave=36)
+
+    #  We can clean it up using non-local filtering. This removes any sparse additive noise from the features:
+    chroma = np.minimum(chroma, librosa.decompose.nn_filter(chroma, aggregate=np.median, metric='cosine'))
+
+    #  Local discontinuities and transients can be suppressed by using a horizontal median filter:
+    chroma = scipy.ndimage.median_filter(chroma, size=(1, 9))
+
+    chroma = chroma.transpose() # change axis distribution
 
     chroma = np.sum(chroma, axis=0)
+    # chroma = np.roll(chroma, 3)  # TODO: when were done comparing remove this
 
     if PCP_THRESHOLD is not None:
         chroma = normalize_pcp_peak(chroma)
@@ -80,14 +81,14 @@ def get_key(input_audio_file, output_text_file):
         chroma = shift_pcp(chroma, HPCP_SIZE)
 
     if USE_THREE_PROFILES:
-        estimation_1 = template_matching_3(chroma, KEY_PROFILE)
+        estimation_1 = profile_matching_3(chroma, KEY_PROFILE)
     else:
-        estimation_1 = template_matching_2(chroma, KEY_PROFILE)
+        estimation_1 = profile_matching_2(chroma, KEY_PROFILE)
 
     key_1 = estimation_1[0] + '\t' + estimation_1[1]
 
     if WITH_MODAL_DETAILS:
-        estimation_2 = template_matching_3(chroma)
+        estimation_2 = profile_matching_3(chroma)
         key_2 = estimation_2[0] + '\t' + estimation_2[1]
         key_verbose = key_1 + '\t' + key_2
         key = key_verbose.split('\t')

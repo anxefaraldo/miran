@@ -3,6 +3,7 @@
 import numpy as np
 import math as m
 
+
 def eucl_dist(series1, series2):
     """calculates the euclidean distance between two vectors"""
     D = []

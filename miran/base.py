@@ -3,10 +3,8 @@
 
 from __future__ import absolute_import, division, print_function
 
-import csv, os, shutil
+import os, shutil
 import numpy as np
-
-from miran.conversions import *
 
 
 def create_dir(dir_name):
@@ -20,20 +18,17 @@ def create_dir(dir_name):
     :type dir_name: str
     """
     if not os.path.isdir(dir_name):
-
         print("not a dir")
-
         root_folder, new_folder = os.path.split(dir_name)
-        if os.path.isdir(root_folder):
 
-            os.mkdir(dir_name)
+        if os.path.isdir(root_folder):
             print("Creating dir '{}' in '{}'".format(new_folder, root_folder))
+            os.mkdir(dir_name)
             return dir_name
 
         elif os.path.split(dir_name)[0] == '':
-
-            root_folder = os.getcwd()
             print("Creating dir '{}' in '{}'".format(dir_name, root_folder))
+            root_folder = os.getcwd()
             os.mkdir(os.path.join(root_folder, dir_name))
 
         else:
@@ -51,8 +46,7 @@ def move_items_by_estimation(condition, destination, estimations_folder, origin)
             e = e.read()
             if condition in e:
                 print('moving...{0} {1}'.format(item, e))
-                shutil.move(origin + '/' + item[:-3] + 'wav',
-                            destination)
+                shutil.move(origin + '/' + item[:-3] + 'wav', destination)
 
 
 def move_items_by_id(condition, destination, results, origin):
@@ -249,7 +243,6 @@ def move_rows(df_column, destination):
         os.rename(row, os.path.join(destination, os.path.split(row)[1]))
 
 
-
 def prepend_str_to_filename(directory, matching_substring, string_to_prepend):
     """
     Prepend a string to an existing filename if it contains a matching substring.
@@ -279,3 +272,13 @@ def change_file_extension(directory, in_ext='.txt', out_ext='.key', recursive=Fa
             number_of_files += 1
 
     print('{} files processed'.format(number_of_files))
+
+
+def replace_chars(my_str, chars={"&", "<", ">", '"', "'"}, replacement=''):
+    """Replaces characters in a string."""
+
+    if any(illegal_char in my_str for illegal_char in chars):
+        for char in chars:
+            my_str = my_str.replace(char, replacement)
+
+    return my_str

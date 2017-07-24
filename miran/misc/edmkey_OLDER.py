@@ -3,11 +3,7 @@
 
 from collections import Counter
 
-import essentia.standard as estd
-from miran.filesystem import create_dir
-
-from miran.key import *
-from miran.conversions import *
+from miran.key.find import *
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #

@@ -3,17 +3,12 @@
 
 from __future__ import absolute_import, division, print_function
 
-from miran.filesystem import *
+import os.path
+from miran.base import folderfiles
 
 
-def replace_chars(my_str, chars={"&", "<", ">", '"', "'"}, replacement=''):
-    """Replaces characters in a string."""
+CONVERSION_TYPES = {'KeyFinder', 'MIK', 'VirtualDJ', 'Traktor', 'Rekordbox', 'Beatunes'}
 
-    if any(illegal_char in my_str for illegal_char in chars):
-        for char in chars:
-            my_str = my_str.replace(char, replacement)
-
-    return my_str
 
 
 def split_key_str(key_string):
@@ -148,7 +143,6 @@ def VirtualDJ(input_file, output_dir=None):
     print("Creating estimation file for '{}' in '{}'".format(input_file, output_dir))
 
 
-
 def batch_format_converter(input_dir, convert_function, output_dir=None, ext='.wav'):
     """This function batch-processes a given folder with
     the desired conversion function.
@@ -167,8 +161,6 @@ def batch_format_converter(input_dir, convert_function, output_dir=None, ext='.w
     batch = folderfiles(input_dir, ext)
     for item in batch:
         eval(convert_function)(item, output_dir)
-
-
 
 
 

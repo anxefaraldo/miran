@@ -63,36 +63,36 @@ def base_transposition(m21_stream):
     m21_stream.insert(0, m21.key.Key(key))
     return m21_stream.transpose(transposition)
 
-# Actions:
-# /Users/angel/Desktop/bass2d/corpus
-if platform == 'darwin':
-    corpus = load_midi_corpus('/Users/angel/Git/house-harmonic-filler/corpus')
-else:
-    corpus = load_midi_corpus('/home/angel/Git/house-harmonic-filler/corpus')
-
-rawp = load_midfile(i, corpus)
-prog = extract_chords(rawp)
-prog = base_transposition(prog)
-prog = force_4_bar(prog)
-prog.show()
-
-force_4_bar(base_transposition(extract_chords(load_midfile(i, corpus)))).show()
-
-
-corpus = load_midi_corpus('/Users/angel/Desktop/bass2d/corpus')
-
-
-
-"""
-Make a simple decission tree to determine the key of bassline loops.
-
-a) count number of bars, and make ure they are complete.
-b) look at the first note of the loop. this is the one with more weight.
-c) calculate possible modes for the whole loop, and per bar. produce output with all possible options.
-d) also look at repeated and long notes. Assign them extra weight. Have a look at Narmour?
-
-
-"""
-
-for n in f.getElementsByClass('Note'):
-    print n.offset, n.p, n.quarterLength
+# # Actions:
+# # /Users/angel/Desktop/bass2d/corpus
+# if platform == 'darwin':
+#     corpus = load_midi_corpus('/Users/angel/Git/house-harmonic-filler/corpus')
+# else:
+#     corpus = load_midi_corpus('/home/angel/Git/house-harmonic-filler/corpus')
+#
+# rawp = load_midfile(i, corpus)
+# prog = extract_chords(rawp)
+# prog = base_transposition(prog)
+# prog = force_4_bar(prog)
+# prog.show()
+#
+# force_4_bar(base_transposition(extract_chords(load_midfile(i, corpus)))).show()
+#
+#
+# corpus = load_midi_corpus('/Users/angel/Desktop/bass2d/corpus')
+#
+#
+#
+# """
+# Make a simple decission tree to determine the key of bassline loops.
+#
+# a) count number of bars, and make ure they are complete.
+# b) look at the first note of the loop. this is the one with more weight.
+# c) calculate possible modes for the whole loop, and per bar. produce output with all possible options.
+# d) also look at repeated and long notes. Assign them extra weight. Have a look at Narmour?
+#
+#
+# """
+#
+# for n in f.getElementsByClass('Note'):
+#     print n.offset, n.p, n.quarterLength

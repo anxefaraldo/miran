@@ -96,10 +96,9 @@ def xls_to_key_annotations(excel_file, sheet_index, export_directory):
         txt.close()
 
 
-def matrix_to_excel(my_matrix,
-                    label_rows=('C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'),
-                    label_cols=('C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'),
+def matrix_to_excel(my_matrix, label_rows=KEY_LABELS[:12], label_cols=KEY_LABELS[:12],
                     filename='matrix.xls', sheet='Sheet1'):
+
     import xlwt
 
     wb = xlwt.Workbook()

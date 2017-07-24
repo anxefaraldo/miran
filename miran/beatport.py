@@ -10,7 +10,7 @@ except ImportError:
 
 import re, json
 import pandas as pd
-from miran.filesystem import *
+from miran.base import *
 
 
 def metafile_to_series(filepath_or_string):
