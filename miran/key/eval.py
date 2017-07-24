@@ -1,15 +1,15 @@
 #!/usr/local/bin/python
 #  -*- coding: UTF-8 -*-
 
-"""This file contains functions relative to the evaluation of
+"""
+This file contains functions relative to the evaluation of
 key estimation algorithms.
 
 Ángel Faraldo, July 2017.
+
 """
 
-from __future__ import absolute_import, division, print_function
-
-from miran.labels import pc2degree
+from miran.labels import PC2DEGREE
 
 
 def key_eval_mirex(estimated_key_tuple, reference_key_tuple):
@@ -64,11 +64,12 @@ def key_eval_relative_errors(estimated_key_numlist, reference_key_numlist):
     :type reference_key_numlist: tuple with numeric values for key and mode
 
     """
+
     estimated_tonic, estimated_mode = estimated_key_numlist
     reference_tonic, reference_mode = reference_key_numlist
 
     interval = (estimated_tonic - reference_tonic) % 12
-    degree = pc2degree[interval]
+    degree = PC2DEGREE[interval]
     error_id = 2 * (interval + (estimated_mode * 12)) + reference_mode
     if estimated_mode == 1:
         degree = degree.lower()

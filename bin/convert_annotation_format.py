@@ -4,9 +4,8 @@
 
 if __name__ == "__main__":
 
-    from argparse import ArgumentParser
     from miran.key.format import *
-    from miran.labels import CONVERSION_TYPES
+    from argparse import ArgumentParser
 
     parser = ArgumentParser(description="Conversion different annotation formats into our regular txt format.")
     parser.add_argument("input", help="file or dir to convert to a regular format")

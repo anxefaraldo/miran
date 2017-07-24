@@ -3,7 +3,7 @@
 
 import sys
 
-from miran.base import *
+from miran.files import *
 from miran.key.find import *
 
 # ======== #

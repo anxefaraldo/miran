@@ -3,7 +3,7 @@
 
 """IMPORTANT: This script assumes that filenames of estimations and references
 are identical, except for the extensions, which can be any of the ones defined
-in ANNOTATION_FILE_EXT.
+in ANNOTATION_FILE_EXTENSIONS.
 
 Ángel Faraldo, July 2017.
 """
@@ -13,10 +13,11 @@ if __name__ == "__main__":
     import os.path
     import numpy as np
     import pandas as pd
-    from miran.translate import *
+    from argparse import ArgumentParser
+    from miran.labels import *
     from miran.key.eval import *
     from miran.key.format import split_key_str
-    from argparse import ArgumentParser
+
 
     parser = ArgumentParser(description="Evaluation of key estimation algorithms.")
     parser.add_argument("references", help="dir with reference annotations.")
@@ -43,12 +44,12 @@ if __name__ == "__main__":
         file_count = 0
         for each_file in estimations:
             reference = None
-            if any(ext == os.path.splitext(each_file)[-1] for ext in ANNOTATION_FILE_EXT):
+            if any(ext == os.path.splitext(each_file)[-1] for ext in ANNOTATION_FILE_EXTENSIONS):
 
                 with open(os.path.join(args.estimations, each_file), 'r') as analysis:
                     analysis = split_key_str(analysis.readline())
 
-                for ext in ANNOTATION_FILE_EXT:
+                for ext in ANNOTATION_FILE_EXTENSIONS:
                     try:
                         with open(os.path.join(args.references, os.path.splitext(each_file)[0] + ext), 'r') as reference:
                             reference = split_key_str(reference.readline())
@@ -71,7 +72,7 @@ if __name__ == "__main__":
                 errors.append(type_error[0])
 
                 results[each_file] = pd.Series([reference[0], reference[1], analysis[0], analysis[1], type_error[1], score_mirex],
-                                               index=['ref_tonic', 'ref_mode', 'est_tonic', 'est_mode', 'rel_error', 'mirex'])
+                                                   index=['ref_tonic', 'ref_mode', 'est_tonic', 'est_mode', 'rel_error', 'mirex'])
 
                 col = reference_key[0] + (reference_key[1] * 12)
                 row = estimated_key[0] + (estimated_key[1] * 12)

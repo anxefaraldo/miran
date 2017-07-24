@@ -4,9 +4,10 @@
 
 if __name__ == "__main__":
 
-    import os
+    import os.path
     from argparse import ArgumentParser
-    from miran.midi import *
+    from miran.utils import folderfiles
+    from miran.midi import reformat_midi
 
 
     parser = ArgumentParser(description="Reformat midi filesystem to be well-formed and type 0.")

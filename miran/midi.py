@@ -534,35 +534,6 @@ def has_pitchwheel(mid):
     return pw
 
 
-def values_greater_than(my_dataframe, my_col, threshold=0):
-    counts = my_dataframe[my_col].value_counts()
-    fields_kept = []
-    for i in range(len(counts)):
-        if counts[i] > threshold:
-            fields_kept.append(counts.index[i])
-    print("Keeping:", fields_kept)
-    temp = pd.DataFrame()
-    for item in fields_kept:
-        temp = temp.append(my_dataframe[my_dataframe[my_col] == item])
-    return temp
-
-
-def n_most_frequent_values(my_dataframe, my_col, n_most_freq=6):
-    counts = my_dataframe[my_col].value_counts()
-
-    if len(counts) <= n_most_freq:
-        return my_dataframe
-
-    elif len(counts) > n_most_freq:
-        counts = counts[:n_most_freq]
-        print("Keeping:", counts.index)
-
-    temp = pd.DataFrame()
-    for item in counts.index:
-        temp = temp.append(my_dataframe[my_dataframe[my_col] == item])
-    return temp
-
-
 def reformat_midi(mid, name=None, verbose=True, write_to_file=False, override_time_info=True):
     """
     Performs sanity check and reformats a midi file based on the following criteria:
@@ -743,7 +714,7 @@ def extract_features(mid):
 
     music = m21.converter.parseFile(mid, format('midi'))
     midi_raw = parse_mid(mid)
-    note_matrix = mid_to_matrix(midi_raw)
+    # note_matrix = mid_to_matrix(midi_raw)
 
     features = dict()
     features['path'] = mid

@@ -47,5 +47,4 @@ setup(
     ],
     extras_require={},
     data_files = []
-
 )

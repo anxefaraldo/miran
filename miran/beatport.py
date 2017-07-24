@@ -8,9 +8,10 @@ try:
 except ImportError:
     import urllib2 as url
 
+import os.path
 import re, json
 import pandas as pd
-from miran.base import *
+from miran.utils import preparse_files
 
 
 def metafile_to_series(filepath_or_string):

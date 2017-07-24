@@ -14,9 +14,10 @@ if __name__ == "__main__":
     from time import clock
     from argparse import ArgumentParser
 
-    from miran.base import *
-    from miran.labels import *
+    from miran.labels import AUDIO_FILE_EXTENSIONS
     from miran.key.find import *
+    from miran.utils import load_settings_as_dict, create_dir, folderfiles
+
 
     clock()
     parser = ArgumentParser(description="Key estimation algorithm.")
@@ -34,7 +35,7 @@ if __name__ == "__main__":
         settings = load_settings_as_dict(args.settings)
         print("Using key estimation settings in {}".format(args.settings))
     else:
-        settings = dekey_defs
+        settings = KEY_SETTINGS
         print("Using default key estimation settings")
 
     if args.profile:
@@ -54,7 +55,7 @@ if __name__ == "__main__":
         print("Writing results to:\t{0}\n".format(args.output))
         count_files = 0
         for a_file in list_of_files:
-            if any(soundfile_type in a_file for soundfile_type in AUDIO_FILE_EXT):
+            if any(soundfile_type in a_file for soundfile_type in AUDIO_FILE_EXTENSIONS):
                 output_file = os.path.join(args.output, os.path.splitext(os.path.split(a_file)[1])[0] + '.txt')
                 estimation, confidence = eval(args.algorithm)(a_file, output_file)
                 print("{} - {} ({})".format(a_file, estimation, confidence))

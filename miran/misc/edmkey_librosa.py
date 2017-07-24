@@ -5,7 +5,7 @@ import sys
 
 import scipy.ndimage
 
-from miran.base import create_dir
+from miran.files import create_dir
 from miran.key.find import *
 
 # ======== #

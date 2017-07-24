@@ -1,9 +1,10 @@
 from __future__ import absolute_import
 
-import miran.key
-
-import miran.base
 import miran.beatport
-import miran.labels
+from miran.labels import *
+import miran.matrix
 import miran.midi
-import miran.translate
+from miran.utils import *
+import miran.key
+import miran.vectors
+

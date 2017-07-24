@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 """
-This scripts looks for beatport stems (typically two-minute long, 96Kbps mp3 files)
+This bin looks for beatport stems (typically two-minute long, 96Kbps mp3 files)
 matching a given track id number. If the track id number exists in beatport,
 it will be downloaded and renamed with metadata information.
 

@@ -8,7 +8,7 @@ import essentia.standard as estd
 
 from pcp import *
 # from templates import *
-from miran.base import create_dir
+from miran.files import create_dir
 
 # ======================= #
 # KEY ESTIMATION SETTINGS #

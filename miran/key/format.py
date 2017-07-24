@@ -4,11 +4,9 @@
 from __future__ import absolute_import, division, print_function
 
 import os.path
-from miran.base import folderfiles
-
+from miran.utils import folderfiles
 
 CONVERSION_TYPES = {'KeyFinder', 'MIK', 'VirtualDJ', 'Traktor', 'Rekordbox', 'Beatunes'}
-
 
 
 def split_key_str(key_string):
