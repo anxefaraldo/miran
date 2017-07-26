@@ -136,7 +136,7 @@ if __name__ == "__main__":
                 if args.verbose:
                     print(":\t{0}".format(estimation)),
             else:
-                raise IOError("Unknown ERROR in single file mode")
+                raise IOError("Unknown ERROR in essentia_process_file file mode")
         else:
             if os.path.isdir(args.input):
                 analysis_folder = args.input[1 + args.input.rfind('/'):]

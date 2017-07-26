@@ -28,7 +28,7 @@ def cos_sim_mtx(A,B):
 
 def self_cos_sim_mtx(A):
     """
-    Given a single multidimensional vector, it returns a cosine self-similarity matrix of size (vectorsize * vectorsize).
+    Given a essentia_process_file multidimensional vector, it returns a cosine self-similarity matrix of size (vectorsize * vectorsize).
 
     """
     dimensions = len(A)

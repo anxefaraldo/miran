@@ -17,3 +17,5 @@ Dependencies:
 * future
 * pandas
 * music21
+* madmom
+* librosa

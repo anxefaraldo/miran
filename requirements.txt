@@ -1,2 +1,7 @@
+appscript
+librosa
+madmom>=0.16dev
+matplotlib
 numpy>=1.8.1
 pandas>=0.18
+scipy

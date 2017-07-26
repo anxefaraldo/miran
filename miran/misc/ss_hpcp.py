@@ -16,9 +16,9 @@ def cos_sim(A,B):
     if mags_prod == 0:
         mags_prod = 0.00000000000001
     return (dot_product / mags_prod)
-    
+
 def self_cos_sim_mtx(A):
-    "returns a cosine self-similarity matrix of size (vectorsize x vectorsize) given a single multidimensional vector"
+    "returns a cosine self-similarity matrix of size (vectorsize x vectorsize) given a essentia_process_file multidimensional vector"
     dimensions = len(A)
     matrix = np.zeros((dimensions,dimensions))
     for i in range(dimensions):
@@ -36,12 +36,12 @@ spectrum = Spectrum(size = ws)
 spectralpeaks = SpectralPeaks(orderBy="magnitude",
                               magnitudeThreshold=1e-05,
                               minFrequency=40,
-                              maxFrequency=5000, 
+                              maxFrequency=5000,
                               maxPeaks=100)
 hpcp = HPCP()
 
 # use pool to store data
-pool = essentia.Pool() 
+pool = essentia.Pool()
 
 # connect algorithms together
 loader.audio >> framecutter.signal

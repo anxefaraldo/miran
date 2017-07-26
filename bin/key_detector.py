@@ -23,7 +23,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description="Key estimation algorithm.")
     parser.add_argument("input", help="file or dir to analyse")
     parser.add_argument("output", help="file or dir to write results to")
-    parser.add_argument("-a", "--algorithm", help="algorithm to use in the analysis", default="key_angel")
+    parser.add_argument("-a", "--algorithm", help="algorithm to use in the analysis", default="key_more")
     parser.add_argument("-p", "--profile", help="key profile; all other settings defaults apply.")
     parser.add_argument("-s", "--settings", help="json file with the key estimation settings")
 
@@ -43,7 +43,7 @@ if __name__ == "__main__":
         print("Key profile:", settings["KEY_PROFILE"])
 
     if os.path.isfile(args.input):
-        estimation, confidence = key_angel(args.input, args.output, **settings)
+        estimation, confidence = key_more(args.input, args.output, **settings)
         print("\nAnalysing '{}'".format(args.input))
         print("Exporting to '{}'.".format(args.output))
         print(": {} ({})".format(estimation, confidence))

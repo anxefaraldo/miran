@@ -342,7 +342,7 @@ def split_in_half(mid, verbose=True, write_to_file=False):
         flat_track.pop(-1)
     flat_track.append(MetaMessage("end_of_track", time=0))
 
-    # replace the 'tracks' field with a single track containing all the messages.
+    # replace the 'tracks' field with a essentia_process_file track containing all the messages.
     # later on we can check for duplicates in certain fields (tempo, timesignature, key)
     mid.tracks.clear()
     mid.type = 0
@@ -538,7 +538,7 @@ def reformat_midi(mid, name=None, verbose=True, write_to_file=False, override_ti
     """
     Performs sanity check and reformats a midi file based on the following criteria:
 
-    - Flattens all messages onto a single track, making it of midi file type 0.
+    - Flattens all messages onto a essentia_process_file track, making it of midi file type 0.
     - Converts 'note_on' messages with velocity=0 to 'note_off' messages.
     - Checks if the last 'note_on' has a corresponding 'note_off' message, adding one if needed.
     - Adds an 'end_of_track' metamessage that is a multiple of the time_signature.
@@ -603,7 +603,7 @@ def reformat_midi(mid, name=None, verbose=True, write_to_file=False, override_ti
     else:
         if verbose and mid.type == 1:
             # if type 1, convert to type 0
-            print("Converting file type 1 to file type 0 (single track).")
+            print("Converting file type 1 to file type 0 (essentia_process_file track).")
 
         flat_track = MidiTrack()
         flat_track.append(MetaMessage("track_name", name=os.path.split(name)[1], time=0))
@@ -625,7 +625,7 @@ def reformat_midi(mid, name=None, verbose=True, write_to_file=False, override_ti
                 else:
                     flat_track.append(msg)
 
-        # replace the 'tracks' field with a single track containing all the messages.
+        # replace the 'tracks' field with a essentia_process_file track containing all the messages.
         # later on we can check for duplicates in certain fields (tempo, timesignature, key)
         mid.tracks.clear()
         mid.type = 0

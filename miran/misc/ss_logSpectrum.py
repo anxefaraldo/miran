@@ -18,18 +18,18 @@ def cos_sim(A,B):
     if mags_prod == 0:
         mags_prod = 0.00000000000001
     return (dot_product / mags_prod)
-    
+
 def self_cos_sim_mtx(A):
-    "returns a cosine self-similarity matrix of size (vectorsize x vectorsize) given a single multidimensional vector"
+    "returns a cosine self-similarity matrix of size (vectorsize x vectorsize) given a essentia_process_file multidimensional vector"
     dimensions = len(A)
     matrix = np.zeros((dimensions,dimensions))
     for i in range(dimensions):
         for j in range(dimensions):
             matrix[i][j] = cos_sim(A[i], A[j])
     return matrix
-    
 
-    
+
+
 filename = sys.argv[1]
 ws = 16384
 hop = 16384

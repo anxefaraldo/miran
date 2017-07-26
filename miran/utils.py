@@ -2,6 +2,8 @@
 # -*- coding: UTF-8 -*-
 
 import os.path
+import librosa.display
+from matplotlib import pyplot as plt
 
 
 def change_file_extension(directory, in_ext='.txt', out_ext='.key', recursive=False):
@@ -33,7 +35,6 @@ def create_dir(dir_name):
     :type dir_name: str
     """
     if not os.path.isdir(dir_name):
-        print("not a dir")
         root_folder, new_folder = os.path.split(dir_name)
 
         if os.path.isdir(root_folder):
@@ -44,7 +45,9 @@ def create_dir(dir_name):
         elif os.path.split(dir_name)[0] == '':
             print("Creating dir '{}' in '{}'".format(dir_name, root_folder))
             root_folder = os.getcwd()
-            os.mkdir(os.path.join(root_folder, dir_name))
+            dir_name = os.path.join(root_folder, dir_name)
+            os.mkdir(dir_name)
+            return dir_name
 
         else:
             raise NameError("Not a valid path name.")
@@ -145,8 +148,6 @@ def prepend_str_to_filename(directory, matching_substring, string_to_prepend):
 
 
 def plot_chroma(chromagram):
-    import librosa.display
-    from matplotlib import pyplot as plt
 
     plt.figure(figsize=(10, 4))
     librosa.display.specshow(chromagram, y_axis='chroma', x_axis='time')

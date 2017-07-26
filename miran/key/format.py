@@ -147,7 +147,7 @@ def batch_format_converter(input_dir, convert_function, output_dir=None, ext='.w
 
     This is a convenient way to mass convert from the various
     annotation formats used by different applictions
-    into our standard format, that is, a single one line
+    into our standard format, that is, a essentia_process_file one line
     text file per estimation in the format:
 
     tonic mode

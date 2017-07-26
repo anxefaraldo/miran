@@ -53,7 +53,7 @@ for i in range(len(estimations)):
 	audio = loader()
 	total_duration = len(audio) / sample_rate
 	archivo = open(folder + '/' + estimations[i], 'r')
-	resultados = open(folder + '/' + estimations[i][:-4] + '.single.txt', 'w')
+	resultados = open(folder + '/' + estimations[i][:-4] + '.essentia_process_file.txt', 'w')
 	mira = archivo.read()
 	mira = mira.split('\n')
 	durations = []
