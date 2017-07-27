@@ -1,11 +1,14 @@
 {
+  "DURATION": null,
+  "START_TIME": 0,
+
   "SAMPLE_RATE": 44100,
   "WINDOW_SIZE": 4096,
-  "HOP_SIZE": 4096,
+  "HOP_SIZE": 16384,
   "WINDOW_SHAPE": "hann",
 
   "PCP_THRESHOLD": 0.2,
-  "HIGHPASS_CUTOFF": null,
+  "HIGHPASS_CUTOFF": 200,
   "SPECTRAL_WHITENING": true,
   "DETUNING_CORRECTION": true,
   "DETUNING_CORRECTION_SCOPE": "average",
@@ -19,23 +22,28 @@
   "HPCP_SPLIT_HZ": 250,
   "HPCP_HARMONICS": 4,
   "HPCP_REFERENCE_HZ": 440,
-  "HPCP_NON_LINEAR": false,
-  "HPCP_NORMALIZE": "none",
+  "HPCP_NON_LINEAR": true,
+  "HPCP_NORMALIZE": "unitMax",
   "HPCP_SHIFT": false,
-  "HPCP_SIZE": 12,
+  "HPCP_SIZE": 36,
   "HPCP_WEIGHT_WINDOW_SEMITONES": 1,
-  "HPCP_WEIGHT_TYPE": "cosine",
+  "HPCP_WEIGHT_TYPE": "squaredCosine",
 
-  "DURATION": null,
-  "OFFSET": 0,
+  "KEY_POLYPHONY": false,
+  "KEY_USE_THREE_CHORDS": false,
+  "KEY_HARMONICS": 15,
+  "KEY_SLOPE": 0.2,
 
   "ANALYSIS_TYPE": "global",
   "N_WINDOWS": 100,
   "WINDOW_INCREMENT": 100,
 
-  "KEY_PROFILE": "bgate",
+  "KEY_PROFILE": "edmm",
   "USE_THREE_PROFILES": true,
   "WITH_MODAL_DETAILS": true,
+
+
+
 
   "OPTIONS": {
     "DETUNING_CORRECTION_SCOPE": [

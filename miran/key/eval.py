@@ -9,7 +9,7 @@ key estimation algorithms.
 
 """
 
-from miran.labels import PC2DEGREE
+from miran.utils import PC2DEGREE
 
 
 def key_eval_mirex(estimated_key_tuple, reference_key_tuple):

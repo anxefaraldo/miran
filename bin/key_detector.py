@@ -14,9 +14,8 @@ if __name__ == "__main__":
     from time import clock
     from argparse import ArgumentParser
 
-    from miran.labels import AUDIO_FILE_EXTENSIONS
     from miran.key.find import *
-    from miran.utils import load_settings_as_dict, create_dir, folderfiles
+    from miran.utils import load_settings_as_dict, create_dir, folderfiles, AUDIO_FILE_EXTENSIONS
 
 
     clock()

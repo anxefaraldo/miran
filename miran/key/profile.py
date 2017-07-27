@@ -6,7 +6,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import numpy as np
 from scipy.stats import pearsonr
-from miran.labels import KEY_LABELS, pitchname_to_int
+from miran.utils import KEY_LABELS, pitchname_to_int
 
 
 def normalize_pcp_area(pcp):
@@ -50,7 +50,7 @@ def shift_pcp(pcp, pcp_size=12):
         shift_distance = tuning_resolution - max_val_index
     else:
         shift_distance = max_val_index
-    pcp = np.roll(pcp, shift_distance)
+    pcp = np.roll(pcp, int(shift_distance))
     return pcp
 
 
