@@ -13,24 +13,18 @@ def normalize_pcp_area(pcp):
     """
     Normalizes a pcp so that the sum of its content is 1,
     outputting a pcp with up to 3 decimal points.
+
     """
-    pcp = np.divide(pcp, np.sum(pcp))
-    new_format = []
-    for item in pcp:
-        new_format.append(item)
-    return np.array(new_format)
+    return np.divide(pcp, np.sum(pcp))
 
 
 def normalize_pcp_peak(pcp):
     """
     Normalizes a pcp so that the maximum value is 1,
     outputting a pcp with up to 3 decimal points.
+
     """
-    pcp = np.multiply(pcp, (1 / np.max(pcp)))
-    new_format = []
-    for item in pcp:
-        new_format.append(item)
-    return np.array(new_format)
+    return np.multiply(pcp, (1 / np.max(pcp)))
 
 
 def shift_pcp(pcp, pcp_size=12):
@@ -54,16 +48,6 @@ def shift_pcp(pcp, pcp_size=12):
     return pcp
 
 
-def transpose_pcp(pcp, tonic_pc, pcp_size=36):
-    """
-    Takes an incoming pcp (assuming its first position
-    corresponds to the note A and transposes it down so that
-    the tonic note corresponds to the first place in the vector.
-    """
-    transposed = np.roll(pcp, (pcp_size / 12.0) * ((tonic_pc - 9) % 12) * -1)
-    return transposed
-
-
 def extract_median_pcp(dir_estimations, dir_annotations, pcp_size=36):
     """
     Extracts the mean profile from a list of vectors.
@@ -80,7 +64,7 @@ def extract_median_pcp(dir_estimations, dir_annotations, pcp_size=36):
             pcp = pcp[pcp.rfind('\t') + 1:].split(', ')
             for i in range(pcp_size):
                 pcp[i] = float(pcp[i])
-            pcp = transpose_pcp(pcp, pitchname_to_int(root))
+            pcp = np.roll(pcp, (pcp_size // 12) * ((pitchname_to_int(root) - 9) % 12) * -1)
             accumulate_profiles.append(pcp)
     return np.median(accumulate_profiles, axis=0)
 
@@ -108,7 +92,8 @@ def pcp_sort(pcp):
     return idx
 
 
-def profile_matching_2(pcp, profile_type='bgate'):
+def find_key2(pcp, profile_type='bgate'):
+
     key_templates = {
 
         'bgate': np.array([[1., 0.00, 0.42, 0.00, 0.53, 0.37, 0.00, 0.77, 0.00, 0.38, 0.21, 0.30],
@@ -185,6 +170,13 @@ def profile_matching_2(pcp, profile_type='bgate'):
 
     _major, _minor = _select_profile_type(profile_type, key_templates)
 
+    if _major.size > pcp.size:
+        pcp = _profile_interpolation(pcp, _major.size)
+
+    if _major.size < pcp.size:
+        _major = _profile_interpolation(_major, pcp.size)
+        _minor = _profile_interpolation(_minor, pcp.size)
+
     first_max_major = -1
     second_max_major = -1
     key_index_major = -1
@@ -222,14 +214,18 @@ def profile_matching_2(pcp, profile_type='bgate'):
         second_max = -1
         scale = 'unknown'
 
+    key_index /= pcp.size / 12.
+    key_index = int(np.round(key_index)) % 12
+
     if key_index < 0:
         raise IndexError("key_index smaller than zero. Could not find key.")
     else:
         first_to_second_ratio = (first_max - second_max) / first_max
-        return KEY_LABELS[int(key_index)], scale, first_max, first_to_second_ratio
+        return KEY_LABELS[key_index], scale, first_max, first_to_second_ratio
 
 
-def profile_matching_3(pcp, profile_type='bgate'):
+def find_key3(pcp, profile_type='bgate'):
+
     if (pcp.size < 12) or (pcp.size % 12 != 0):
         raise IndexError("Input PCP size is not a positive multiple of 12")
 
@@ -259,6 +255,14 @@ def profile_matching_3(pcp, profile_type='bgate'):
     }
 
     _major, _minor, _minor2 = _select_profile_type(profile_type, key_templates)
+
+    if _major.size > pcp.size:
+        pcp = _profile_interpolation(pcp, _major.size)
+
+    if _major.size < pcp.size:
+        _major = _profile_interpolation(_major, pcp.size)
+        _minor = _profile_interpolation(_minor, pcp.size)
+        _minor2 = _profile_interpolation(_minor2, pcp.size)
 
     first_max_major = -1
     second_max_major = -1
@@ -315,14 +319,18 @@ def profile_matching_3(pcp, profile_type='bgate'):
         second_max = -1
         scale = 'unknown'
 
+    key_index /= pcp.size / 12.
+    key_index = int(np.round(key_index)) % 12
+
     if key_index < 0:
         raise IndexError("key_index smaller than zero. Could not find key.")
     else:
         first_to_second_ratio = (first_max - second_max) / first_max
-        return KEY_LABELS[int(key_index)], scale, first_max, first_to_second_ratio
+        return KEY_LABELS[key_index], scale, first_max, first_to_second_ratio
 
 
-def profile_matching_modal(pcp):
+def find_mode(pcp):
+
     if (pcp.size < 12) or (pcp.size % 12 != 0):
         raise IndexError("Input PCP size is not a positive multiple of 12")
 
@@ -343,6 +351,27 @@ def profile_matching_modal(pcp):
         'difficult': np.array([0.80, 0.60, 0.80, 0.60, 0.80, 0.60, 0.80, 0.60, 0.80, 0.60, 0.80, 0.60]),
 
     }
+
+
+    ionian = key_templates["ionian"]
+    harmonic = key_templates["harmonic"]
+    mixolydian = key_templates["mixolydian"]
+    phrygian = key_templates["phrygian"]
+    fifth = key_templates["fifth"]
+    monotonic = key_templates["monotonic"]
+    difficult = key_templates["difficult"]
+
+    if ionian.size > pcp.size:
+        pcp = _profile_interpolation(pcp, ionian.size)
+
+    if ionian.size < pcp.size:
+        ionian = _profile_interpolation(ionian, pcp.size)
+        harmonic = _profile_interpolation(harmonic, pcp.size)
+        mixolydian = _profile_interpolation(mixolydian, pcp.size)
+        phrygian = _profile_interpolation(phrygian, pcp.size)
+        fifth = _profile_interpolation(fifth, pcp.size)
+        monotonic = _profile_interpolation(monotonic, pcp.size)
+        difficult = _profile_interpolation(difficult, pcp.size)
 
     first_max_ionian = -1
     second_max_ionian = -1
@@ -373,43 +402,43 @@ def profile_matching_modal(pcp):
     key_index_difficult = -1
 
     for shift in np.arange(pcp.size):
-        correlation_ionian = (pearsonr(pcp, np.roll(key_templates['ionian'], shift)))[0]
+        correlation_ionian = (pearsonr(pcp, np.roll(ionian, shift)))[0]
         if correlation_ionian > first_max_ionian:
             second_max_ionian = first_max_ionian
             first_max_ionian = correlation_ionian
             key_index_ionian = shift
 
-        correlation_harmonic = (pearsonr(pcp, np.roll(key_templates['harmonic'], shift)))[0]
+        correlation_harmonic = (pearsonr(pcp, np.roll(harmonic, shift)))[0]
         if correlation_harmonic > first_max_harmonic:
             second_max_harmonic = first_max_harmonic
             first_max_harmonic = correlation_harmonic
             key_index_harmonic = shift
 
-        correlation_mixolydian = (pearsonr(pcp, np.roll(key_templates['mixolydian'], shift)))[0]
+        correlation_mixolydian = (pearsonr(pcp, np.roll(mixolydian, shift)))[0]
         if correlation_mixolydian > first_max_mixolydian:
             second_max_mixolydian = first_max_mixolydian
             first_max_mixolydian = correlation_mixolydian
             key_index_mixolydian = shift
 
-        correlation_phrygian = (pearsonr(pcp, np.roll(key_templates['phrygian'], shift)))[0]
+        correlation_phrygian = (pearsonr(pcp, np.roll(phrygian, shift)))[0]
         if correlation_phrygian > first_max_phrygian:
             second_max_phrygian = first_max_phrygian
             first_max_phrygian = correlation_phrygian
             key_index_phrygian = shift
 
-        correlation_fifth = (pearsonr(pcp, np.roll(key_templates['fifth'], shift)))[0]
+        correlation_fifth = (pearsonr(pcp, np.roll(fifth, shift)))[0]
         if correlation_fifth > first_max_fifth:
             second_max_fifth = first_max_fifth
             first_max_fifth = correlation_fifth
             key_index_fifth = shift
 
-        correlation_monotonic = (pearsonr(pcp, np.roll(key_templates['monotonic'], shift)))[0]
+        correlation_monotonic = (pearsonr(pcp, np.roll(monotonic, shift)))[0]
         if correlation_monotonic > first_max_monotonic:
             second_max_monotonic = first_max_monotonic
             first_max_monotonic = correlation_monotonic
             key_index_monotonic = shift
 
-        correlation_difficult = (pearsonr(pcp, np.roll(key_templates['difficult'], shift)))[0]
+        correlation_difficult = (pearsonr(pcp, np.roll(difficult, shift)))[0]
         if correlation_difficult > first_max_difficult:
             second_max_difficult = first_max_difficult
             first_max_difficult = correlation_difficult
@@ -477,11 +506,14 @@ def profile_matching_modal(pcp):
         second_max = -1
         scale = 'unknown'
 
+    key_index /= pcp.size / 12.
+    key_index = int(np.round(key_index)) % 12
+
     if key_index < 0:
         raise IndexError("key_index smaller than zero. Could not find key.")
     else:
         first_to_second_ratio = (first_max - second_max) / first_max
-        return KEY_LABELS[int(key_index)], scale, first_max, first_to_second_ratio
+        return KEY_LABELS[key_index], scale, first_max, first_to_second_ratio
 
 
 def _select_profile_type(profile, templates_dict):
@@ -489,3 +521,40 @@ def _select_profile_type(profile, templates_dict):
         return templates_dict[profile]
     except:
         raise KeyError("Unsupported profile: {}\nvalid profiles are:\n{}".format(profile, templates_dict.keys()))
+
+
+def _resize_profile(profile, pcp_size=36):
+
+    n = pcp_size // 12
+
+    new_profile = [0] * pcp_size
+
+    for i in range(12):
+        new_profile[i * n] = profile[i]
+
+        if i == 11:
+            it = (profile[11] - profile[0]) / n
+        else:
+            it = (profile[i] - profile[i+1]) / n
+
+        for e in range(1, n):
+            new_profile[i*n+e] = profile[i] - e * it
+
+    return new_profile
+
+
+def _profile_interpolation(profile, pcp_size=36, interpolation='cubic'):
+
+    # interpolation can be:
+    # (‘linear’, ‘nearest’, ‘zero’, ‘slinear’, ‘quadratic’, ‘cubic’)
+
+    from scipy.interpolate import interp1d
+
+    in_len = len(profile)
+
+    x = np.linspace(0, in_len, num=(in_len + 1), endpoint=True)
+    z = np.linspace(0, in_len, num=(pcp_size + 1), endpoint=True)
+    f = interp1d(x, np.hstack([profile, profile[0]]), kind=interpolation)
+
+    return f(z)[:-1]
+

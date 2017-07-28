@@ -6,5 +6,5 @@ import miran.beatport
 import miran.matrix
 import miran.midi
 import miran.key
-import miran.vectors
+import miran.vector
 

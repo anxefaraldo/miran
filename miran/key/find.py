@@ -72,15 +72,15 @@ def key_librosa(input_audio_file, output_text_file, **kwargs):
         chroma = shift_pcp(chroma, kwargs["HPCP_SIZE"])
 
     if kwargs["USE_THREE_PROFILES"]:
-        estimation_1 = profile_matching_3(chroma, kwargs["KEY_PROFILE"])
+        estimation_1 = find_key3(chroma, kwargs["KEY_PROFILE"])
     else:
-        estimation_1 = profile_matching_2(chroma, kwargs["KEY_PROFILE"])
+        estimation_1 = find_key2(chroma, kwargs["KEY_PROFILE"])
 
     key_1 = estimation_1[0] + '\t' + estimation_1[1]
     correlation_value = estimation_1[2]
 
     if kwargs["WITH_MODAL_DETAILS"]:
-        estimation_2 = profile_matching_3(chroma)
+        estimation_2 = find_key3(chroma)
         key_2 = estimation_2[0] + '\t' + estimation_2[1]
 
         key_verbose = key_1 + '\t' + key_2
@@ -97,65 +97,6 @@ def key_librosa(input_audio_file, output_text_file, **kwargs):
     textfile = open(output_text_file, 'w')
     textfile.write(key + '\n')
     textfile.close()
-    return key, correlation_value
-
-
-def key_madmom(input_audio_file, output_text_file, **kwargs):
-    """
-    This function estimates the overall key of an audio track
-    optionaly with extra modal information.
-    :type input_audio_file: str
-    :type output_text_file: str
-
-    """
-
-    import madmom
-
-    if not kwargs:
-        kwargs = KEY_SETTINGS
-
-    spec = madmom.audio.spectrogram.Spectrogram(input_audio_file, start=kwargs["START_TIME"], stop=dur_to_endtime(kwargs))
-    chroma = madmom.audio.chroma.HarmonicPitchClassProfile(spec,
-                                                           fps=kwargs["SAMPLE_RATE"] / kwargs["HOP_SIZE"],
-                                                           fmin=kwargs["MIN_HZ"],
-                                                           fmax=kwargs["MAX_HZ"],
-                                                           num_classes=kwargs["HPCP_SIZE"])
-
-    chroma = np.sum(chroma, axis=0)
-
-    if kwargs["PCP_THRESHOLD"] is not None:
-        chroma = normalize_pcp_peak(chroma)
-        chroma = pcp_gate(chroma, kwargs["PCP_THRESHOLD"])
-
-    if kwargs["DETUNING_CORRECTION"]:
-        chroma = shift_pcp(chroma, kwargs["HPCP_SIZE"])
-
-    if kwargs["USE_THREE_PROFILES"]:
-        estimation_1 = profile_matching_3(chroma, kwargs["KEY_PROFILE"])
-    else:
-        estimation_1 = profile_matching_2(chroma, kwargs["KEY_PROFILE"])
-
-    key_1 = estimation_1[0] + '\t' + estimation_1[1]
-    correlation_value = estimation_1[2]
-
-    if kwargs["WITH_MODAL_DETAILS"]:
-        estimation_2 = profile_matching_3(chroma)
-        key_2 = estimation_2[0] + '\t' + estimation_2[1]
-        key_verbose = key_1 + '\t' + key_2
-        key = key_verbose.split('\t')
-
-        if key[3] == 'monotonic' and key[0] == key[2]:
-            key = '{0}\tminor'.format(key[0])
-        else:
-            key = key_1
-
-    else:
-        key = key_1
-
-    textfile = open(output_text_file, 'w')
-    textfile.write(key + '\n')
-    textfile.close()
-
     return key, correlation_value
 
 
@@ -282,8 +223,8 @@ def key_essentia(input_audio_file, output_text_file, **kwargs):
 
     if kwargs["DURATION"] is not None:
         audio = audio[(kwargs["START_TIME"] * kwargs["SAMPLE_RATE"]):(kwargs["DURATION"] * kwargs["SAMPLE_RATE"])]
-
     duration = len(audio)
+
     chroma = []
     n_slices = int(1 + (duration / kwargs["HOP_SIZE"]))
     for slice_n in range(n_slices):
@@ -292,20 +233,22 @@ def key_essentia(input_audio_file, output_text_file, **kwargs):
         if kwargs["SPECTRAL_WHITENING"]:
             p2 = sw(spek, p1, p2)
         pcp = hpcp(p1, p2)
-        if not kwargs["DETUNING_CORRECTION"] or kwargs["DETUNING_CORRECTION_SCOPE"] == 'average':
-            chroma.append(pcp)
-        elif kwargs["DETUNING_CORRECTION"] and kwargs["DETUNING_CORRECTION_SCOPE"] == 'frame':
-            pcp = shift_pcp(pcp, kwargs["HPCP_SIZE"])
-            chroma.append(pcp)
-        else:
-            raise NameError("SHIFT_SCOPE must be set to 'frame' or 'average'.")
+        if np.sum(pcp) > 0:
+            if not kwargs["DETUNING_CORRECTION"] or kwargs["DETUNING_CORRECTION_SCOPE"] == 'average':
+                chroma.append(pcp)
+            elif kwargs["DETUNING_CORRECTION"] and kwargs["DETUNING_CORRECTION_SCOPE"] == 'frame':
+                pcp = shift_pcp(pcp, kwargs["HPCP_SIZE"])
+                chroma.append(pcp)
+            else:
+                raise NameError("SHIFT_SCOPE must be set to 'frame' or 'average'.")
 
     if not chroma:
         return 'Silence'
 
     chroma = np.sum(chroma, axis=0)
+    chroma = normalize_pcp_peak(chroma)
+
     if kwargs["PCP_THRESHOLD"] is not None:
-       chroma = normalize_pcp_peak(chroma)
        chroma = pcp_gate(chroma, kwargs["PCP_THRESHOLD"])
 
     if kwargs["DETUNING_CORRECTION"] and kwargs["DETUNING_CORRECTION_SCOPE"] == 'average':
@@ -320,6 +263,7 @@ def key_essentia(input_audio_file, output_text_file, **kwargs):
         key_2 = estimation_2[0] + '\t' + estimation_2[1]
         key_verbose = key_1 + '\t' + key_2
         key = key_verbose.split('\t')
+
         # Assign monotonic tracks to minor:
         if key[3] == 'monotonic' and key[0] == key[2]:
             key = '{0}\tminor'.format(key[0])
@@ -327,9 +271,11 @@ def key_essentia(input_audio_file, output_text_file, **kwargs):
             key = key_1
     else:
         key = key_1
+
     textfile = open(output_text_file, 'w')
     textfile.write(key + '\n')
     textfile.close()
+
     return key, correlation_value
 
 
@@ -509,107 +455,6 @@ def key_angel(input_audio_file, output_text_file, **kwargs):
     if not kwargs:
         kwargs = KEY_SETTINGS
 
-    loader = estd.MonoLoader(filename=input_audio_file,
-                             sampleRate=kwargs["SAMPLE_RATE"])
-    cut = estd.FrameCutter(frameSize=kwargs["WINDOW_SIZE"],
-                           hopSize=kwargs["HOP_SIZE"])
-    window = estd.Windowing(size=kwargs["WINDOW_SIZE"],
-                            type=kwargs["WINDOW_SHAPE"])
-    rfft = estd.Spectrum(size=kwargs["WINDOW_SIZE"])
-    sw = estd.SpectralWhitening(maxFrequency=kwargs["MAX_HZ"],
-                                sampleRate=kwargs["SAMPLE_RATE"])
-    speaks = estd.SpectralPeaks(magnitudeThreshold=kwargs["SPECTRAL_PEAKS_THRESHOLD"],
-                                maxFrequency=kwargs["MAX_HZ"],
-                                minFrequency=kwargs["MIN_HZ"],
-                                maxPeaks=kwargs["SPECTRAL_PEAKS_MAX"],
-                                sampleRate=kwargs["SAMPLE_RATE"])
-    hpcp = estd.HPCP(bandPreset=kwargs["HPCP_BAND_PRESET"],
-                     bandSplitFrequency=kwargs["HPCP_SPLIT_HZ"],
-                     harmonics=kwargs["HPCP_HARMONICS"],
-                     maxFrequency=kwargs["MAX_HZ"],
-                     minFrequency=kwargs["MIN_HZ"],
-                     nonLinear=kwargs["HPCP_NON_LINEAR"],
-                     normalized=kwargs["HPCP_NORMALIZE"],
-                     referenceFrequency=kwargs["HPCP_REFERENCE_HZ"],
-                     sampleRate=kwargs["SAMPLE_RATE"],
-                     size=kwargs["HPCP_SIZE"],
-                     weightType=kwargs["HPCP_WEIGHT_TYPE"],
-                     windowSize=kwargs["HPCP_WEIGHT_WINDOW_SEMITONES"],
-                     maxShifted=kwargs["HPCP_SHIFT"])
-    if kwargs["HIGHPASS_CUTOFF"] is not None:
-        hpf = estd.HighPass(cutoffFrequency=kwargs["HIGHPASS_CUTOFF"], sampleRate=kwargs["SAMPLE_RATE"])
-        audio = hpf(hpf(hpf(loader())))
-    else:
-        audio = loader()
-
-    if kwargs["DURATION"] is not None:
-        audio = audio[(kwargs["START_TIME"] * kwargs["SAMPLE_RATE"]):(kwargs["DURATION"] * kwargs["SAMPLE_RATE"])]
-
-    duration = len(audio)
-    n_slices = int(1 + (duration / kwargs["HOP_SIZE"]))
-    chroma = []
-    for slice_n in range(n_slices):
-        spek = rfft(window(cut(audio)))
-        p1, p2 = speaks(spek)
-        if kwargs["SPECTRAL_WHITENING"]:
-            p2 = sw(spek, p1, p2)
-        pcp = hpcp(p1, p2)
-        if not kwargs["DETUNING_CORRECTION"] or kwargs["DETUNING_CORRECTION_SCOPE"] == 'average':
-            # chroma[slice_n] = pcp
-            chroma.append(pcp)
-        elif kwargs["DETUNING_CORRECTION"] and kwargs["DETUNING_CORRECTION_SCOPE"] == 'frame':
-            pcp = shift_pcp(pcp, kwargs["HPCP_SIZE"])
-            # schroma[slice_n] = pcp
-            chroma.append(pcp)
-        else:
-            raise NameError("SHIFT_SCOPE musts be set to 'frame' or 'average'.")
-    chroma = np.sum(chroma, axis=0)
-    if kwargs["PCP_THRESHOLD"] is not None:
-        chroma = normalize_pcp_peak(chroma)
-        chroma = pcp_gate(chroma, kwargs["PCP_THRESHOLD"])
-
-    if kwargs["DETUNING_CORRECTION"] and kwargs["DETUNING_CORRECTION_SCOPE"] == 'average':
-        chroma = shift_pcp(chroma, kwargs["HPCP_SIZE"])
-
-    chroma = np.roll(chroma, -3)  # Adjust to essentia's HPCP calculation starting on A...
-
-    if kwargs["USE_THREE_PROFILES"]:
-        estimation_1 = profile_matching_3(chroma, kwargs["KEY_PROFILE"])
-    else:
-        estimation_1 = profile_matching_2(chroma, kwargs["KEY_PROFILE"])
-    key_1 = estimation_1[0] + '\t' + estimation_1[1]
-    correlation_value = estimation_1[2]
-
-    if kwargs["WITH_MODAL_DETAILS"]:
-        estimation_2 = profile_matching_modal(chroma)
-        key_2 = estimation_2[0] + '\t' + estimation_2[1]
-        key_verbose = key_1 + '\t' + key_2
-        key = key_verbose.split('\t')
-        # Assign monotonic track to minor:
-        if key[3] == 'monotonic' and key[0] == key[2]:
-            key = '{0}\tminor'.format(key[0])
-        else:
-            key = key_1
-    else:
-        key = key_1
-
-    textfile = open(output_text_file, 'w')
-    textfile.write(key + '\t' + str(correlation_value) + '\n')
-    textfile.close()
-    return key, correlation_value
-
-
-def key_more(input_audio_file, output_text_file, **kwargs):
-    """
-    This function estimates the overall key of an audio track
-    optionaly with extra modal information.
-    :type input_audio_file: str
-    :type output_text_file: str
-
-    """
-    if not kwargs:
-        kwargs = KEY_SETTINGS
-
     audio = md.audio.signal.Signal(input_audio_file,
                                    sample_rate=kwargs["SAMPLE_RATE"],
                                    start=kwargs["START_TIME"],
@@ -617,13 +462,18 @@ def key_more(input_audio_file, output_text_file, **kwargs):
                                    num_channels=1,
                                    dtype="float32")
 
-    sw = estd.SpectralWhitening(maxFrequency=kwargs["MAX_HZ"],
-                                sampleRate=kwargs["SAMPLE_RATE"])
+    window = estd.Windowing(size=kwargs["WINDOW_SIZE"], type=kwargs["WINDOW_SHAPE"])
+
+    rfft = estd.Spectrum(size=kwargs["WINDOW_SIZE"])
+
+    sw = estd.SpectralWhitening(maxFrequency=kwargs["MAX_HZ"], sampleRate=kwargs["SAMPLE_RATE"])
+
     speaks = estd.SpectralPeaks(magnitudeThreshold=kwargs["SPECTRAL_PEAKS_THRESHOLD"],
                                 maxFrequency=kwargs["MAX_HZ"],
                                 minFrequency=kwargs["MIN_HZ"],
                                 maxPeaks=kwargs["SPECTRAL_PEAKS_MAX"],
                                 sampleRate=kwargs["SAMPLE_RATE"])
+
     hpcp = estd.HPCP(bandPreset=kwargs["HPCP_BAND_PRESET"],
                      bandSplitFrequency=kwargs["HPCP_SPLIT_HZ"],
                      harmonics=kwargs["HPCP_HARMONICS"],
@@ -638,48 +488,65 @@ def key_more(input_audio_file, output_text_file, **kwargs):
                      windowSize=kwargs["HPCP_WEIGHT_WINDOW_SEMITONES"],
                      maxShifted=kwargs["HPCP_SHIFT"])
 
-
     if kwargs["HIGHPASS_CUTOFF"] is not None:
         hpf = estd.HighPass(cutoffFrequency=kwargs["HIGHPASS_CUTOFF"], sampleRate=kwargs["SAMPLE_RATE"])
         audio = hpf(hpf(hpf(audio)))
 
-    speks = md.audio.Spectrogram(audio,
-                                 frame_size=kwargs["WINDOW_SIZE"],
-                                 hop_size=kwargs["HOP_SIZE"],
-                                 window=windowing(kwargs["WINDOW_SHAPE"], kwargs["WINDOW_SIZE"]),
-                                 circular_shift=False,
-                                 include_nyquist=True)
+
+    # THIS WAS GIVING ALMOST THE SAME RESULTS BUT SLIGHTLY BELOW!
+    # MY GUESS IS THAT IT HAS TO DO WITH THE WINDOWING FUNCTION!
+    # speks = md.audio.Spectrogram(audio,
+    #                              frame_size=kwargs["WINDOW_SIZE"],
+    #                              hop_size=kwargs["HOP_SIZE"],
+    #                              window=windowing(kwargs["WINDOW_SHAPE"], kwargs["WINDOW_SIZE"]),
+    #                              circular_shift=False,
+    #                              include_nyquist=True)
+
+    audio = md.audio.FramedSignal(audio, frame_size=kwargs["WINDOW_SIZE"], hop_size=kwargs["HOP_SIZE"])
+
     chroma = []
-    for spek in speks:
+    for frame in audio:
+        spek = rfft(window(frame))
         p1, p2 = speaks(spek)
         if kwargs["SPECTRAL_WHITENING"]:
             p2 = sw(spek, p1, p2)
+
         pcp = hpcp(p1, p2)
-        if not kwargs["DETUNING_CORRECTION"] or kwargs["DETUNING_CORRECTION_SCOPE"] == 'average':
-            chroma.append(pcp)
-        elif kwargs["DETUNING_CORRECTION"] and kwargs["DETUNING_CORRECTION_SCOPE"] == 'frame':
-            pcp = shift_pcp(pcp, kwargs["HPCP_SIZE"])
-            chroma.append(pcp)
-        else:
-            raise NameError("SHIFT_SCOPE musts be set to 'frame' or 'average'.")
+        if np.sum(pcp) > 0:
+            if not kwargs["DETUNING_CORRECTION"] or kwargs["DETUNING_CORRECTION_SCOPE"] == 'average':
+                chroma.append(pcp)
+            elif kwargs["DETUNING_CORRECTION"] and kwargs["DETUNING_CORRECTION_SCOPE"] == 'frame':
+                pcp = shift_pcp(pcp, kwargs["HPCP_SIZE"])
+                chroma.append(pcp)
+            else:
+                raise NameError("SHIFT_SCOPE musts be set to 'frame' or 'average'.")
+
     chroma = np.sum(chroma, axis=0)
+    chroma = normalize_pcp_peak(chroma)
+
     if kwargs["PCP_THRESHOLD"] is not None:
-        chroma = normalize_pcp_peak(chroma)
         chroma = pcp_gate(chroma, kwargs["PCP_THRESHOLD"])
+
     if kwargs["DETUNING_CORRECTION"] and kwargs["DETUNING_CORRECTION_SCOPE"] == 'average':
         chroma = shift_pcp(chroma, kwargs["HPCP_SIZE"])
-    chroma = np.roll(chroma, -3)  # Adjust to essentia's HPCP calculation starting on A...
+
+    # IMPORTANT! Adjust to essentia's HPCP calculation starting on A...
+    chroma = np.roll(chroma, -3 * (kwargs["HPCP_SIZE"] // 12))
+
     if kwargs["USE_THREE_PROFILES"]:
-        estimation_1 = profile_matching_3(chroma, kwargs["KEY_PROFILE"])
+        estimation_1 = find_key3(chroma, kwargs["KEY_PROFILE"])
     else:
-        estimation_1 = profile_matching_2(chroma, kwargs["KEY_PROFILE"])
+        estimation_1 = find_key2(chroma, kwargs["KEY_PROFILE"])
+
     key_1 = estimation_1[0] + '\t' + estimation_1[1]
     correlation_value = estimation_1[2]
+
     if kwargs["WITH_MODAL_DETAILS"]:
-        estimation_2 = profile_matching_modal(chroma)
+        estimation_2 = find_mode(chroma)
         key_2 = estimation_2[0] + '\t' + estimation_2[1]
         key_verbose = key_1 + '\t' + key_2
         key = key_verbose.split('\t')
+
         # Assign monotonic track to minor:
         if key[3] == 'monotonic' and key[0] == key[2]:
             key = '{0}\tminor'.format(key[0])
@@ -687,7 +554,9 @@ def key_more(input_audio_file, output_text_file, **kwargs):
             key = key_1
     else:
         key = key_1
+
     textfile = open(output_text_file, 'w')
     textfile.write(key + '\t' + str(correlation_value) + '\n')
     textfile.close()
+
     return key, correlation_value
