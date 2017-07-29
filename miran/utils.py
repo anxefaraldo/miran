@@ -2,7 +2,6 @@
 # -*- coding: UTF-8 -*-
 
 import os.path
-import math
 import numpy as np
 import librosa.display
 from matplotlib import pyplot as plt
@@ -257,15 +256,7 @@ def windowing(window_type, size=4096, beta=0.2):
 
 
 
-def dur_to_endtime(**kwargs):
 
-    if not kwargs:
-        kwargs = KEY_SETTINGS
-
-    if kwargs["DURATION"] is not None:
-        return kwargs["START_TIME"] + kwargs["DURATION"]
-    else:
-        return None
 
 
 # !/usr/local/bin/python
@@ -293,48 +284,6 @@ KEY_LABELS = ('C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B',
 # ------------------------------------------------------
 DEGREE_LABELS = ('I', 'bII', 'II', 'bIII', 'III', 'IV', '#IV', 'V', 'bVI', 'VI', 'bVII', 'VII',
                  'i', 'bii', 'ii', 'biii', 'iii', 'iv', '#iv', 'v', 'bvi', 'vi', 'bvii', 'vii')
-
-# pitch-class integer to relative roman numeral notation
-# ------------------------------------------------------
-PC2DEGREE = {0: 'I', 1: 'bII', 2: 'II', 3: 'bIII', 4: 'III', 5: 'IV',
-             6: '#IV', 7: 'V', 8: 'bVI', 9: 'VI', 10: 'bVII', 11: 'VII'}
-
-KEY_SETTINGS = {"DURATION": None,
-                "START_TIME": 0,
-                "SAMPLE_RATE": 44100,
-                "WINDOW_SIZE": 4096,
-                "HOP_SIZE": 4096,
-                "WINDOW_SHAPE": "hann",
-                "PCP_THRESHOLD": 0.2,
-                "HIGHPASS_CUTOFF": 200,
-                "SPECTRAL_WHITENING": True,
-                "DETUNING_CORRECTION": True,
-                "DETUNING_CORRECTION_SCOPE": "average",
-                "MIN_HZ": 25,
-                "MAX_HZ": 3500,
-                "SPECTRAL_PEAKS_THRESHOLD": 0.0001,
-                "SPECTRAL_PEAKS_MAX": 60,
-                "HPCP_BAND_PRESET": False,
-                "HPCP_SPLIT_HZ": 250,
-                "HPCP_HARMONICS": 4,
-                "HPCP_REFERENCE_HZ": 440,
-                "HPCP_NON_LINEAR": False,
-                "HPCP_NORMALIZE": "none",
-                "HPCP_SHIFT": False,
-                "HPCP_SIZE": 12,
-                "HPCP_WEIGHT_WINDOW_SEMITONES": 1,
-                "HPCP_WEIGHT_TYPE": "cosine",
-                "KEY_POLYPHONY": False,
-                "KEY_USE_THREE_CHORDS": False,
-                "KEY_HARMONICS": 15,
-                "KEY_SLOPE": 0.2,
-                "ANALYSIS_TYPE": "global",
-                "N_WINDOWS": 100,
-                "WINDOW_INCREMENT": 100,
-                "KEY_PROFILE": "bgate",
-                "USE_THREE_PROFILES": True,
-                "WITH_MODAL_DETAILS": True
-                }
 
 
 def pitchname_to_int(a_pitchname):
@@ -414,7 +363,6 @@ def key_to_int(key_symbol):
     # TODO: DO WE NEED TO DELETE THIS!!?
     """
     Converts a key symbol (i.e. C major) type to int
-    :type key_symbol: str
     """
     key2int = {'C major': 0,
                'C# major': 1, 'Db major': 1,
@@ -448,9 +396,8 @@ def key_to_int(key_symbol):
 def int_to_key(key_integer):
     """
     Converts an int onto a key symbol with root and scale.
-    :type key_integer: int
-    """
 
+    """
     int2key = {0: 'C major', 1: 'C# major', 2: 'D major', 3: 'Eb major', 4: 'E major',
                5: 'F major', 6: 'F# major', 7: 'G major', 8: 'Ab major', 9: 'A major',
                10: 'Bb major', 11: 'B major', 12: 'C minor', 13: 'C# minor', 14: 'D minor',

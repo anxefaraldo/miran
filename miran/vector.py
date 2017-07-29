@@ -2,80 +2,102 @@
 # -*- coding: UTF-8 -*-
 
 import numpy as np
-import math as m
-from scipy.stats import pearsonr
 
 
-def euclidean_distance(a, b):
+def crosscorrelation(v, u):
     """
-    Returns the euclidean distance between two vectors of equal length.
-
-    """
-    return np.linalg.norm(a - b)
-
-
-def eucl_dist(series1, series2):
-    """calculates the euclidean distance between two vectors"""
-    D = []
-    for i in range(len(series1)):
-        D.append((series1[i] - series2[i]) ** 2)
-    return m.sqrt(np.sum(D))
-
-
-def eucl_dist_2(series1, series2):
-    """calculates the squared euclidean distance, which is less CPU consuming"""
-    D = []
-    for i in range(len(series1)):
-        D.append((series1[i] - series2[i]) ** 2)
-    return np.sum(D)  # Which is "Distance Squared"
-
-
-def crosscorrelation(a, b):
-    """
-    Calculates a normalized cross-correlation between two vectors.
+    Calculates v normalized cross-correlation between two vectors.
     Returns the Pearson correlation coefficient.
 
     """
-    return (pearsonr(a, b))[0]
+    from scipy.stats import pearsonr
+
+    return (pearsonr(v, u))[0]
 
 
-def acorr(a):
-    """calculates the auto-correlation fuction of a signal"""
-    a = list(a)
-    la = len(a)
-    acorr = [0] * la
-    for i in range(la):
-        b = ([0] * i) + a
-        b = b[:la]
-        val = np.multiply(a, b)
-        acorr[i] = np.sum(val)
-    return acorr
-
-
-def xcorr(a, b):
-    """calculates the cross-correlation fuction of two signals"""
-    la = len(a)
-    lb = len(b)
-    xcorrSize = la - (lb - 1)
-    xcorr = [0] * xcorrSize
-    for i in range(xcorrSize):
-        val = np.multiply(a[i:lb + i], b)
-        xcorr[i] = np.sum(val)
-    return xcorr
-
-
-def standard_score(vector):
+def distance(v, u, dist='euclidean'):
     """
-    Returns a vector normalized to zero mean and unit standard deviation.
+    Returns the dist between two vectors of equal length.
+    Possible distances are shown below.
+
+    Function	    Description
+    ========        ===========
+    braycurtis	    the Bray-Curtis dist.
+    canberra	    the Canberra dist.
+    chebyshev	    the Chebyshev dist.
+    cityblock	    the Manhattan dist.
+    correlation	    the Correlation dist.
+    cosine	        the Cosine dist.
+    dice	        the Dice dissimilarity (boolean).
+    euclidean	    the Euclidean dist.
+    hamming	        the Hamming dist (boolean).
+    jaccard	        the Jaccard dist (boolean).
+    kulsinski	    the Kulsinski dist (boolean).
+    mahalanobis	    the Mahalanobis dist.
+    matching	    the matching dissimilarity (boolean).
+    minkowski	    the Minkowski dist.
+    rogerstanimoto	the Rogers-Tanimoto dissimilarity (boolean).
+    russellrao	    the Russell-Rao dissimilarity (boolean).
+    seuclidean	    the normalized Euclidean dist.
+    sokalmichener	the Sokal-Michener dissimilarity (boolean).
+    sokalsneath	    the Sokal-Sneath dissimilarity (boolean).
+    sqeuclidean	    the squared Euclidean dist.
+    yule	        the Yule dissimilarity (boolean).
+
+    """
+    import scipy.spatial.distance as ssd
+
+    return eval('ssd.' + dist)(v, u)
+
+
+def norm_area(v):
+    """
+    Normalizes a v so that the sum of its content is 1,
+    outputting a v with up to 3 decimal points.
+
+    """
+    return np.divide(v, np.sum(v))
+
+
+def norm_peak(v, max_val=1.):
+    """
+    Normalizes a vector so that the maximum value equals 'max_val
+
+    """
+    return np.multiply(v, (max_val / np.max(v)))
+
+
+def resize_vector(v, new_size=36, interpolation='cubic'):
+    """
+    Resizes a vector to a vector of size "new_size.
+    Interpolation patterns can be chosen from one of the following:
+
+    ‘linear’, ‘nearest’, ‘zero’, ‘slinear’, ‘quadratic’, ‘cubic’
+
+    """
+    from scipy.interpolate import interp1d
+
+    in_len = len(v)
+
+    x = np.linspace(0, in_len, num=(in_len + 1), endpoint=True)
+    z = np.linspace(0, in_len, num=(new_size + 1), endpoint=True)
+    f = interp1d(x, np.hstack([v, v[0]]), kind=interpolation)
+
+    return f(z)[:-1]
+
+
+def standard_score(v):
+    """
+    Returns a v normalized to zero mean and unit standard deviation.
     Normally referred to as standardazing.
 
     La suma del standard score es cero
 
     """
-    return np.divide(np.subtract(vector, np.mean(vector)), np.std(vector))
+    return np.divide(np.subtract(v, np.mean(v)), np.std(v))
 
 
-def unit_vector(vector):
+def unit_vector(v):
     """
     Scale input vectors individually to unit norm (vector length = 1)
     The most commonly encountered vector norm is the L2-norm
@@ -86,61 +108,42 @@ def unit_vector(vector):
       is the unit normal vector, often known simply as the "unit normal."
 
       Care should be taken to not confuse the terms "vector norm" (length of vector),
-     "normal vector" (perpendicular vector) and "normalized vector" (unit-length vector).
+     "normal vector" (perpendicular vector) and "normalized v" (unit-length vector).
 
     """
-    vector_norm = np.linalg.norm(vector)  # L2-Norm
+    vector_norm = np.linalg.norm(v)  # L2-Norm
     if vector_norm == 0:
-        return vector
-    return vector / vector_norm
+        return v
+    return v / vector_norm
 
 
-def golden_ration(number, duration):
-    new = number / 1.618
-    print int((duration - new) / 60), ':', int((duration - new) % 60)
-    return new
-
-
-def gr2(number):
-    new = number * 1.618
-    print int(new / 60), ':', int(new % 60)
-    return new
-
-
-def cos_sim(a, b):
-    """measures the cosine similarity of 2 vectors of equal dimension"""
-    dot_product = np.vdot(a, b)
-    mag_a = m.sqrt(sum(np.power(a, 2)))
-    mag_b = m.sqrt(sum(np.power(b, 2)))
-    mags_prod = mag_a * mag_b
-    if mags_prod == 0:
-        mags_prod = 0.00000000000001
-    return dot_product / mags_prod
-
-
-def self_cos_sim_mtx(a):
+def vector_threshold(pcp, threshold):
     """
-    Returns a cosine self-similarity matrix of size
-    (vectorsize x vectorsize) given a essentia_process_file multidimensional vector
-
+    Zeroes vector elements with values under a certain threshold.
     """
-    dimensions = len(a)
-    matrix = np.zeros((dimensions, dimensions))
-    for i in range(dimensions):
-        for j in range(dimensions):
-            matrix[i][j] = cos_sim(a[i], a[j])
-    return matrix
+    for i in range(len(pcp)):
+        if pcp[i] < threshold:
+            pcp[i] = 0
+    return pcp
 
 
-def self_cos_sim_mtx(a):
+def sort_vector(v, output='values', sort='ascending'):
     """
-    Given a essentia_process_file multidimensional vector, it returns a cosine self-similarity matrix of size (vectorsize * vectorsize).
-
+    Returns a new vector with sorted indexes of the incoming pcp vector.
     """
-    dimensions = len(a)
-    matrix = np.zeros((dimensions, dimensions))
-    for i in range(dimensions):
-        for j in range(dimensions):
-            matrix[i][j] = cos_sim(a[i], a[j])
-    return matrix
+    u = np.sort(v)
+    if sort == 'descending':
+        u = u[::-1]
+    elif sort != 'ascending':
+        raise ValueError("sort options are 'ascending' or 'descending'.")
 
+    if output == 'values':
+        return u
+
+    elif output == 'indexes':
+        idx = []
+        for i in u:
+            idx.append(v.tolist().index(i))
+        return np.array(idx)
+    else:
+        raise ValueError("output options are 'values' or 'indexes'.")

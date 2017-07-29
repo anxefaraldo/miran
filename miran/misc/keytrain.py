@@ -96,7 +96,7 @@ def get_features(soundfile, target):
     feature_vector.append(modename_to_int(estimation_1[1]))    # scale1 as int
     feature_vector.append(estimation_1[2])                 # confidence1
     estimation_2 = key_2(chroma)
-    # key_2 = estimation_2[0] + ' ' + estimation_2[1]
+    # _key2 = estimation_2[0] + ' ' + estimation_2[1]
     feature_vector.append(pitchname_to_int(estimation_2[0]))  # tonic2 as int
     feature_vector.append(modename_to_int(estimation_2[1]))    # mode2 as int
     feature_vector.append(estimation_2[2])                 # confidence2

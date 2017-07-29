@@ -4,7 +4,7 @@
 
 if __name__ == "__main__":
 
-    from miran.key.format import *
+    from miran.format import *
     from argparse import ArgumentParser
 
     parser = ArgumentParser(description="Conversion different annotation formats into our regular txt format.")

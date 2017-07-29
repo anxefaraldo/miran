@@ -11,10 +11,10 @@ from __future__ import absolute_import
 
 if __name__ == "__main__":
 
+    import os.path
     from time import clock
     from argparse import ArgumentParser
-
-    from miran.key.find import *
+    from miran.key import *
     from miran.utils import load_settings_as_dict, create_dir, folderfiles, AUDIO_FILE_EXTENSIONS
 
 

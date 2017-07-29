@@ -14,10 +14,9 @@ if __name__ == "__main__":
     import numpy as np
     import pandas as pd
     from argparse import ArgumentParser
-    from miran.utils import ANNOTATION_FILE_EXTENSIONS, KEY_LABELS, DEGREE_LABELS
-    from miran.utils import pitchname_to_int, modename_to_int
-    from miran.key.eval import *
-    from miran.key.format import split_key_str
+    from miran.utils import *
+    from miran.evaluation import *
+    from miran.format import split_key_str
 
 
     parser = ArgumentParser(description="Evaluation of key estimation algorithms.")

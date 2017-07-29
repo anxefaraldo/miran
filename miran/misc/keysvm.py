@@ -87,13 +87,13 @@ def estimate_key(soundfile, write_to):
             if len(chroma) == N_WINDOWS:
                 pcp = np.sum(chroma, axis=0)  # TODO: have a look at variance or std!
                 if DETUNING_CORRECTION and DETUNING_CORRECTION_SCOPE == 'average':
-                    pcp = shift_pcp(list(pcp), HPCP_SIZE)
+                    pcp = _detuning_correction(list(pcp), HPCP_SIZE)
                 pcp = pcp.tolist()
                 local_key_1 = key_1(pcp)
                 local_result_1 = local_key_1[0] + ' ' + local_key_1[1]
                 keys_1.append(local_result_1)
                 if WITH_MODAL_DETAILS:
-                    local_key_2 = key_2(pcp)
+                    local_key_2 = _key2(pcp)
                     local_result_2 = local_key_2[0] + ' ' + local_key_2[1]
                     keys_2.append(local_result_2)
                 chroma = chroma[WINDOW_INCREMENT:]
@@ -132,7 +132,7 @@ def estimate_key(soundfile, write_to):
         chroma = ['N/A']
         if WITH_MODAL_DETAILS:
             mode_2 = Counter(keys_2)
-            key_2 = mode_2.most_common(1)[0][0]
+            _key2 = mode_2.most_common(1)[0][0]
             confidence_2 = 0.0
             """
     else:
