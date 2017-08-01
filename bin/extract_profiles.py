@@ -3,7 +3,7 @@
 
 import os
 import numpy as np
-
+from miran.utils import pitchname_to_int
 
 
 def extract_median_pcp(dir_estimations, dir_annotations, pcp_size=36):
@@ -33,9 +33,5 @@ if __name__ == "__main__":
 
     clock()
 
-    a = np.random.rand(12)
-
-    for i in range(1000):
-        _resize_profile(a, 36)
 
     print("Finished in {} secs.\n".format(clock()))

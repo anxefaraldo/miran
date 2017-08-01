@@ -3,7 +3,7 @@
 
 """
 This file contains functions relative to the evaluation of
-key estimation algorithms.
+estimation algorithms.
 
 Ángel Faraldo, July 2017.
 

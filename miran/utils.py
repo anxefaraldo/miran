@@ -57,8 +57,6 @@ def create_dir(dir_name):
         print("WARNING: '{}' already exists!".format(dir_name))
 
 
-
-
 def folderfiles(folderpath, ext=None, recursive=False):
     """
     Returns a list of absolute paths with the filesystem in the specified folder.
@@ -219,7 +217,7 @@ def windowing(window_type, size=4096, beta=0.2):
     elif window_type == "hann":
         return np.hanning(size)
     elif window_type == "kaiser":
-        return np.bartlett(size, beta)
+        return np.kaiser(size, beta)
     elif window_type == "rect":
         return np.ones(size)
 
@@ -252,38 +250,6 @@ def windowing(window_type, size=4096, beta=0.2):
 #
 #     if (i + 1) < size and array[i] > array[i+1]:
 #         pass
-
-
-
-
-
-
-
-# !/usr/local/bin/python
-# -*- coding: UTF-8 -*-
-
-
-# ================================================== #
-# GLOBAL DEFINITIONS AND CONVERSIONS USED THROUGHOUT #
-# ================================================== #
-
-# accepted extensions for audio files
-# -----------------------------------
-AUDIO_FILE_EXTENSIONS = {'.wav', '.mp3', 'flac', '.aiff', '.ogg'}
-
-# accepted extensions for key annotation files
-# --------------------------------------------
-ANNOTATION_FILE_EXTENSIONS = {'.txt', '.key', '.lab'}
-
-# default key label names
-# -----------------------
-KEY_LABELS = ('C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B',
-              'Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm')
-
-# pitch-class integer to relative roman numeral notation
-# ------------------------------------------------------
-DEGREE_LABELS = ('I', 'bII', 'II', 'bIII', 'III', 'IV', '#IV', 'V', 'bVI', 'VI', 'bVII', 'VII',
-                 'i', 'bii', 'ii', 'biii', 'iii', 'iv', '#iv', 'v', 'bvi', 'vi', 'bvii', 'vii')
 
 
 def pitchname_to_int(a_pitchname):

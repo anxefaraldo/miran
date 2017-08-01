@@ -7,50 +7,9 @@ import essentia.standard as estd
 from collections import Counter
 import madmom as md
 
-from miran.utils import KEY_LABELS, bin_to_pc
 from miran.vector import *
-
-KEY_SETTINGS = {"DURATION": None,
-                "START_TIME": 0,
-
-                "SAMPLE_RATE": 44100,
-                "WINDOW_SIZE": 4096,
-                "HOP_SIZE": 4096,
-                "WINDOW_SHAPE": "hann",
-
-                "PCP_THRESHOLD": 0.2,
-                "HIGHPASS_CUTOFF": 200,
-                "SPECTRAL_WHITENING": True,
-                "DETUNING_CORRECTION": True,
-                "DETUNING_CORRECTION_SCOPE": "average",
-
-                "MIN_HZ": 25,
-                "MAX_HZ": 3500,
-                "SPECTRAL_PEAKS_THRESHOLD": 0.0001,
-                "SPECTRAL_PEAKS_MAX": 60,
-                "HPCP_BAND_PRESET": False,
-                "HPCP_SPLIT_HZ": 250,
-                "HPCP_HARMONICS": 4,
-                "HPCP_REFERENCE_HZ": 440,
-                "HPCP_NON_LINEAR": False,
-                "HPCP_NORMALIZE": "none",
-                "HPCP_SHIFT": False,
-                "HPCP_SIZE": 12,
-                "HPCP_WEIGHT_WINDOW_SEMITONES": 1,
-                "HPCP_WEIGHT_TYPE": "cosine",
-
-                "KEY_POLYPHONY": False,
-                "KEY_USE_THREE_CHORDS": False,
-                "KEY_HARMONICS": 15,
-                "KEY_SLOPE": 0.2,
-
-                "ANALYSIS_TYPE": "global",
-                "N_WINDOWS": 100,
-                "WINDOW_INCREMENT": 100,
-                "KEY_PROFILE": "bgate",
-                "USE_THREE_PROFILES": True,
-                "WITH_MODAL_DETAILS": True
-                }
+from miran.utils import bin_to_pc
+from miran.defs import KEY_SETTINGS, KEY_LABELS
 
 
 def _select_profile_type(profile, templates_dict):
@@ -1001,7 +960,7 @@ def key_angel(input_audio_file, output_text_file, **kwargs):
     #                              frame_size=kwargs["WINDOW_SIZE"],
     #                              hop_size=kwargs["HOP_SIZE"],
     #                              window=windowing(kwargs["WINDOW_SHAPE"], kwargs["WINDOW_SIZE"]),
-    #                              circular_shift=False,
+    #                              circular_shift=True,
     #                              include_nyquist=True)
 
     audio = md.audio.FramedSignal(audio, frame_size=kwargs["WINDOW_SIZE"], hop_size=kwargs["HOP_SIZE"])

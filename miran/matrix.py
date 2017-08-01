@@ -5,7 +5,7 @@ from __future__ import absolute_import, division, print_function
 
 import os, shutil
 import pandas as pd
-from miran.utils import KEY_LABELS
+from miran.defs import KEY_LABELS
 
 
 def values_greater_than(my_dataframe, my_col, threshold=0):

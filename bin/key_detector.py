@@ -15,7 +15,9 @@ if __name__ == "__main__":
     from time import clock
     from argparse import ArgumentParser
     from miran.key import *
-    from miran.utils import load_settings_as_dict, create_dir, folderfiles, AUDIO_FILE_EXTENSIONS
+    from miran.defs import AUDIO_FILE_EXTENSIONS, KEY_SETTINGS
+    from miran.utils import load_settings_as_dict, create_dir, folderfiles
+
 
 
     clock()
@@ -42,7 +44,7 @@ if __name__ == "__main__":
         print("Key profile:", settings["KEY_PROFILE"])
 
     if os.path.isfile(args.input):
-        estimation, confidence = key_angel(args.input, args.output, **settings)
+        estimation, confidence = eval(args.algorithm)(args.input, args.output, **settings)
         print("\nAnalysing '{}'".format(args.input))
         print("Exporting to '{}'.".format(args.output))
         print(": {} ({})".format(estimation, confidence))
