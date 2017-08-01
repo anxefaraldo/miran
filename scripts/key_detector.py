@@ -1,5 +1,5 @@
-#!/usr/local/bin/python
-#  -*- coding: UTF-8 -*-
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
 """
 Ángel Faraldo, July 2017.
@@ -7,7 +7,6 @@
 """
 
 from __future__ import absolute_import
-
 
 if __name__ == "__main__":
 
@@ -17,7 +16,6 @@ if __name__ == "__main__":
     from miran.key import *
     from miran.defs import AUDIO_FILE_EXTENSIONS, KEY_SETTINGS
     from miran.utils import load_settings_as_dict, create_dir, folderfiles
-
 
 
     clock()

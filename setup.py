@@ -1,10 +1,12 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 #  -*- coding: UTF-8 -*-
 
 import sys
-from setuptools import setup
-# from setuptools import find_packages
+from setuptools import setup, find_packages, Extension
 
+import glob
+
+data_files = glob.glob("settings/*")
 
 with open('README.rst') as f:
     long_description = f.read()
@@ -18,8 +20,6 @@ setup(
     author='Ángel Faraldo',
     author_email='angelfaraldo@gmail.com',
     url='https://github.com/angelfaraldo/miran',
-    packages=['miran'],  #, 'key'],
-    # packages=find_packages(exclude='misc'),
     long_description=long_description,
     classifiers=[
         "License :: OSI Approved :: MIT License",
@@ -47,6 +47,8 @@ setup(
         'xlrd',
         'xlwt'
     ],
-    extras_require={},
-    data_files = []
+    packages=find_packages(exclude='misc'),
+    # package_dir={'': 'miran'},
+    # scripts='scripts/*',
+    data_files = [('settings', data_files)],
 )
