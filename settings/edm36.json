@@ -28,6 +28,8 @@
   "HPCP_SIZE": 36,
   "HPCP_WEIGHT_WINDOW_SEMITONES": 1,
   "HPCP_WEIGHT_TYPE": "cosine",
+  "PROFILE_INTERPOLATION": "linear",
+
 
   "KEY_POLYPHONY": false,
   "KEY_USE_THREE_CHORDS": false,

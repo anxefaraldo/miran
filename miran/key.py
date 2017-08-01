@@ -51,7 +51,7 @@ def _dur_to_endtime(**kwargs):
         return None
 
 
-def _key2(pcp, profile_type='bgate'):
+def _key2(pcp, profile_type='bgate', interpolation='linear'):
     key_templates = {
 
         'bgate': np.array([[1., 0.00, 0.42, 0.00, 0.53, 0.37, 0.00, 0.77, 0.00, 0.38, 0.21, 0.30],
@@ -132,8 +132,8 @@ def _key2(pcp, profile_type='bgate'):
         pcp = resize_vector(pcp, _major.size)
 
     if _major.size < pcp.size:
-        _major = resize_vector(_major, pcp.size)
-        _minor = resize_vector(_minor, pcp.size)
+        _major = resize_vector(_major, pcp.size, interpolation)
+        _minor = resize_vector(_minor, pcp.size, interpolation)
 
     first_max_major = -1
     second_max_major = -1
@@ -182,7 +182,7 @@ def _key2(pcp, profile_type='bgate'):
         return KEY_LABELS[key_index], scale, first_max, first_to_second_ratio
 
 
-def _key3(pcp, profile_type='bgate'):
+def _key3(pcp, profile_type='bgate', interpolation='linear'):
     if (pcp.size < 12) or (pcp.size % 12 != 0):
         raise IndexError("Input PCP size is not a positive multiple of 12")
 
@@ -217,9 +217,9 @@ def _key3(pcp, profile_type='bgate'):
         pcp = resize_vector(pcp, _major.size)
 
     if _major.size < pcp.size:
-        _major = resize_vector(_major, pcp.size)
-        _minor = resize_vector(_minor, pcp.size)
-        _minor2 = resize_vector(_minor2, pcp.size)
+        _major = resize_vector(_major, pcp.size, interpolation)
+        _minor = resize_vector(_minor, pcp.size, interpolation)
+        _minor2 = resize_vector(_minor2, pcp.size, interpolation)
 
     first_max_major = -1
     second_max_major = -1
@@ -286,7 +286,7 @@ def _key3(pcp, profile_type='bgate'):
         return KEY_LABELS[key_index], scale, first_max, first_to_second_ratio
 
 
-def _key7(pcp):
+def _key7(pcp, interpolation='linear'):
     if (pcp.size < 12) or (pcp.size % 12 != 0):
         raise IndexError("Input PCP size is not a positive multiple of 12")
 
@@ -320,13 +320,13 @@ def _key7(pcp):
         pcp = resize_vector(pcp, ionian.size)
 
     if ionian.size < pcp.size:
-        ionian = resize_vector(ionian, pcp.size)
-        harmonic = resize_vector(harmonic, pcp.size)
-        mixolydian = resize_vector(mixolydian, pcp.size)
-        phrygian = resize_vector(phrygian, pcp.size)
-        fifth = resize_vector(fifth, pcp.size)
-        monotonic = resize_vector(monotonic, pcp.size)
-        difficult = resize_vector(difficult, pcp.size)
+        ionian = resize_vector(ionian, pcp.size, interpolation)
+        harmonic = resize_vector(harmonic, pcp.size, interpolation)
+        mixolydian = resize_vector(mixolydian, pcp.size, interpolation)
+        phrygian = resize_vector(phrygian, pcp.size, interpolation)
+        fifth = resize_vector(fifth, pcp.size, interpolation)
+        monotonic = resize_vector(monotonic, pcp.size, interpolation)
+        difficult = resize_vector(difficult, pcp.size, interpolation)
 
     first_max_ionian = -1
     second_max_ionian = -1
@@ -533,15 +533,15 @@ def key_librosa(input_audio_file, output_text_file, **kwargs):
         chroma = _detuning_correction(chroma, kwargs["HPCP_SIZE"])
 
     if kwargs["USE_THREE_PROFILES"]:
-        estimation_1 = _key3(chroma, kwargs["KEY_PROFILE"])
+        estimation_1 = _key3(chroma, kwargs["KEY_PROFILE"], kwargs["PROFILE_INTERPOLATION"])
     else:
-        estimation_1 = _key2(chroma, kwargs["KEY_PROFILE"])
+        estimation_1 = _key2(chroma, kwargs["KEY_PROFILE"], kwargs["PROFILE_INTERPOLATION"])
 
     key_1 = estimation_1[0] + '\t' + estimation_1[1]
     correlation_value = estimation_1[2]
 
     if kwargs["WITH_MODAL_DETAILS"]:
-        estimation_2 = _key3(chroma)
+        estimation_2 = _key3(chroma, kwargs["PROFILE_INTERPOLATION"])
         key_2 = estimation_2[0] + '\t' + estimation_2[1]
 
         key_verbose = key_1 + '\t' + key_2
@@ -995,15 +995,15 @@ def key_angel(input_audio_file, output_text_file, **kwargs):
     chroma = np.roll(chroma, -3 * (kwargs["HPCP_SIZE"] // 12))
 
     if kwargs["USE_THREE_PROFILES"]:
-        estimation_1 = _key3(chroma, kwargs["KEY_PROFILE"])
+        estimation_1 = _key3(chroma, kwargs["KEY_PROFILE"], kwargs["PROFILE_INTERPOLATION"])
     else:
-        estimation_1 = _key2(chroma, kwargs["KEY_PROFILE"])
+        estimation_1 = _key2(chroma, kwargs["KEY_PROFILE"], kwargs["PROFILE_INTERPOLATION"])
 
     key_1 = estimation_1[0] + '\t' + estimation_1[1]
     correlation_value = estimation_1[2]
 
     if kwargs["WITH_MODAL_DETAILS"]:
-        estimation_2 = _key7(chroma)
+        estimation_2 = _key7(chroma, kwargs["PROFILE_INTERPOLATION"])
         key_2 = estimation_2[0] + '\t' + estimation_2[1]
         key_verbose = key_1 + '\t' + key_2
         key = key_verbose.split('\t')

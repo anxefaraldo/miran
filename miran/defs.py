@@ -63,6 +63,7 @@ KEY_SETTINGS = {"DURATION": None,
                 "HPCP_SIZE": 12,
                 "HPCP_WEIGHT_WINDOW_SEMITONES": 1,
                 "HPCP_WEIGHT_TYPE": "cosine",
+                "PROFILE_INTERPOLATION": "linear",
 
                 "KEY_POLYPHONY": False,
                 "KEY_USE_THREE_CHORDS": False,

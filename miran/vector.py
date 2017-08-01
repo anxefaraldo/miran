@@ -67,7 +67,7 @@ def norm_peak(v, max_val=1.):
     return np.multiply(v, (max_val / np.max(v)))
 
 
-def resize_vector(v, new_size=36, interpolation='cubic'):
+def resize_vector(v, new_size=36, interpolation='linear'):
     """
     Resizes a vector to a vector of size "new_size.
     Interpolation patterns can be chosen from one of the following:
