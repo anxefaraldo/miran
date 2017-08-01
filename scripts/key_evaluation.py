@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python
 #  -*- coding: UTF-8 -*-
 
 """IMPORTANT: This script assumes that filenames of estimations and references
