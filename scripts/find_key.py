@@ -60,7 +60,7 @@ if __name__ == "__main__":
                 print("{} - {} ({})".format(a_file, estimation, confidence))
                 count_files += 1
 
-        print("{} audio files analysed".format(count_files, clock()))
+        print("{} audio files analysed".format(count_files))
 
     else:
         raise NameError("Invalid input. Make sure it is a valid file or dir.")
