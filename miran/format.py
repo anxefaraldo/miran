@@ -49,9 +49,6 @@ def KeyFinder(input_file, output_dir=None):
 
     audio_filename - key.mp3
 
-    :param input_file :type valid filepath:
-    :param output_dir :type valid dirpath:
-
     """
     key = input_file[3 + input_file.rfind(' - '):input_file.rfind('.')]
 
@@ -73,6 +70,63 @@ def KeyFinder(input_file, output_dir=None):
         outfile.write(key)
 
     print("Creating estimation file for '{}' in '{}'". format(input_file, output_dir))
+
+
+def MIK(input_file, output_dir=None):
+    """
+    This function converts a Mixed-in-Key analysis file into
+    a readable format for our evaluation algorithm.
+
+    Mixed in Key can export the results to csv files, formatted
+    according to the following columns:
+
+    | Collection name | File name | Key Result | BPM | Energy |
+
+
+    Major keys are written as a pitch alphabetic name in upper case
+    followed by an alteration symbol (low 'b' for flat) if needed (A, Bb).
+
+    (The user can select the export key format, but this function expects
+    non-natural keys spelled with flats.
+
+    Minor keys append an 'm' to the tonic written as in major,
+    without spaces between the tonic and the mode (Am, Bbm, ...)
+
+    Ocasionally, MIK detects more than one key for a given track,
+    but it does not export the time positions at which eack key
+    applies. The export field simply reports keys separated by
+    slashes ('/') without spaces commas or tabs. In these not
+    so frequent situations, I have decided to take the first key
+    as the key estimation for the track
+
+    """
+    import pandas as pd
+
+    mik = pd.read_csv(input_file)
+
+    if not output_dir:
+        output_dir = os.path.split(input_file)[0]
+
+    print("Creating estimation files from '{}'".format(input_file))
+
+    for row in mik.iterrows():
+        output_file = row[1]["File name"] + '.txt'
+        key = row[1]["Key result"]
+
+        if '/' in key:
+            key = key.split('/')[0] # take the first estimations in case there are more than one.
+
+        if key[-1] == 'm':
+            key = key[:-1] + '\tminor\n'
+
+        else:
+            key = key + '\tmajor\n'
+
+        with open(os.path.join(output_dir, output_file), 'w') as outfile:
+            outfile.write(key)
+
+        print("Saving estimation file to '{}'". format(os.path.join(output_dir, output_file)))
+
 
 
 def VirtualDJ(input_file, output_dir=None):
@@ -160,38 +214,6 @@ def batch_format_converter(input_dir, convert_function, output_dir=None, ext='.w
         eval(convert_function)(item, output_dir)
 
 
-
-##### and this was KEYS FROM REKORDBOX!
-
-
-# my_file = open('/Users/angeluni/Insync/uni/publicaciones/improving_key/estimations-other/Rekordbox/rekordbox-e925.xml')
-# text = my_file.read()
-# str1 = 'Name="'
-# str2 = 'Tonality="'
-# str1len = len(str1)
-# str2len = len(str2)
-#
-# while len(text) > 1:
-#     i = text.find(str1)
-#     text = text[i:]
-#     filename = text[str1len:text.find('" ')]
-#     filename = filename[:filename.find('"')] + '.key'
-#     # filename = text[str1len:text.find('"')] + '.key'
-#     f = open('/Users/angeluni/Insync/uni/publicaciones/improving_key/estimations-other/Rekordbox/rekordbox-edm925/' + filename, 'w')
-#     i = text.find(str2)
-#     text = text[i:]
-#     key = text[str2len:text.find('" ')]
-#     if 'm' in key:
-#         key = key[:-1] + ' minor'
-#     else:
-#         key += ' major'
-#     print
-#     filename, key
-#     f.write(key)
-#     f.close()
-
-
-#
 # THIS WAS QM TO MIREX!
 
 # import os
@@ -248,65 +270,6 @@ def batch_format_converter(input_dir, convert_function, output_dir=None, ext='.w
 #         wf = open(estimations + item, 'w')
 #         wf.write(eline)
 #         wf.close()
-#
-
-# ####### MIXED IN KEY !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# import re
-
-#
-# mik = file('/Users/angelfaraldo/Desktop/MIKBeatles.html', 'r')
-#
-# filenames = []
-# keys = []
-# i = 0
-# for line in l:
-#     if '<td>' in line:
-#         j = i % 4
-#         if j == 0:
-#             filenames.append(line[12:-8] + '.txt')
-#         if j == 2:
-#             keys.append(line[12:-8])
-#         i += 1
-#
-# for key in keys:
-#     if 'd' in key:
-#         keys[keys.index(key)] = key.replace('d', " major")
-#     elif 'm' in key:
-#         keys[keys.index(key)] = key.replace('m', " minor")
-#
-# for key in keys:
-#     if '10' in key:
-#         keys[keys.index(key)] = key.replace('10', "Eb")
-#     elif '11' in key:
-#         keys[keys.index(key)] = key.replace('11', "Bb")
-#     elif '12' in key:
-#         keys[keys.index(key)] = key.replace('12', "F")
-#     elif '1' in key:
-#         keys[keys.index(key)] = key.replace('1', "C")
-#     elif '2' in key:
-#         keys[keys.index(key)] = key.replace('2', "G")
-#     elif '3' in key:
-#         keys[keys.index(key)] = key.replace('3', "D")
-#     elif '4' in key:
-#         keys[keys.index(key)] = key.replace('4', "A")
-#     elif '5' in key:
-#         keys[keys.index(key)] = key.replace('5', "E")
-#     elif '6' in key:
-#         keys[keys.index(key)] = key.replace('6', "B")
-#     elif '7' in key:
-#         keys[keys.index(key)] = key.replace('7', "F#")
-#     elif '8' in key:
-#         keys[keys.index(key)] = key.replace('8', "Db")
-#     elif '9' in key:
-#         keys[keys.index(key)] = key.replace('9', "Ab")
-#     elif 'None' in key:
-#         keys[keys.index(key)] = key.replace('None', "C major")
-#
-# for item in filenames:
-#     est = open('/Users/angelfaraldo/Desktop/EVALTESTS/beatles-key-mik/' + item, 'w')
-#     est.write(keys[filenames.index(item)])
-#     est.close()
-#
 
 # ####### BEATLESS TO MIREX!! ###############
 #

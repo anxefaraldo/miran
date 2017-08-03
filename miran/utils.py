@@ -273,7 +273,7 @@ def pitchname_to_int(a_pitchname):
                  'A': 9, 'A#': 10,
                  'Bb': 10, 'B': 11,
                  'Cb': 11,
-                 '??': 12, '-': 12, 'X': 12}
+                 '??': 12, '-': 12, 'X': 12, 'All': 12}
 
     try:
         if a_pitchname.islower():

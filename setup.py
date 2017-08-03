@@ -41,6 +41,7 @@ setup(
         'mido',
         'music21',
         'numpy',
+        'openpyxl',
         'pandas',
         'scipy',
         urllib,

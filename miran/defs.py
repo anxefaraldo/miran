@@ -52,6 +52,7 @@ KEY_SETTINGS = {"DURATION": None,
                 "MAX_HZ": 3500,
                 "SPECTRAL_PEAKS_THRESHOLD": 0.0001,
                 "SPECTRAL_PEAKS_MAX": 60,
+
                 "HPCP_BAND_PRESET": False,
                 "HPCP_SPLIT_HZ": 250,
                 "HPCP_HARMONICS": 4,
@@ -72,6 +73,7 @@ KEY_SETTINGS = {"DURATION": None,
                 "ANALYSIS_TYPE": "global",
                 "N_WINDOWS": 100,
                 "WINDOW_INCREMENT": 100,
+
                 "KEY_PROFILE": "bgate",
                 "USE_THREE_PROFILES": True,
                 "WITH_MODAL_DETAILS": True
