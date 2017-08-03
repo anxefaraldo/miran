@@ -14,26 +14,30 @@ Last check (2017/07/08) seems to indicate that the number of STEMS is under 4800
 
 if __name__ == "__main__":
 
-    import os, sys
+    import os.path
     from miran.beatport import download_stem
+    from miran.utils import create_dir
+    from argparse import ArgumentParser
 
-    args = sys.argv[1:]
+    parser = ArgumentParser(description="Download Beatport preview stems by matching id's.")
+    parser.add_argument("save_to", help="dir to save the downloaded files")
+    parser.add_argument("-id", "--ids", help="Beatport stem id(s) to download. If none, "
+                                            "it will attempt to download all available data", nargs='+')
 
-    if "-d" in args:
-        out_dir = args.pop(1 + args.index('-d'))
-        args.remove('-d')
-    elif "--dir" in args:
-        out_dir = args.pop(1 + args.index('--d'))
-        args.remove('--dir')
-    else:
-        out_dir = os.getcwd()
+    args = parser.parse_args()
 
-    if len(args) > 0:
-        for stem_id in args:
-            download_stem(stem_id, out_dir)
-    else:
+    if not os.path.isdir(args.save_to):
+        args.save_to = create_dir(args.save_to)
+
+    print("Saving files to '{}'.".format(args.save_to))
+
+    if not args.ids:
         print("Getting all available STEMS in Beatport!")
         i = 0
         while i < 5000:
-            download_stem(i, out_dir)
+            download_stem(i, args.save_to)
             i += 1
+
+    else:
+        for stem_id in args.ids:
+            download_stem(stem_id, args.save_to)

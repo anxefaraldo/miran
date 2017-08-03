@@ -156,7 +156,7 @@ def download_stem(stemid, output_dir=None):
     print("Saving metadata to", jsonfile)
 
 
-def download_track(trackid, output_dir=None):
+def download_track(trackid, output_dir=None, skip_tracks_without_metadata=False):
     """
     Attempts to download the chosen track (by ID) from Beatport.com
 
@@ -191,6 +191,10 @@ def download_track(trackid, output_dir=None):
         artists = str.join(', ', artists).encode('utf-8')
 
     except IOError:
+        if skip_tracks_without_metadata:
+            print("Did not find metadata. Skipping")
+            return
+
         print("NOT found. Naming generically.")
         title = "Unknown Title"
         artists = "Unknown Artist"
