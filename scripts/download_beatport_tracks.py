@@ -206,17 +206,12 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
 
     parser = ArgumentParser(description="Download Beatport preview excerpts by matching id's.")
-    parser.add_argument("ids", help="Beatport track id(s) to download,", nargs='+')
+    parser.add_argument("-id", "--ids", help="Beatport track id(s) to download,", nargs='+')
     parser.add_argument("save_to", help="dir to save the downloaded files")
     parser.add_argument("-d", "--dataset", help="download files associated with a known dataset (gskey, bmtg)")
     parser.add_argument("-m", "--metadata_only", action="store_true", help="download only files with associated metadata")
 
-
-
-
     args = parser.parse_args()
-
-    print(args.metadata_only)
 
     if not os.path.isdir(args.save_to):
         args.save_to = create_dir(args.save_to)
@@ -231,6 +226,8 @@ if __name__ == "__main__":
         bids = args.ids
 
     print("Saving files to '{}'.".format(args.save_to))
+    if args.metadata_only:
+        print("You have chosen to download only tracks with related metadata.")
 
     for track_id in bids:
         download_track(int(track_id), args.save_to, skip_tracks_without_metadata=args.metadata_only)
