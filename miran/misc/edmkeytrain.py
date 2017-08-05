@@ -16,7 +16,7 @@ from ML.train import *
 from fodules.folder import make_unique_dir
 
 clock()
-conf_file = open('./settings.py', 'r')
+conf_file = open('./keyconfigs.py', 'r')
 parser = ArgumentParser(description="Key Estimation Algorithm")
 parser.add_argument("input_data_folder",
                     help="dir with audio filesystem to analyse")

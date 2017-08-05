@@ -54,6 +54,7 @@ def create_dir(dir_name):
 
     else:
         print("WARNING: '{}' already exists!".format(dir_name))
+        return dir_name
 
 
 def folderfiles(folderpath, ext=None, recursive=False):
@@ -91,7 +92,7 @@ def folderfiles(folderpath, ext=None, recursive=False):
 
 
 def load_settings_as_dict(json_settings):
-    """Loads the key estimation settings from a json file."""
+    """Loads the key estimation keyconfigs from a json file."""
 
     import json
 
@@ -103,7 +104,7 @@ def load_settings_as_dict(json_settings):
 
 
 def load_settings_as_vars(json_settings):
-    """Loads the key estimation settings from a json file."""
+    """Loads the key estimation keyconfigs from a json file."""
 
     import json
 
@@ -128,6 +129,9 @@ def preparse_files(searchpath_or_pathlist, ext=None, recursive=False):
         else:
             raise TypeError("argument must be either a valid filepath, dirpath or a list of paths.")
 
+        return searchpath_or_pathlist
+
+    else:
         return searchpath_or_pathlist
 
 
@@ -379,4 +383,3 @@ def bin_to_pc(binary, pcp_size=36):
     It assumes (bin[0] == pc9) as implemeted in Essentia.
     """
     return int(binary / (pcp_size / 12.0))
-

@@ -23,8 +23,8 @@ if __name__ == "__main__":
     parser.add_argument("input", help="file or dir to analyse")
     parser.add_argument("output", help="file or dir to write results to")
     parser.add_argument("-a", "--algorithm", help="algorithm to use in the analysis", default="key_angel")
-    parser.add_argument("-p", "--profile", help="key profile; all other settings defaults apply.")
-    parser.add_argument("-s", "--settings", help="json file with the key estimation settings")
+    parser.add_argument("-p", "--profile", help="key profile; all other keyconfigs defaults apply.")
+    parser.add_argument("-s", "--keyconfigs", help="json file with the key estimation keyconfigs")
 
     args = parser.parse_args()
 
@@ -32,10 +32,10 @@ if __name__ == "__main__":
 
     if args.settings:
         settings = load_settings_as_dict(args.settings)
-        print("Loading settings from '{}'".format(args.settings))
+        print("Loading keyconfigs from '{}'".format(args.settings))
     else:
         settings = KEY_SETTINGS
-        print("Loading default key estimation settings")
+        print("Loading default key estimation keyconfigs")
 
     if args.profile:
         settings["KEY_PROFILE"] = args.profile

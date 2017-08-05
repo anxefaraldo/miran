@@ -2,7 +2,7 @@
 
 """
 This file contains the default definitions of most pararameters,
-including key estimation settings and label conversions.
+including key estimation keyconfigs and label conversions.
 
 
 Ángel Faraldo, August 2017.

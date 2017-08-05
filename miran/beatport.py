@@ -44,16 +44,12 @@ def metafile_to_series(filepath_or_string):
         sub_genres = str.join(', ', sub_genres)
 
     # return a pandas series with relevant metadata
-    return pd.Series([metadata["id"],
-                      artists,
-                      metadata["name"],
-                      metadata["mix"],
-                      metadata["label"]["name"],
-                      genres,
-                      sub_genres,
-                      metadata["key"]],
+    return pd.Series([os.path.splitext(filepath_or_string)[0], metadata["id"], artists,
+                      metadata["name"], metadata["mix"], metadata["label"]["name"],
+                      genres, sub_genres, metadata["key"]],
 
-                     index=['id', 'artists', 'title', 'mix', 'label', 'genres', 'subgenres', 'key'])
+                     index=['filename', 'id', 'artists', 'title', 'mix',
+                            'label', 'genres', 'subgenres', 'key'])
 
 
 def metadir_to_dataframe(dir_or_listOfFilepaths, ext='.json'):
@@ -173,7 +169,7 @@ def download_track(trackid, output_dir=None, skip_tracks_without_metadata=False)
 
     try:
         print("Looking for track's Beatport page...\t", end=" ")
-        data = url.urlopen("https://www.beatport.com/track/noche-de-san-juan-original-mix/" + trackid)
+        data = url.urlopen("https://www.beatport.com/track/x/" + trackid)
         print("found.")
 
         # read data from website

@@ -2,11 +2,15 @@
 #  -*- coding: UTF-8 -*-
 
 import sys
-from setuptools import setup, find_packages, Extension
+from setuptools import setup, find_packages
 
-import glob
+import glob, os
 
-data_files = glob.glob("settings/*")
+data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "miran/keyconfigs/*.json")
+
+data_files = glob.glob(data_path)
+
+print(data_files)
 
 with open('README.rst') as f:
     long_description = f.read()
@@ -49,7 +53,7 @@ setup(
         'xlwt'
     ],
     packages=find_packages(exclude='misc'),
-    # package_dir={'': 'miran'},
-    # scripts='scripts/*',
-    data_files = [('settings', data_files)],
+    # package_dir={'': ''},
+    # scripts=script_files,
+    data_files = [('miran/keyconfigs', data_files)],
 )

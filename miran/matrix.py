@@ -4,8 +4,7 @@ from __future__ import absolute_import, division, print_function
 
 import os, shutil
 import pandas as pd
-from miran.defs import KEY_LABELS
-
+from miran.utils import create_dir
 
 def values_greater_than(my_dataframe, my_col, threshold=0):
     counts = my_dataframe[my_col].value_counts()
@@ -46,106 +45,35 @@ def find_identical_rows(df, row_index):
         if all(find_row == row[1]):
             print(row[0])
 
-
-# def copy_files_in_df(df, destination):
-#     """
-#     Move a row from a Pandas dataframe to a different location in the hard drive.
-#     This function assumes that each row represents a file in the filesystem and that
-#     its filepath is the index of the row.
-#
-#     """
-#     from shutil import copyfile
-#     if not os.path.isdir(destination):
-#         raise IOError
-#     rows = df.index
-#     for i in range(len(rows)):
-#         # os.rename(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
-#         copyfile(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
-
-# def move_rows(df, destination):
-#     """
-#     Move a row from a Pandas dataframe to a different location in the hard drive.
-#     This function assumes that each row represents a file in the filesystem and that
-#     its filepath is the index of the row.
-#
-#     """
-#     if not os.path.isdir(destination):
-#         raise IOError
-#     rows = df.index
-#     with open(os.path.join(destination, 'original_files.txt'), 'w') as f:
-#         f.writelines(rows + '\n')
-#     for i in range(len(rows)):
-#         os.rename(rows[i], os.path.join(destination, os.path.split(rows[i])[1]))
-
-
-def copy_files_in_df(pd_col_with_filename, destination):
+def copy_files_in_df(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
     """
     Copy a row from a Pandas dataframe to a different location in the hard drive.
     This function assumes that each row represents a file in the filesystem and that
     its filepath is the index of the row.
 
     """
-    if not os.path.isdir(destination):
-        raise IOError
+    if not os.path.isdir(output_dir):
+        output_dir = create_dir(output_dir)
+
     for row in pd_col_with_filename:
-        shutil.copyfile(row, os.path.join(destination, os.path.split(row)[1]))
+        for extension in ext:
+            output_file = os.path.join(output_dir, os.path.split(row)[1] + extension)
+            print("copying '{}' to '{}'".format(row, output_file))
+            shutil.copyfile(row + extension, output_file)
 
 
-def move_rows(df_column, destination):
+def move_files_in_df(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
     """
     Move a row from a Pandas dataframe to a different location in the hard drive.
     This function assumes that each row represents a file in the filesystem and that
     its filepath is the index of the row.
 
     """
-    if not os.path.isdir(destination):
-        raise IOError
-    # with open(os.path.join(destination, 'original_files.txt'), 'w') as f:
-    #    f.writelines(df_column + '\n')
-    for row in df_column:
-        os.rename(row, os.path.join(destination, os.path.split(row)[1]))
+    if not os.path.isdir(output_dir):
+        output_dir = create_dir(output_dir)
 
-
-def xls_to_key_annotations(excel_file, sheet_index, export_directory):
-    import xlrd
-
-    excel_file = xlrd.open_workbook(excel_file)
-    spreadsheet = excel_file.sheet_by_index(sheet_index)
-
-    for row in range(spreadsheet.nrows):
-        v = spreadsheet.row_values(row)
-        txt = open(export_directory + '/' + v[0] + '.key', 'w')
-        if len(v[1]) > 3:
-            txt.write(v[1] + '\n')
-        else:
-            txt.write(v[1] + ' major\n')
-        txt.close()
-
-
-def matrix_to_excel(my_matrix, label_rows=KEY_LABELS[:12], label_cols=KEY_LABELS[:12],
-                    filename='matrix.xls', sheet='Sheet1'):
-    import xlwt
-
-    wb = xlwt.Workbook()
-    ws = wb.add_sheet(sheet)
-
-    start_row = 1
-    for label in label_rows:
-        ws.write(start_row, 0, label)
-        start_row += 1
-
-    start_col = 1
-    for label in label_cols:
-        ws.write(0, start_col, label)
-        start_col += 1
-
-    next_row = 1
-    next_col = 1
-    for row in my_matrix:
-        col = next_col
-        for item in row:
-            ws.write(next_row, col, item)
-            col += 1
-        next_row += 1
-
-    wb.save(filename)
+    for row in pd_col_with_filename:
+        for extension in ext:
+            output_file = os.path.join(output_dir, os.path.split(row)[1] + extension)
+            print("moving '{}' to '{}'".format(row, output_file))
+            os.rename(row + extension, output_file)
