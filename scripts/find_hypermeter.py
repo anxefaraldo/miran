@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print("Prenaring the Algorithm...")
+    print("\nPreparing the Algorithm...")
     # create a madmom 'processor' to find the hypermetrical positions ONLY.
     beat_tracker = mmm.features.beats.DBNDownBeatTrackingProcessor(beats_per_bar=16, fps=100, downbeats=True)
 
@@ -34,9 +34,12 @@ if __name__ == "__main__":
         raise NameError("Invalid input. Make sure it is a valid file or dir.")
 
     if args.output_dir:
-        output_dir = create_dir(args.output_dir)
+        if not os.path.isdir(args.output_dir):
+            output_dir = create_dir(args.output_dir)
+        else:
+            output_dir = args.output_dir
 
-    print("\nAnalysing audio files in '{}'".format(args.input))
+    print("Analysing audio files in '{}'".format(args.input))
     print("Exporting annotations to '{}'\n".format(output_dir))
 
     count_files = 0

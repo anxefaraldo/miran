@@ -58,6 +58,7 @@ def copy_files_in_df(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
     for row in pd_col_with_filename:
         for extension in ext:
             output_file = os.path.join(output_dir, os.path.split(row)[1] + extension)
+            print(output_file)
             print("copying '{}' to '{}'".format(row, output_file))
             shutil.copyfile(row + extension, output_file)
 
@@ -75,5 +76,6 @@ def move_files_in_df(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
     for row in pd_col_with_filename:
         for extension in ext:
             output_file = os.path.join(output_dir, os.path.split(row)[1] + extension)
+            print(output_fil)
             print("moving '{}' to '{}'".format(row, output_file))
             os.rename(row + extension, output_file)
