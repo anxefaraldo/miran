@@ -280,7 +280,7 @@ def pitchname_to_int(a_pitchname):
         return pitch2int[a_pitchname]
 
     except KeyError:
-        print('KeyError: tonic name not recognised')
+        print('KeyError: {} tonic name not recognised'.format(a_pitchname))
 
 
 def modename_to_int(mode=''):
@@ -299,7 +299,7 @@ def modename_to_int(mode=''):
         return mode2int[mode]
 
     except KeyError:
-        print('KeyError: mode type not recognised')
+        print('KeyError: {} mode name not recognised'.format(mode))
 
 
 def key_to_list(key_name):

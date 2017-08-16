@@ -6,7 +6,8 @@ import os.path
 import pandas as pd
 from miran.utils import folderfiles
 
-CONVERSION_TYPES = {'KeyFinder', 'MIK', 'VirtualDJ', 'Traktor', 'Rekordbox', 'Beatunes'}
+CONVERSION_TYPES = {'ClassicalDB', 'KeyFinder', 'MIK', 'VirtualDJ',
+                    'Traktor', 'Rekordbox', 'Beatunes'}
 
 
 def split_key_str(key_string):
@@ -32,6 +33,42 @@ def split_key_str(key_string):
     else:
         raise ValueError("Unrecognised key_string format")
     return key_string
+
+
+def ClassicalDB(input_file, output_dir=None):
+    """
+    This function converts a ClassicalDB analysis file into
+    a readable format for our evaluation algorithm.
+
+    Major keys are written as a pitch alphabetic name in upper case
+    followed by an alteration symbol (low 'b' for flat or '#' for sharp) if needed (A, Bb)
+
+    Minor keys append an 'm' to the tonic written as in major,
+    without spaces between the tonic and the mode (Am, Bbm, ...)
+
+    audio_filename - key.mp3
+
+    """
+    key = input_file[3 + input_file.rfind(' - '):input_file.rfind('.')]
+
+    if key[-1] == 'm':
+        key = key[:-1] + '\tminor\n'
+
+    else:
+        key = key + '\tmajor\n'
+
+    if not output_dir:
+        output_dir, output_file = os.path.split(input_file)
+
+    else:
+        output_file = os.path.split(input_file)[1]
+
+    output_file = os.path.splitext(output_file)[0] + '.txt'
+
+    with open(os.path.join(output_dir,output_file), 'w') as outfile:
+        outfile.write(key)
+
+    print("Creating estimation file for '{}' in '{}'". format(input_file, output_dir))
 
 
 def KeyFinder(input_file, output_dir=None):
