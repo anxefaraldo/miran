@@ -58,7 +58,6 @@ def copy_files_in_df(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
     for row in pd_col_with_filename:
         for extension in ext:
             output_file = os.path.join(output_dir, os.path.split(row)[1] + extension)
-            print(output_file)
             print("copying '{}' to '{}'".format(row, output_file))
             shutil.copyfile(row + extension, output_file)
 
@@ -76,6 +75,17 @@ def move_files_in_df(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
     for row in pd_col_with_filename:
         for extension in ext:
             output_file = os.path.join(output_dir, os.path.split(row)[1] + extension)
-            print(output_fil)
             print("moving '{}' to '{}'".format(row, output_file))
             os.rename(row + extension, output_file)
+
+
+def df_to_excel(df, excel_filename, sheet_name="Untitled"):
+
+    if not os.path.isdir(os.path.split(excel_filename)[0]):
+        print("\nInvalid export abs path. NOT saving results.")
+    else:
+        print("\nSaving evaluation results to {}".format(excel_filename))
+
+    writer = pd.ExcelWriter(os.path.splitext(excel_filename)[0] + '.xlsx')
+    df.to_excel(writer, sheet_name)
+    writer.save()

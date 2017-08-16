@@ -30,9 +30,9 @@ if __name__ == "__main__":
 
     print("Preparing '{}' algorithm".format(args.algorithm))
 
-    if args.settings:
-        settings = load_settings_as_dict(args.settings)
-        print("Loading keyconfigs from '{}'".format(args.settings))
+    if args.keyconfigs:
+        settings = load_settings_as_dict(args.keyconfigs)
+        print("Loading keyconfigs from '{}'".format(args.keyconfigs))
     else:
         settings = KEY_SETTINGS
         print("Loading default key estimation keyconfigs")

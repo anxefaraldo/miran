@@ -4,13 +4,6 @@
 import sys
 from setuptools import setup, find_packages
 
-import glob, os
-
-data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "miran/keyconfigs/*.json")
-
-data_files = glob.glob(data_path)
-
-print(data_files)
 
 with open('README.rst') as f:
     long_description = f.read()
@@ -48,12 +41,9 @@ setup(
         'openpyxl',
         'pandas',
         'scipy',
-        urllib,
-        'xlrd',
-        'xlwt'
+        'seaborn',
+        urllib
     ],
     packages=find_packages(exclude='misc'),
-    # package_dir={'': ''},
-    # scripts=script_files,
-    data_files = [('miran/keyconfigs', data_files)],
+    # data_files = [('miran/keyconfigs', data_files)],
 )

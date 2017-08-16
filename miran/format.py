@@ -3,6 +3,7 @@
 from __future__ import absolute_import, division, print_function
 
 import os.path
+import pandas as pd
 from miran.utils import folderfiles
 
 CONVERSION_TYPES = {'KeyFinder', 'MIK', 'VirtualDJ', 'Traktor', 'Rekordbox', 'Beatunes'}
@@ -100,7 +101,6 @@ def MIK(input_file, output_dir=None):
     as the key estimation for the track
 
     """
-    import pandas as pd
 
     mik = pd.read_csv(input_file)
 

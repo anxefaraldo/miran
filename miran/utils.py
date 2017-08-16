@@ -2,9 +2,6 @@
 
 import os.path
 import numpy as np
-import librosa.display
-from matplotlib import pyplot as plt
-
 
 def change_file_extension(directory, in_ext='.txt', out_ext='.key', recursive=False):
     """
@@ -148,16 +145,6 @@ def prepend_str_to_filename(directory, matching_substring, string_to_prepend):
             os.rename(item, os.path.join(d, string_to_prepend + f))
 
 
-
-def plot_chroma(chromagram):
-
-    plt.figure(figsize=(10, 4))
-    librosa.display.specshow(chromagram, y_axis='chroma', x_axis='time')
-    plt.colorbar()
-    plt.title('Chromagram')
-    plt.tight_layout()
-
-
 def replace_chars(my_str, chars={"&", "<", ">", '"', "'"}, replacement=''):
     """Replaces characters in a string."""
 
@@ -166,6 +153,13 @@ def replace_chars(my_str, chars={"&", "<", ">", '"', "'"}, replacement=''):
             my_str = my_str.replace(char, replacement)
 
     return my_str
+
+
+def return_random_track(path_or_filelist, ext=None, recursive=False):
+
+    from random import randint
+    my_list = preparse_files(path_or_filelist, ext=ext, recursive=recursive)
+    return my_list[randint(0, len(my_list) - 1)]
 
 
 def show_in_finder(filepath):

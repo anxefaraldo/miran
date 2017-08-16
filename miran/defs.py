@@ -53,28 +53,26 @@ KEY_SETTINGS = {"DURATION": None,
                 "SPECTRAL_PEAKS_THRESHOLD": 0.0001,
                 "SPECTRAL_PEAKS_MAX": 60,
 
-                "HPCP_BAND_PRESET": False,
-                "HPCP_SPLIT_HZ": 250,
-                "HPCP_HARMONICS": 4,
-                "HPCP_REFERENCE_HZ": 440,
-                "HPCP_NON_LINEAR": False,
-                "HPCP_NORMALIZE": "none",
-                "HPCP_SHIFT": False,
                 "HPCP_SIZE": 12,
-                "HPCP_WEIGHT_WINDOW_SEMITONES": 1,
+                "HPCP_REFERENCE_HZ": 440,
+                "HPCP_HARMONICS": 4,
+                "HPCP_BAND_PRESET": False, "HPCP_SPLIT_HZ": 250,
+                "HPCP_NORMALIZE": "none", "HPCP_NON_LINEAR": False,
                 "HPCP_WEIGHT_TYPE": "cosine",
-                "PROFILE_INTERPOLATION": "linear",
+                "HPCP_WEIGHT_WINDOW_SEMITONES": 1,
+                "HPCP_SHIFT": False,
 
+                "PROFILE_INTERPOLATION": "linear",
                 "KEY_POLYPHONY": False,
                 "KEY_USE_THREE_CHORDS": False,
                 "KEY_HARMONICS": 15,
                 "KEY_SLOPE": 0.2,
 
-                "ANALYSIS_TYPE": "global",
-                "N_WINDOWS": 100,
-                "WINDOW_INCREMENT": 100,
-
                 "KEY_PROFILE": "bgate",
                 "USE_THREE_PROFILES": True,
-                "WITH_MODAL_DETAILS": True
+                "WITH_MODAL_DETAILS": True,
+
+                "ANALYSIS_TYPE": "global",
+                "N_WINDOWS": 100,
+                "WINDOW_INCREMENT": 100
                 }
