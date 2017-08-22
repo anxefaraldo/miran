@@ -221,33 +221,6 @@ def windowing(window_type, size=4096, beta=0.2):
     else:
         raise ValueError("Not a valid window type")
 
-#
-# def peak_detection(array, min_position, max_position, threshold, max_peaks, range, interpolate=False, order_by='frequencies'):
-#     """
-#     This algorithm detects local maxima (peaks) in an array.
-#     The algorithm finds positive slopes and detects a peak when
-#     the slope changes sign and the peak is above the threshold.
-#     It optionally interpolates using parabolic curve fitting.
-#
-#     """
-#     peak_values = []
-#     peak_positions = []
-#     size = len(array)
-#
-#     if min_position >= max_position:
-#         raise ValueError("The minimum position has to be less than the maximum position")
-#
-#     if size < 2:
-#         raise ValueError(
-#             "The size of the array must be at least 2, for the peak detection to work")
-#
-#     scale = range / (size - 1)
-#
-#     i = np.max([0, math.ceil(min_position / scale)])
-#
-#     if (i + 1) < size and array[i] > array[i+1]:
-#         pass
-
 
 def pitchname_to_int(a_pitchname):
     """
@@ -293,7 +266,7 @@ def modename_to_int(mode=''):
     mode2int = {'': 0, 'major': 0, 'maj': 0, 'M': 0, 'minor': 1, 'min': 1, 'm': 1,
                 'ionian': 11, 'dorian': 12, 'phrygian': 13, 'lydian': 14, 'mixolydian': 15,
                 'aeolian': 16, 'locrian': 17, 'harmonic': 21, 'fifth': 31, 'monotonic': 32,
-                'difficult': 33, 'peak': 34, 'flat': 35}
+                'difficult': 33, 'peak': 34, 'flat': 35, 'n/a': 100}
 
     try:
         return mode2int[mode]
@@ -301,61 +274,61 @@ def modename_to_int(mode=''):
     except KeyError:
         print('KeyError: {} mode name not recognised'.format(mode))
 
-
-def key_to_list(key_name):
-    # TODO DELETE AFTER RECVISIGO ALL KEUY ESTIMATION ALGOS!
-    """
-    Converts a key (i.e. C major) type into a
-    numeric list in the form [tonic, mode].
-    :type key_name: str
-    """
-    if len(key_name) <= 2:
-        key_name = key_name.strip()
-        key_name = [pitchname_to_int(key_name), 0]
-        return key_name
-    elif '\t' in key_name[1:3]:
-        key_name = key_name.split('\t')
-    elif ' ' in key_name[1:3]:
-        key_name = key_name.split(' ')
-    key_name[-1] = key_name[-1].strip()
-    key_name = [pitchname_to_int(key_name[0]), modename_to_int(key_name[1])]
-    return key_name
-
-
-def key_to_int(key_symbol):
-    # TODO: DO WE NEED TO DELETE THIS!!?
-    """
-    Converts a key symbol (i.e. C major) type to int
-    """
-    key2int = {'C major': 0,
-               'C# major': 1, 'Db major': 1,
-               'D major': 2,
-               'D# major': 3, 'Eb major': 3,
-               'E major': 4,
-               'F major': 5,
-               'F# major': 6, 'Gb major': 6,
-               'G major': 7,
-               'G# major': 8, 'Ab major': 8,
-               'A major': 9,
-               'A# major': 10, 'Bb major': 10,
-               'B major': 11,
-
-               'C minor': 12,
-               'C# minor': 13, 'Db minor': 13,
-               'D minor': 14,
-               'D# minor': 15, 'Eb minor': 15,
-               'E minor': 16,
-               'F minor': 17,
-               'F# minor': 18, 'Gb minor': 18,
-               'G minor': 19,
-               'G# minor': 20, 'Ab minor': 20,
-               'A minor': 21,
-               'A# minor': 22, 'Bb minor': 22,
-               'B minor': 23}
-
-    return key2int[key_symbol]
-
-
+#
+# def key_to_list(key_name):
+#     # TODO DELETE AFTER RECVISIGO ALL KEY ESTIMATION ALGOS!
+#     """
+#     Converts a key (i.e. C major) type into a
+#     numeric list in the form [tonic, mode].
+#     :type key_name: str
+#     """
+#     if len(key_name) <= 2:
+#         key_name = key_name.strip()
+#         key_name = [pitchname_to_int(key_name), 0]
+#         return key_name
+#     elif '\t' in key_name[1:3]:
+#         key_name = key_name.split('\t')
+#     elif ' ' in key_name[1:3]:
+#         key_name = key_name.split(' ')
+#     key_name[-1] = key_name[-1].strip()
+#     key_name = [pitchname_to_int(key_name[0]), modename_to_int(key_name[1])]
+#     return key_name
+#
+#
+# def key_to_int(key_symbol):
+#     # TODO: DO WE NEED TO DELETE THIS!!?
+#     """
+#     Converts a key symbol (i.e. C major) type to int
+#     """
+#     key2int = {'C major': 0,
+#                'C# major': 1, 'Db major': 1,
+#                'D major': 2,
+#                'D# major': 3, 'Eb major': 3,
+#                'E major': 4,
+#                'F major': 5,
+#                'F# major': 6, 'Gb major': 6,
+#                'G major': 7,
+#                'G# major': 8, 'Ab major': 8,
+#                'A major': 9,
+#                'A# major': 10, 'Bb major': 10,
+#                'B major': 11,
+#
+#                'C minor': 12,
+#                'C# minor': 13, 'Db minor': 13,
+#                'D minor': 14,
+#                'D# minor': 15, 'Eb minor': 15,
+#                'E minor': 16,
+#                'F minor': 17,
+#                'F# minor': 18, 'Gb minor': 18,
+#                'G minor': 19,
+#                'G# minor': 20, 'Ab minor': 20,
+#                'A minor': 21,
+#                'A# minor': 22, 'Bb minor': 22,
+#                'B minor': 23}
+#
+#     return key2int[key_symbol]
+#
+#
 def int_to_key(key_integer):
     """
     Converts an int onto a key symbol with root and scale.
@@ -365,11 +338,11 @@ def int_to_key(key_integer):
                5: 'F major', 6: 'F# major', 7: 'G major', 8: 'Ab major', 9: 'A major',
                10: 'Bb major', 11: 'B major', 12: 'C minor', 13: 'C# minor', 14: 'D minor',
                15: 'Eb minor', 16: 'E minor', 17: 'F minor', 18: 'F# minor', 19: 'G minor',
-               20: 'Ab minor', 21: 'A minor', 22: 'Bb minor', 23: 'B minor'}
+               20: 'Ab minor', 21: 'A minor', 22: 'Bb minor', 23: 'B minor', 24: 'unknown'}
 
     return int2key[key_integer]
-
-
+#
+#
 def bin_to_pc(binary, pcp_size=36):
     # TODO DELETE AFTER REVISIONG KEY ESTINAMTISNSDF1
     """

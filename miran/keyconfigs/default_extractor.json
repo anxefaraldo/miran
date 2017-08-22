@@ -1,0 +1,9 @@
+{
+  "DURATION": null,
+  "START_TIME": 0,
+
+  "SAMPLE_RATE": 44100,
+  "WINDOW_SIZE": 4096,
+  "HOP_SIZE": 2048,
+  "HPCP_REFERENCE_HZ": 440
+}

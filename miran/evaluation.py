@@ -32,6 +32,7 @@ def key_eval_mirex(estimated_key_tuple, reference_key_tuple):
         score = 1.
 
     # fifth error = neighbouring keys in the circle of fifths with the same mode
+    # by distance of ascending fifth...
     elif estimated_tonic == (reference_tonic + 7) % 12 and estimated_mode == reference_mode:
             score = 0.5
     # mir_eval only considers ascending fifths, so next line does not apply for them

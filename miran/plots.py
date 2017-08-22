@@ -1,21 +1,18 @@
 import os.path
-import numpy as np
 import matplotlib as mpl
-import matplotlib.pyplot as plt
-import seaborn as sns
 
-# THIS ARE BASIC PLOTTING SETTINGS TO HOMOGENEIZE THE GRAPHS WITH THE STYLE OF THE THESIS
-mpl.rc('font',**{'family':'serif','serif':['Times']})
+from utils import *
+import seaborn as sns
+import matplotlib.pyplot as plt
+from format import *
+
+sns.set_style('darkgrid')
+mpl.rc('font', **{'family':'serif', 'serif':['Times']})
 mpl.rc('xtick', labelsize=8)
 mpl.rc('ytick', labelsize=8)
 mpl.rc('axes', labelsize=9)
 mpl.rc('text', usetex=True)
 
-# DISCARDED OPTIONS
-#plt.rc('font', family='sans-serif', serif='Avant Garde')
-#plt.rc('xtick', labelsize=6)
-#plt.rc('ytick', labelsize=7)
-#plt.rc('axes', labelsize=9)
 
 key_templates = {
 
@@ -89,41 +86,106 @@ key_templates = {
                             [1.0, 0.2, 0.25, 0.5, 0.1, 0.7, 0.1, 0.8, 0.3, 0.2, 0.6, 0.2]]),
 
     'noland': np.array([[0.0629, 0.0146, 0.061, 0.0121, 0.0623, 0.0414, 0.0248, 0.0631, 0.015, 0.0521, 0.0142, 0.0478],
-                        [0.0682, 0.0138, 0.0543, 0.0519, 0.0234, 0.0544, 0.0176, 0.067, 0.0349, 0.0297, 0.0401, 0.027]])
-}
+                        [0.0682, 0.0138, 0.0543, 0.0519, 0.0234, 0.0544, 0.0176, 0.067, 0.0349, 0.0297, 0.0401, 0.027]])}
+
 
 def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
                 output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures"):
 
     from librosa.display import specshow
+    with sns.axes_style('ticks'):
 
-    if chromagram.shape[0] == 12:
-        plt.figure(figsize=(5.16, 2), dpi=150)
-        plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
+        if chromagram.shape[0] == 12:
+            plt.figure(figsize=(5.16, 2), dpi=150)
+            plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
 
-    elif chromagram.shape[0] == 36:
-        plt.figure(figsize=(5.16, 2.5), dpi=150)
-        plt.yticks((0.5, 3.5, 6.5, 9.5, 12.5, 15.5, 18.5, 21.5, 24.5, 27.5, 30.5, 33.5),
-                   ('c', r'c$\sharp$', 'd', r'e$\flat$', 'e', 'f', r'f$\sharp$', 'g', r'a$\flat$', 'a', r'b$\flat$', 'b'))
+        elif chromagram.shape[0] == 36:
+            plt.figure(figsize=(5.16, 2.5), dpi=150)
+            plt.yticks((0.5, 3.5, 6.5, 9.5, 12.5, 15.5, 18.5, 21.5, 24.5, 27.5, 30.5, 33.5),
+                       ('c', r'c$\sharp$', 'd', r'e$\flat$', 'e', 'f', r'f$\sharp$', 'g', r'a$\flat$', 'a', r'b$\flat$', 'b'))
 
-    specshow(chromagram, x_axis='time', sr=sr, hop_length=hl)
-    plt.xlabel('time (secs.)')
-    plt.ylabel('pitch classes')
+        specshow(chromagram, x_axis='time', sr=sr, hop_length=hl)
+        plt.xlabel('time (secs.)')
+        plt.ylabel('pitch classes')
+        plt.tight_layout()
+        # plt.colorbar()
+        plt.savefig(os.path.join(output_dir, name + '.pdf'), format="pdf", dpi=1200)
+        plt.show()
+
+
+def plot_majmin_dist(dataset_dir, name="Key_Distribution",
+                     output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/", ext=".txt", n_keys=12):
+    corpus = folderfiles(dataset_dir, ext=ext)
+
+    raw_keys = []
+    for item in corpus:
+        with open(item, 'r') as f:
+            raw_keys.append(split_key_str(f.readline()))
+
+    major = np.zeros(n_keys)
+    minor = np.zeros(n_keys)
+    for e in raw_keys:
+        if modename_to_int(e[1]) == 0:
+            major[pitchname_to_int(e[0])] += 1
+        elif modename_to_int(e[1]) == 1:
+            minor[pitchname_to_int(e[0])] += 1
+
+    total_maj = np.sum(major)
+    total_min = np.sum(minor)
+    total_items = total_maj + total_min
+    percentage_factor = 100.00 / total_items
+    percentage_major = np.multiply(major, percentage_factor)
+    percentage_minor = np.multiply(minor, percentage_factor)
+
+    # NOW THE PLOTTING
+    plt.figure(figsize=(5.16, 2), dpi=150)
+
+    gs = mpl.gridspec.GridSpec(2, 1, height_ratios=[1, 9])
+    ax = plt.subplot(gs[0])
+    a = ax.barh(0, total_maj, linewidth=0.0, edgecolor=(.1, .1, .1))
+    b = ax.barh(0, total_min, left=total_maj, linewidth=0.0, edgecolor=(.1, .1, .1))
+    plt.xlim((0, total_items))
+    plt.xticks([])
+    plt.yticks([])
+    plt.title(name, fontsize=10)
+
+    for r in a:
+        pmaj = "%.1f" % (total_maj * percentage_factor)
+        str_l = len(pmaj) + 1
+        plt.text((total_maj * 0.5) - (str_l * 0.8), -0.25, pmaj + '\%', fontsize=7)
+
+    for r in b:
+        pmin = "%.1f" % (total_min * percentage_factor)
+        str_l = len(pmin) + 1
+        plt.text(total_maj + (total_min * 0.5) - (str_l * 0.8), -0.25, pmin + '\%', fontsize=7)
+
+    plt.subplot(gs[1])
+    plt.xlabel('tonic note')
+    plt.ylabel('percentage (\%)')
+    if n_keys == 13:
+        plt.xticks(range(n_keys), (
+        r'C', r'C$\sharp$', r'D', r'E$\flat$', r'E', r'F', r'F$\sharp$', r'G', r'A$\flat$', r'A', r'B$\flat$', r'B',
+        r'--'))
+    else:
+        plt.xticks(range(n_keys), (
+        r'C', r'C$\sharp$', r'D', r'E$\flat$', r'E', r'F', r'F$\sharp$', r'G', r'A$\flat$', r'A', r'B$\flat$', r'B'))
+    plt.bar(range(n_keys), percentage_major, label='major', linewidth=0, edgecolor=(.1, .1, .1))
+    plt.bar(range(n_keys), percentage_minor, bottom=percentage_major, label='minor', linewidth=0,
+            edgecolor=(.1, .1, .1))
+    plt.legend(fontsize=8)
     plt.tight_layout()
-    # plt.colorbar()
-    plt.savefig(os.path.join(output_dir, name + '.pdf'), format="pdf", dpi=1200)
-    plt.show()
+    plt.savefig(os.path.join(output_dir, re.sub(' ', '_', name) + '.pdf'), format="pdf", dpi=1200)
+
 
 
 def plot_profiles(profile_name, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures",
-                  yr=None, yt=None, loc=None):
+                  yr=None, yt=None, loc=None, yl="weigths"):
 
-    sns.set_style('darkgrid')
     plt.figure(figsize=(5.16, 2), dpi=150)
     plt.plot(key_templates[profile_name][0], '-o', linewidth=1, markersize=4, label="major")
     plt.plot(key_templates[profile_name][1], '--s', linewidth=1, markersize=4, label="minor")
     plt.xlabel('relative scale degrees')
-    plt.ylabel('weigths')
+    plt.ylabel(yl)
     if yr:
         plt.ylim(yr)
     if yt:
@@ -134,20 +196,19 @@ def plot_profiles(profile_name, output_dir="/Users/angel/Dropbox/Apps/Texpad/The
     if not loc:
         plt.legend(fontsize=8)
     else:
-        plt.legend(fontsize=8,loc=loc) # typically some (0.8,0.6)
+        plt.legend(fontsize=8, loc=loc) # typically some (0.8,0.6)
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, profile_name + '_profiles.pdf'), format="pdf", dpi=1200)
     plt.show()
 
 
 def plot_single_profile(data, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures",
-                  yr=None, yt=None, loc=None, label=""):
+                  yr=None, yt=None, loc=None, label="", yl="weigths"):
 
-    sns.set_style('darkgrid')
     plt.figure(figsize=(5.16, 2), dpi=150)
     plt.plot(data, '-gp', linewidth=1, markersize=4, label=label)
     plt.xlabel('relative scale degrees')
-    plt.ylabel('weigths')
+    plt.ylabel(yl)
     if yr:
         plt.ylim(yr)
     if yt:
@@ -162,3 +223,5 @@ def plot_single_profile(data, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesi
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, label + '_single_profile.pdf'), format="pdf", dpi=1200)
     plt.show()
+
+
