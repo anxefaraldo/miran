@@ -7,7 +7,7 @@ import pandas as pd
 from miran.utils import folderfiles, int_to_key
 
 CONVERSION_TYPES = {'ClassicalDB', 'KeyFinder', 'MIK', 'VirtualDJ',
-                    'Traktor', 'Rekordbox', 'Beatunes', 'SeratoDJ'}
+                    'Traktor', 'Rekordbox', 'Beatunes', 'SeratoDJ', 'WTC'}
 
 
 def split_key_str(key_string):
@@ -67,6 +67,44 @@ def ClassicalDB(input_file, output_dir=None):
         output_file = os.path.split(input_file)[1]
 
     output_file = os.path.splitext(output_file)[0] + '.txt'
+
+    with open(os.path.join(output_dir,output_file), 'w') as outfile:
+        outfile.write(key)
+
+    print("Creating estimation file for '{}' in '{}'". format(input_file, output_dir))
+
+
+def WTC(input_file, output_dir=None):
+    """
+    This function converts a WTC annotation file into
+    a readable format for our evaluation algorithm.
+
+
+    Major keys are written as a pitch alphabetic name in upper case
+    followed by an alteration symbol (low 'b' for flat or '#' for sharp)
+    if needed (A, Bb).
+
+    Minor keys append an 'm' to the tonic written as in major,
+    without spaces between the tonic and the mode (Am, Bbm, ...)
+
+    audio_filename in key.mp3
+
+    """
+    key = input_file[4 + input_file.rfind(' in '):input_file.rfind('.')]
+
+    if key[-1] == 'm':
+        key = key[:-1] + '\tminor\n'
+
+    else:
+        key = key + '\tmajor\n'
+
+    if not output_dir:
+        output_dir, output_file = os.path.split(input_file)
+
+    else:
+        output_file = os.path.split(input_file)[1]
+
+    output_file = output_file[:output_file.rfind('.')] + '.txt'
 
     with open(os.path.join(output_dir,output_file), 'w') as outfile:
         outfile.write(key)
@@ -169,6 +207,92 @@ def MIK(input_file, output_dir=None):
             outfile.write(key)
 
         print("Saving estimation file to '{}'". format(os.path.join(output_dir, output_file)))
+
+
+def QM_key(input_file, output_dir=None):
+    """
+    This function converts a QM_Key_Detector analysis file into
+    a readable format for our evaluation algorithm.
+
+    QM_Key_Detector estimation files can be created manually with
+    Sonic Visualiser or in batch processes with Sonic-Annotator.
+    In either case, this function expects a .csv file with annotations
+    for each audio file.
+
+    QM_Key_Detector outputs the key on a frame basis, therefore
+    outputing potential key changes. Given this way of working,
+    we had to find a way to reduce the annotations to a single
+    estimation for most of the evaluation tasks. We do this
+    by taking the Key with the longest total duration in the
+    whole audio file.
+
+    QM_Key_Detector csv files have columns representing time instants,
+    followed by the estimated key:
+
+    0.00,1,"C major"
+    1.02,13,"C minor"
+
+    Major keys are in range 1-12 starting at C.
+    Minor keys are in range 13-24 starting at Cm.
+
+    FOR THE MOMENT, QM NEEDS TO HAVE THE ORIGINAL AUDIO FILES IN
+    THE SAME FOLDER AS THE ANNOTATIONS... WE WOULD SOLVE THIS BY
+    ADDING MORE ARGUMENTS, BUT WE DON'T WANT THAT, YET.
+
+    """
+    import csv
+    import numpy as np
+    import madmom.audio.signal as mas
+    from miran.defs import AUDIO_FILE_EXTENSIONS
+
+    d = {}
+    values = []
+    keys = []
+
+    with open(input_file, 'r') as qm_data:
+        for row in csv.reader(qm_data):
+            values.append(float(row[0]))
+            keys.append(row[2])
+
+    input_file = input_file[:input_file.rfind('_vamp')]
+
+    total_dur = 0
+    for ext in AUDIO_FILE_EXTENSIONS:
+        try:
+            with open(input_file + ext, 'r') as audiofile:
+                total_dur = mas.Signal(audiofile).length
+                print(total_dur)
+            break
+
+        except IOError:
+            print('DID NOT FIND RELATED AUDIO TO MATCH DURATION')
+            continue
+
+    values.append(total_dur)
+    values = np.diff(values)
+
+    for v, k in zip(values, keys):
+        print(v, k)
+        if d.has_key(k):
+            d[k] += v
+        else:
+            d[k] = v
+
+    v = list(d.values())
+    k = list(d.keys())
+
+    if not output_dir:
+        output_dir, output_file = os.path.split(input_file)
+
+    else:
+        output_file = os.path.split(input_file)[1]
+
+    output_file = output_file + '.txt'
+
+    with open(os.path.join(output_dir, output_file), 'w') as outfile:
+        outfile.write(k[v.index(max(v))])
+
+    print("Creating estimation file for '{}' in '{}'".format(input_file, output_dir))
 
 
 def rekordbox(input_file, output_dir=None):
@@ -375,61 +499,3 @@ def batch_format_converter(input_dir, convert_function, output_dir=None, ext='.w
     batch = folderfiles(input_dir, ext)
     for item in batch:
         eval(convert_function)(item, output_dir)
-
-
-# THIS WAS QM TO MIREX!
-
-# import os
-# import re
-#
-# estimations = "/Users/angel/Desktop/qm-kf100_estimations/"
-# annotations = '/Users/angel/GoogleDrive/Datasets/KeyFinder100/key/'
-#
-# est = os.listdir(estimations)
-# if '.DS_Store' in est:
-#     est.remove('.DS_Store')
-#
-# ann = os.listdir(annotations)
-# if '.DS_Store' in ann:
-#     ann.remove('.DS_Store')
-#
-# for item in est:
-#     estf = open(estimations + item, 'r')
-#     eline = estf.readlines()
-#     estf.close()
-#     if len(eline) > 1:
-#         newlist = []
-#         for line in eline:
-#             newlist.append(float(line[:line.find(',')]))
-#         annf = open(annotations + ann[est.index(item)], 'r')
-#         aline = annf.readline()
-#         annf.close()
-#         tabpos = aline.find('\t')
-#         endTime = float(aline[tabpos + 1:])
-#         newlist.append(endTime)
-#         diffTimes = []
-#         for i in range(len(newlist) - 1):
-#             diffTimes.append(newlist[i + 1] - newlist[i])
-#         eline = eline[diffTimes.index(max(diffTimes))]
-#         eline = eline[eline.find('"') + 1:-2]
-#         if '/' in eline:
-#             eline = eline[:3] + eline[-5:]
-#         elif '(unknown)' in eline:
-#             eline = 'C major'
-#         print
-#         eline
-#         wf = open(estimations + item, 'w')
-#         wf.write(eline)
-#         wf.close()
-#     else:
-#         eline = eline[0]
-#         eline = eline[eline.find('"') + 1:-2]
-#         if '/' in eline:
-#             eline = eline[:3] + eline[-5:]
-#         elif '(unknown)' in eline:
-#             eline = 'C major'
-#         print
-#         eline
-#         wf = open(estimations + item, 'w')
-#         wf.write(eline)
-#         wf.close()
