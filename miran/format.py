@@ -5,9 +5,10 @@ from __future__ import absolute_import, division, print_function
 import os.path
 import pandas as pd
 from miran.utils import folderfiles, int_to_key
+from miran.defs import AUDIO_FILE_EXTENSIONS
 
-CONVERSION_TYPES = {'ClassicalDB', 'KeyFinder', 'MIK', 'VirtualDJ',
-                    'Traktor', 'Rekordbox', 'Beatunes', 'SeratoDJ', 'WTC'}
+CONVERSION_TYPES = {'Beatunes', 'ClassicalDB', 'KeyFinder', 'MIK',
+                    'Traktor', 'Rekordbox', 'SeratoDJ', 'VirtualDJ', 'WTC'}
 
 
 def split_key_str(key_string):
@@ -36,6 +37,65 @@ def split_key_str(key_string):
     else:
         raise ValueError("Unrecognised key_string format: {}".format(key_string))
     return key_string
+
+
+def Beatunes(input_file, output_dir=None):
+    """
+    This function converts a Beatunes tagged file into
+    a readable format for our evaluation algorithm.
+
+    Beatunes embeds the the key as an ID3 tag
+    inside the audio file.
+
+    Major keys are written as a pitch alphabetic name in upper case
+    followed by an alteration symbol (low 'b' for flat) if needed (A, Bb)
+
+    Minor keys append an 'm' to the tonic written as in major,
+    without spaces between the tonic and the mode (Am, Bbm, ...)
+
+    audio_filename - key.mp3
+
+    """
+    fname, fext = os.path.splitext(input_file)
+
+    if fext == '.mp3':
+        import mutagen.mp3
+        d = mutagen.mp3.Open(input_file)
+        key = d["TKEY"][0][0]
+
+    elif '.aif' in fext:
+        import mutagen.mp3
+        d = mutagen.aiff.Open(input_file)
+        key = d["TKEY"][0][0]
+
+    elif fext == '.flac':
+        import mutagen.flac
+        d = mutagen.flac.Open(input_file)
+        key = d["key"][0]
+
+    else:
+        print("Could not retrieve id3 tags from {}\n"
+              "Recognised id3  formats are mp3, flac and aiff.".format(input_file))
+        return
+
+    if key[-1] == 'm':
+        key = key[:-1] + '\tminor\n'
+
+    else:
+        key = key + '\tmajor\n'
+
+    if not output_dir:
+        output_dir, output_file = os.path.split(input_file)
+
+    else:
+        output_file = os.path.split(input_file)[1]
+
+    output_file = os.path.splitext(output_file)[0] + '.txt'
+
+    with open(os.path.join(output_dir, output_file), 'w') as outfile:
+        outfile.write(key)
+
+    print("Creating estimation file for '{}' in '{}'".format(input_file, output_dir))
 
 
 def ClassicalDB(input_file, output_dir=None):
@@ -243,7 +303,6 @@ def QM_key(input_file, output_dir=None):
     import csv
     import numpy as np
     import madmom.audio.signal as mas
-    from miran.defs import AUDIO_FILE_EXTENSIONS
 
     d = {}
     values = []

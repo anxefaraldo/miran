@@ -478,7 +478,7 @@ def key_essentia_extractor(input_audio_file, output_text_file, **kwargs):
     """
     loader = estd.MonoLoader(filename=input_audio_file,
                              sampleRate=kwargs["SAMPLE_RATE"])
-    key = estd.KeyExtractor(frameSize=kwargs["WINDOW_SIZE"],
+    ekey = estd.KeyExtractor(frameSize=kwargs["WINDOW_SIZE"],
                             hopSize=kwargs["HOP_SIZE"],
                             tuningFrequency=kwargs["HPCP_REFERENCE_HZ"])
 

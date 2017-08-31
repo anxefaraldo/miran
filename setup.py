@@ -37,6 +37,7 @@ setup(
         'matplotlib',
         'mido',
         'music21',
+        'mutagen',
         'numpy',
         'openpyxl',
         'pandas',

@@ -15,7 +15,7 @@ including key estimation keyconfigs and label conversions.
 
 # accepted extensions for audio files
 # -----------------------------------
-AUDIO_FILE_EXTENSIONS = {'.wav', '.mp3', 'flac', '.aiff', '.ogg'}
+AUDIO_FILE_EXTENSIONS = {'.wav', '.mp3', 'flac', '.aiff', '.ogg', '.aif'}
 
 # accepted extensions for key annotation files
 # --------------------------------------------

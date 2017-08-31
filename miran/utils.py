@@ -350,3 +350,16 @@ def bin_to_pc(binary, pcp_size=36):
     It assumes (bin[0] == pc9) as implemeted in Essentia.
     """
     return int(binary / (pcp_size / 12.0))
+
+
+def wav2aiff(input_path, replace=True):
+
+    from subprocess import call
+    files = preparse_files(input_path)
+
+    for f in files:
+        fname, fext = os.path.splitext(f)
+        if fext == '.wav':
+            call('ffmpeg -i "{}" "{}"'.format(f, fname + '.aif'), shell=True)
+            if replace:
+                os.remove(f)
