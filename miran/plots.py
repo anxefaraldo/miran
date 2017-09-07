@@ -5,6 +5,7 @@ from utils import *
 import seaborn as sns
 import matplotlib.pyplot as plt
 from format import *
+import re
 
 sns.set_style('darkgrid')
 mpl.rc('font', **{'family':'serif', 'serif':['Times']})
