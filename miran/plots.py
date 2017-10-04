@@ -14,7 +14,6 @@ mpl.rc('ytick', labelsize=8)
 mpl.rc('axes', labelsize=9)
 mpl.rc('text', usetex=True)
 
-
 key_templates = {
 
     'bgate': np.array([[1., 0.00, 0.42, 0.00, 0.53, 0.37, 0.00, 0.77, 0.00, 0.38, 0.21, 0.30],
@@ -178,13 +177,13 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution",
     plt.savefig(os.path.join(output_dir, re.sub(' ', '_', name) + '.pdf'), format="pdf", dpi=1200)
 
 
-
-def plot_profiles(profile_name, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures",
-                  yr=None, yt=None, loc=None, yl="weigths"):
-
-    plt.figure(figsize=(5.16, 2), dpi=150)
-    plt.plot(key_templates[profile_name][0], '-o', linewidth=1, markersize=4, label="major")
-    plt.plot(key_templates[profile_name][1], '--s', linewidth=1, markersize=4, label="minor")
+def plot_profiles(profile_name, output_dir="/Users/angelosx/Dropbox/Apps/Texpad/Thesis/figures/",
+                  yr=None, yt=None, loc=None, yl="weigths", fy1=7, fy2=0, fx=0):
+    plt.figure(figsize=(5.16, 2.5), dpi=150)
+    a = plt.plot(key_templates[profile_name][0], '-o', linewidth=1, markersize=4, label="major")
+    c1 = a[0].get_color()
+    b = plt.plot(key_templates[profile_name][1], '--s', linewidth=1, markersize=4, label="minor")
+    c2 = b[0].get_color()
     plt.xlabel('relative scale degrees')
     plt.ylabel(yl)
     if yr:
@@ -194,20 +193,31 @@ def plot_profiles(profile_name, output_dir="/Users/angel/Dropbox/Apps/Texpad/The
     plt.xticks(range(12), (r'\^{1}', r'$\sharp$\^{1}/$\flat$\^{2}', r'\^{2}', r'$\sharp$\^{2}/$\flat$\^{3}', r'\^{3}',
                            r'\^{4}', r'$\sharp$\^{4}/$\flat$\^{5}', r'\^{5}', r'$\sharp$\^{5}/$\flat$\^{6}', r'\^{6}',
                            r'$\sharp$\^{6}/$\flat$\^{7}', r'\^{7}'))
+    i = -0.25
+    for f in key_templates[profile_name][0]:
+        plt.text(i + fx, fy1, '%.2f' % f, fontsize=8, color=c1)
+        i += 1
+    i = -0.25
+    for f in key_templates[profile_name][1]:
+        plt.text(i + fx, fy2, '%.2f' % f, fontsize=8, color=c2)
+        i += 1
+
     if not loc:
         plt.legend(fontsize=8)
     else:
-        plt.legend(fontsize=8, loc=loc) # typically some (0.8,0.6)
-    plt.tight_layout()
+        plt.legend(fontsize=8, loc=loc)  # typically some (0.8,0.6)
+
+    plt.tight_layout(pad=2, rect=(0, 0, 1, 1))
     plt.savefig(os.path.join(output_dir, profile_name + '_profiles.pdf'), format="pdf", dpi=1200)
     plt.show()
 
 
-def plot_single_profile(data, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures",
-                  yr=None, yt=None, loc=None, label="", yl="weigths"):
+def plot_single_profile(data, output_dir="/Users/angelosx/Dropbox/Apps/Texpad/Thesis/figures",
+                  yr=None, yt=None, loc=None, label="", yl="weigths", fy=7, fx=0):
 
-    plt.figure(figsize=(5.16, 2), dpi=150)
-    plt.plot(data, '-gp', linewidth=1, markersize=4, label=label)
+    plt.figure(figsize=(5.16, 2.5), dpi=150)
+    a = plt.plot(data, '-gp', linewidth=1, markersize=4, label=label)
+    c1 = a[0].get_color()
     plt.xlabel('relative scale degrees')
     plt.ylabel(yl)
     if yr:
@@ -217,11 +227,15 @@ def plot_single_profile(data, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesi
     plt.xticks(range(12), (r'\^{1}', r'$\sharp$\^{1}/$\flat$\^{2}', r'\^{2}', r'$\sharp$\^{2}/$\flat$\^{3}', r'\^{3}',
                            r'\^{4}', r'$\sharp$\^{4}/$\flat$\^{5}', r'\^{5}', r'$\sharp$\^{5}/$\flat$\^{6}', r'\^{6}',
                            r'$\sharp$\^{6}/$\flat$\^{7}', r'\^{7}'))
+    i = -0.25
+    for f in data:
+        plt.text(i + fx, fy, '%.2f' % f, fontsize=8, color=c1)
+        i += 1
     if not loc:
         plt.legend(fontsize=8)
     else:
         plt.legend(fontsize=8,loc=loc) # typically some (0.8,0.6)
-    plt.tight_layout()
+    plt.tight_layout(pad=2, rect=(0, 0, 1, 1))
     plt.savefig(os.path.join(output_dir, label + '_single_profile.pdf'), format="pdf", dpi=1200)
     plt.show()
 

@@ -25,7 +25,7 @@ def split_key_str(key_string):
     if key_string == "-":
         return ["-", 'n/a']
 
-    elif "," in key_string:
+    if "," in key_string:
         key_string = key_string.replace("\t", "")
         key_string = key_string.replace(' ', "")
         key_string = key_string.split(",")
@@ -34,8 +34,10 @@ def split_key_str(key_string):
         key_string = key_string.split("\t")
     elif " " in key_string:
         key_string = key_string.split()
+
     else:
         raise ValueError("Unrecognised key_string format: {}".format(key_string))
+
     return key_string
 
 
