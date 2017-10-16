@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 with open('README.rst') as f:
     long_description = f.read()
 
-urllib = 'urllib' if sys.version_info >= (3, 0) else 'urllib2'
+# urllib = 'urllib' if sys.version_info >= (3, 0) else 'urllib2'
 
 setup(
     name='miran',
@@ -43,7 +43,7 @@ setup(
         'pandas',
         'scipy',
         'seaborn',
-        urllib
+        # urllib
     ],
     packages=find_packages(exclude='misc'),
     # data_files = [('miran/keyconfigs', data_files)],
