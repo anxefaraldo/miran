@@ -125,10 +125,10 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution",
     major = np.zeros(n_keys)
     minor = np.zeros(n_keys)
     for e in raw_keys:
-        if modename_to_int(e[1]) == 0:
-            major[pitchname_to_int(e[0])] += 1
-        elif modename_to_int(e[1]) == 1:
-            minor[pitchname_to_int(e[0])] += 1
+        if modename_to_id(e[1]) == 0:
+            major[chroma_to_pc(e[0])] += 1
+        elif modename_to_id(e[1]) == 1:
+            minor[chroma_to_pc(e[0])] += 1
 
     total_maj = np.sum(major)
     total_min = np.sum(minor)

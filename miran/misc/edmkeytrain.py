@@ -56,7 +56,7 @@ if os.path.isdir(args.input_data_folder):
                 groundtruth_file = open(args.ground_truth + '/' + item[:-4] + '.key', 'r')
                 groundtruth_key = groundtruth_file.readline()
                 groundtruth_file.close()
-                groundtruth = key_to_list(groundtruth_key)
+                groundtruth = split_key_str(groundtruth_key)
             except StandardError:
                 print "Didn't find groundtruth for current soundfile. Skipping...\n"
                 continue

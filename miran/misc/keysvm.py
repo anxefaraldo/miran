@@ -112,7 +112,7 @@ def estimate_key(soundfile, write_to):
             peaks_pcs.append(bin_to_pc(item, HPCP_SIZE))
         estimation_1 = key_1(chroma)
         key_1 = estimation_1[0] + ' ' + estimation_1[1]
-        keyn_1 = key_to_int(key_1)
+        keyn_1 = split?(key_1)
         tonic_1 = pitchname_to_int(estimation_1[0])
         scale_1 = modename_to_int(estimation_1[1])
         confidence_1 = estimation_1[2]

@@ -3,7 +3,7 @@
 
 import os
 import numpy as np
-from miran.utils import pitchname_to_int
+from miran.utils import chroma_to_pc
 
 
 def extract_median_pcp(dir_estimations, dir_annotations, pcp_size=36):
@@ -22,7 +22,7 @@ def extract_median_pcp(dir_estimations, dir_annotations, pcp_size=36):
             pcp = pcp[pcp.rfind('\t') + 1:].split(', ')
             for i in range(pcp_size):
                 pcp[i] = float(pcp[i])
-            pcp = np.roll(pcp, (pcp_size // 12) * ((pitchname_to_int(root) - 9) % 12) * -1)
+            pcp = np.roll(pcp, (pcp_size // 12) * ((chroma_to_pc(root) - 9) % 12) * -1)
             accumulate_profiles.append(pcp)
     return np.median(accumulate_profiles, axis=0)
 

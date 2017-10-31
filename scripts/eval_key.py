@@ -15,7 +15,7 @@ if __name__ == "__main__":
     import pandas as pd
     from argparse import ArgumentParser
     from miran.defs import ANNOTATION_FILE_EXTENSIONS, DEGREE_LABELS, KEY_LABELS
-    from miran.utils import pitchname_to_int, modename_to_int
+    from miran.utils import chroma_to_pc, modename_to_id
     from miran.evaluation import *
     from miran.format import split_key_str
 
@@ -63,8 +63,8 @@ if __name__ == "__main__":
                     print("{} - Didn't find reference annotation".format(each_file))
                     continue
 
-                estimated_key = (pitchname_to_int(analysis[0]), modename_to_int(analysis[1]))
-                reference_key = (pitchname_to_int(reference[0]), modename_to_int(reference[1]))
+                estimated_key = (chroma_to_pc(analysis[0]), modename_to_id(analysis[1]))
+                reference_key = (chroma_to_pc(reference[0]), modename_to_id(reference[1]))
 
                 score_mirex = key_eval_mirex(estimated_key, reference_key)
                 mirex.append(score_mirex)

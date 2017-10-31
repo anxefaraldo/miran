@@ -3,6 +3,7 @@
 import os.path
 import numpy as np
 
+
 def change_file_extension(directory, in_ext='.txt', out_ext='.key', recursive=False):
     """
     Looks for specific file types in a directory and changes their
@@ -204,7 +205,10 @@ def write_regular_timespans(textfile, duration=120):
 
 
 def windowing(window_type, size=4096, beta=0.2):
-    """converts"""
+    """
+    Returns an array of the specified size
+    with the desired window shape.
+    """
     if window_type == "bartlett":
         return np.bartlett(size)
     elif window_type == "blackmann":
@@ -222,14 +226,14 @@ def windowing(window_type, size=4096, beta=0.2):
         raise ValueError("Not a valid window type")
 
 
-def pitchname_to_int(a_pitchname):
+def chroma_to_pc(chroma_name):
     """
     Converts a pitch name to its pitch-class value.
     The flat symbol is represented by a lower case 'b'.
     the sharp symbol is represented by the '#' character.
     The pitch name can be either upper of lower case.
 
-    :type a_pitchname: str
+    :type chroma_name: str
 
     """
     pitch2int = {'B#': 0, 'C': 0, 'Dbb': 0,
@@ -247,16 +251,16 @@ def pitchname_to_int(a_pitchname):
                  '??': 12, '-': 12, 'X': 12, 'All': 12}
 
     try:
-        if a_pitchname.islower():
-            a_pitchname = a_pitchname[0].upper() + a_pitchname[1:]
+        if chroma_name.islower():
+            chroma_name = chroma_name[0].upper() + chroma_name[1:]
 
-        return pitch2int[a_pitchname]
+        return pitch2int[chroma_name]
 
     except KeyError:
-        print('KeyError: {} pitch name not recognised'.format(a_pitchname))
+        print('KeyError: {} choma not recognised'.format(chroma_name))
 
 
-def modename_to_int(mode=''):
+def modename_to_id(mode=''):
     """
     Converts a mode label into numeric values.
 
@@ -274,27 +278,6 @@ def modename_to_int(mode=''):
     except KeyError:
         print('KeyError: {} mode name not recognised'.format(mode))
 
-#
-# def key_to_list(key_name):
-#     # TODO DELETE AFTER RECVISIGO ALL KEY ESTIMATION ALGOS!
-#     """
-#     Converts a key (i.e. C major) type into a
-#     numeric list in the form [tonic, mode].
-#     :type key_name: str
-#     """
-#     if len(key_name) <= 2:
-#         key_name = key_name.strip()
-#         key_name = [pitchname_to_int(key_name), 0]
-#         return key_name
-#     elif '\t' in key_name[1:3]:
-#         key_name = key_name.split('\t')
-#     elif ' ' in key_name[1:3]:
-#         key_name = key_name.split(' ')
-#     key_name[-1] = key_name[-1].strip()
-#     key_name = [pitchname_to_int(key_name[0]), modename_to_int(key_name[1])]
-#     return key_name
-#
-#
 # def key_to_int(key_symbol):
 #     # TODO: DO WE NEED TO DELETE THIS!!?
 #     """
@@ -327,8 +310,8 @@ def modename_to_int(mode=''):
 #                'B minor': 23}
 #
 #     return key2int[key_symbol]
-#
-#
+
+
 def int_to_key(key_integer):
     """
     Converts an int onto a key symbol with root and scale.
@@ -341,8 +324,29 @@ def int_to_key(key_integer):
                20: 'Ab minor', 21: 'A minor', 22: 'Bb minor', 23: 'B minor', 24: 'unknown'}
 
     return int2key[key_integer]
-#
-#
+
+
+def pc_to_chroma(pitch_class):
+    """
+    Converts an int onto a pitch_name
+
+    """
+    pc2chroma = {0: 'C',
+                 1: 'C#',
+                 2: 'D',
+                 3: 'Eb',
+                 4: 'E',
+                 5: 'F',
+                 6: 'F#',
+                 7: 'G',
+                 8: 'Ab',
+                 9: 'A',
+                 10: 'Bb',
+                 11: 'B'}
+
+    return pc2chroma[pitch_class]
+
+
 def bin_to_pc(binary, pcp_size=36):
     # TODO DELETE AFTER REVISIONG KEY ESTINAMTISNSDF1
     """
@@ -559,7 +563,7 @@ def roman_to_pcs(chord_symbol):
         return ()
 
 
-def find_mode(mode_array):
+def find_mode_flat(mode_array):
 
     from vector import distance
 
@@ -569,12 +573,14 @@ def find_mode(mode_array):
              'lydian':     np.array([1., 0., 1., 0., 1., 0., 1., 1., 0., 1., 0., 1.]),
              'mixolydian': np.array([1., 0., 1., 0., 1., 1., 0., 1., 0., 1., 1., 0.]),
              'aeolian':    np.array([1., 0., 1., 1., 0., 1., 0., 1., 1., 0., 1., 0.]),
-             'locrian':    np.array([1., 1., 0., 1., 0., 1., 1., 0., 1., 0., 1., 0.])}
+             'harmonic':   np.array([1., 0., 1., 1., 0., 1., 0., 1., 1., 0., 0., 1.]),
+             'locrian':    np.array([1., 1., 0., 1., 0., 1., 1., 0., 1., 0., 1., 0.]),
+             'pentamaj':   np.array([1., 0., 1., 0., 1., 0., 0., 1., 0., 1., 0., 0.]),
+             'pentamin':   np.array([1., 0., 0., 1., 0., 1., 0., 1., 0., 0., 1., 0.])}
 
+    rank = []
     for mode in modes.keys():
-
-        dis = distance(modes[mode], mode_array)
-
-        if distance(modes[mode], mode_array) == 0.:
-
-            return mode
+        dis = distance(modes[mode], mode_array, dist='cityblock')
+        rank.append((dis,mode))
+    rank.sort(key=lambda tup: tup[0])
+    return rank

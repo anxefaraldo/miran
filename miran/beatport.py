@@ -9,64 +9,50 @@ except ImportError:
     import urllib2 as url
 
 import os.path
-import re, json
+import json
+import re
+import shutil
 import pandas as pd
-from miran.utils import preparse_files
+from miran.utils import create_dir, preparse_files
 
 
-def metafile_to_series(filepath_or_string):
+def copy_files_in_pddf(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
     """
-    Takes a json file or string and creates a pandas Series with it.
+    Copy a row from a Pandas dataframe to a different location in the hard drive.
+    This function assumes that each row represents a file in the filesystem and that
+    its filepath is the index of the row.
+
     """
-    if os.path.isfile(filepath_or_string):
-        with open(filepath_or_string, 'r') as jsonfile:
-            metadata = json.load(jsonfile)
-    else:
-        metadata = json.loads(filepath_or_string)
+    if not os.path.isdir(output_dir):
+        output_dir = create_dir(output_dir)
 
-    # unfold arguments containing lists:
-    artists = []
-    for entry in metadata["artists"]:
-        if entry["name"] != 'None':
-            artists.append(entry["name"])
-    artists = str.join(', ', artists)
-
-    genres = []
-    for entry in metadata["genres"]:
-        if entry["name"] != 'None':
-            genres.append(entry["name"])
-    genres = str.join(', ', genres)
-
-    sub_genres = []
-    for entry in metadata["sub_genres"]:
-        if entry["name"] != 'None':
-            sub_genres.append(entry["name"])
-        sub_genres = str.join(', ', sub_genres)
-
-    # return a pandas series with relevant metadata
-    return pd.Series([os.path.splitext(filepath_or_string)[0], metadata["id"], artists,
-                      metadata["name"], metadata["mix"], metadata["label"]["name"],
-                      genres, sub_genres, metadata["key"]],
-
-                     index=['filename', 'id', 'artists', 'title', 'mix',
-                            'label', 'genres', 'subgenres', 'key'])
+    for row in pd_col_with_filename:
+        for extension in ext:
+            output_file = os.path.join(output_dir, os.path.split(row)[1] + extension)
+            print("copying '{}' to '{}'".format(row, output_file))
+            shutil.copyfile(row + extension, output_file)
 
 
-def metadir_to_dataframe(dir_or_listOfFilepaths, ext='.json'):
+def move_files_in_pddf(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
+    """
+    Move a row from a Pandas dataframe to a different location in the hard drive.
+    This function assumes that each row represents a file in the filesystem and that
+    its filepath is the index of the row.
 
-    list_of_files = preparse_files(dir_or_listOfFilepaths, ext=ext)
+    """
+    if not os.path.isdir(output_dir):
+        output_dir = create_dir(output_dir)
 
-    dataframe = []
-    for item in list_of_files:
-        dataframe.append(metafile_to_series(item))
-
-    # put the results in a pandas dataframe:
-    return pd.DataFrame(dataframe)
+    for row in pd_col_with_filename:
+        for extension in ext:
+            output_file = os.path.join(output_dir, os.path.split(row)[1] + extension)
+            print("moving '{}' to '{}'".format(row, output_file))
+            os.rename(row + extension, output_file)
 
 
 def download_stem(stemid, output_dir=None):
     """
-    Attempts to download the chosed stem (by ID) from Beatport.com
+    Attempts to download the chosen stem (by ID) from Beatport.com
 
     """
     stemid = str(stemid)
@@ -219,12 +205,14 @@ def download_track(trackid, output_dir=None, skip_tracks_without_metadata=False)
         print("Saving metadata to", jsonfile)
 
 
-def filepath_to_column(dataframe, searchpath_or_pathlist, ext='.mp3'):
+def filepath_to_pdcol(dataframe, searchpath_or_pathlist, ext='.mp3', hide_ext=True):
     filelist = preparse_files(searchpath_or_pathlist, ext=ext)
 
     dataframe['path'] = pd.Series()
     for item in dataframe.iterrows():
         file_path = find_file_by_id(item[1][0], filelist)
+        if hide_ext:
+            file_path = os.path.splitext(file_path)[0]
         dataframe.set_value(dataframe.index[item[0]], ['path'], file_path)
 
 
@@ -258,20 +246,60 @@ def get_ids_from_files(searchpath_or_pathlist, ext='.mp3', recursive=False, save
     return track_ids
 
 
-def rename_files_without_leading_zeroes(searchpath_or_pathlist, ext=None, recursive=False):
-    filelist = preparse_files(searchpath_or_pathlist, ext=ext, recursive=recursive)
+def metadir_to_pddf(dir_or_listOfFilepaths, ext='.json'):
+    """
+    Directory with metadata files to pandas dataframe.
+    Takes a dir with json files and creates a pandas dataframe with them.
+    """
 
-    for item in filelist:
-        my_dir, my_file = os.path.split(item)
-        os.rename(item, os.path.join(my_dir, str(int(my_file.split()[0])) + my_file[my_file.find(' '):]))
+    list_of_files = preparse_files(dir_or_listOfFilepaths, ext=ext)
+
+    dataframe = []
+    for item in list_of_files:
+        dataframe.append(metafile_to_pds(item))
+
+    # put the results in a pandas dataframe:
+    return pd.DataFrame(dataframe)
 
 
-def rename_files_without_beatport_metadata(searchpath_or_pathlist, ext=None, recursive=False):
-    filelist = preparse_files(searchpath_or_pathlist, ext=ext, recursive=recursive)
+def metafile_to_pds(filepath_or_string):
+    """
+    Metadata file to pandas series.
+    Takes a json file or string and creates a pandas Series with it.
+    """
 
-    for item in filelist:
-        my_dir, my_file = os.path.split(item)
-        os.rename(item, os.path.join(my_dir, os.path.join(my_dir, my_file[:my_file.find(' =')] + ext)))
+    if os.path.isfile(filepath_or_string):
+        with open(filepath_or_string, 'r') as jsonfile:
+            metadata = json.load(jsonfile)
+    else:
+        metadata = json.loads(filepath_or_string)
+
+    # unfold arguments containing lists:
+    artists = []
+    for entry in metadata["artists"]:
+        if entry["name"] != 'None':
+            artists.append(entry["name"])
+    artists = str.join(', ', artists)
+
+    genres = []
+    for entry in metadata["genres"]:
+        if entry["name"] != 'None':
+            genres.append(entry["name"])
+    genres = str.join(', ', genres)
+
+    sub_genres = []
+    for entry in metadata["sub_genres"]:
+        if entry["name"] != 'None':
+            sub_genres.append(entry["name"])
+        sub_genres = str.join(', ', sub_genres)
+
+    # return a pandas series with relevant metadata
+    return pd.Series([os.path.splitext(filepath_or_string)[0], metadata["id"], artists,
+                      metadata["name"], metadata["mix"], metadata["label"]["name"],
+                      genres, sub_genres, metadata["key"]],
+
+                     index=['filename', 'id', 'artists', 'title', 'mix',
+                            'label', 'genres', 'subgenres', 'key'])
 
 
 def remove_leading_zeroes_from_id(beatport_id_string, out_type='int'):
@@ -283,3 +311,19 @@ def remove_leading_zeroes_from_id(beatport_id_string, out_type='int'):
 
     else:
         raise TypeError("out_type must be either 'str' or 'int'.")
+
+
+def rename_files_without_metadata(searchpath_or_pathlist, ext=None, recursive=False):
+    filelist = preparse_files(searchpath_or_pathlist, ext=ext, recursive=recursive)
+
+    for item in filelist:
+        my_dir, my_file = os.path.split(item)
+        os.rename(item, os.path.join(my_dir, os.path.join(my_dir, my_file[:my_file.find(' =')] + ext)))
+
+
+def rename_files_without_leading_zeroes(searchpath_or_pathlist, ext=None, recursive=False):
+    filelist = preparse_files(searchpath_or_pathlist, ext=ext, recursive=recursive)
+
+    for item in filelist:
+        my_dir, my_file = os.path.split(item)
+        os.rename(item, os.path.join(my_dir, str(int(my_file.split()[0])) + my_file[my_file.find(' '):]))

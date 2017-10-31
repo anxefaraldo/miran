@@ -7,8 +7,8 @@ import pandas as pd
 from miran.utils import folderfiles, int_to_key
 from miran.defs import AUDIO_FILE_EXTENSIONS
 
-CONVERSION_TYPES = {'Beatunes', 'ClassicalDB', 'KeyFinder', 'MIK',
-                    'Traktor', 'Rekordbox', 'SeratoDJ', 'VirtualDJ', 'WTC'}
+CONVERSION_TYPES = {'Beatunes', 'ClassicalDB', 'KeyFinder', 'legacy', 'MIK',
+                    'Traktor', 'rekordbox', 'SeratoDJ', 'VirtualDJ', 'WTC'}
 
 
 def split_key_str(key_string):
@@ -39,6 +39,26 @@ def split_key_str(key_string):
         raise ValueError("Unrecognised key_string format: {}".format(key_string))
 
     return key_string
+
+
+def create_annotation_file(input_file, annotation, output_dir=None):
+    """
+    This function creates an annotation file with the specified commands.
+
+    """
+
+    if not output_dir:
+        output_dir, output_file = os.path.split(input_file)
+
+    else:
+        output_file = os.path.split(input_file)[1]
+
+    output_file = os.path.splitext(output_file)[0] + '.txt'
+
+    with open(os.path.join(output_dir, output_file), 'w') as outfile:
+        outfile.write(annotation)
+
+    print("Creating annotation file for '{}' in '{}'".format(input_file, output_dir))
 
 
 def Beatunes(input_file, output_dir=None):
@@ -206,6 +226,36 @@ def KeyFinder(input_file, output_dir=None):
         output_file = os.path.split(input_file)[1]
 
     output_file = output_file[:output_file.rfind(' - ')] + '.txt'
+
+    with open(os.path.join(output_dir,output_file), 'w') as outfile:
+        outfile.write(key)
+
+    print("Creating estimation file for '{}' in '{}'". format(input_file, output_dir))
+
+
+def legacy(input_file, output_dir=None):
+    """
+    This function creates annotation files from metadata
+    contained in the audio file title as we had done in
+    previous experiments.
+
+    We had previously appended the key name to the filename
+    after the selected delimiter (=).
+
+    arttist - title = key.mp3
+
+    """
+    key = input_file[3 + input_file.rfind(' = '):input_file.rfind('.')]
+    tonic, mode = key.split()
+    key = '{}\t{}\n'.format(tonic, mode)
+
+    if not output_dir:
+        output_dir, output_file = os.path.split(input_file)
+
+    else:
+        output_file = os.path.split(input_file)[1]
+
+    output_file = output_file[:output_file.rfind(' = ')] + '.txt'
 
     with open(os.path.join(output_dir,output_file), 'w') as outfile:
         outfile.write(key)

@@ -2,9 +2,9 @@
 
 from __future__ import absolute_import, division, print_function
 
-import os, shutil
+import os
 import pandas as pd
-from miran.utils import create_dir
+
 
 def values_greater_than(my_dataframe, my_col, threshold=0):
     counts = my_dataframe[my_col].value_counts()
@@ -44,39 +44,6 @@ def find_identical_rows(df, row_index):
     for row in df.iterrows():
         if all(find_row == row[1]):
             print(row[0])
-
-def copy_files_in_df(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
-    """
-    Copy a row from a Pandas dataframe to a different location in the hard drive.
-    This function assumes that each row represents a file in the filesystem and that
-    its filepath is the index of the row.
-
-    """
-    if not os.path.isdir(output_dir):
-        output_dir = create_dir(output_dir)
-
-    for row in pd_col_with_filename:
-        for extension in ext:
-            output_file = os.path.join(output_dir, os.path.split(row)[1] + extension)
-            print("copying '{}' to '{}'".format(row, output_file))
-            shutil.copyfile(row + extension, output_file)
-
-
-def move_files_in_df(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
-    """
-    Move a row from a Pandas dataframe to a different location in the hard drive.
-    This function assumes that each row represents a file in the filesystem and that
-    its filepath is the index of the row.
-
-    """
-    if not os.path.isdir(output_dir):
-        output_dir = create_dir(output_dir)
-
-    for row in pd_col_with_filename:
-        for extension in ext:
-            output_file = os.path.join(output_dir, os.path.split(row)[1] + extension)
-            print("moving '{}' to '{}'".format(row, output_file))
-            os.rename(row + extension, output_file)
 
 
 def df_to_excel(df, excel_filename, sheet_name="Untitled"):
