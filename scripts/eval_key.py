@@ -43,6 +43,8 @@ if __name__ == "__main__":
         estimations = os.listdir(args.estimations)
 
         file_count = 0
+        true_tonic_mode = np.array([0, 0])
+        false_tonic_mode = np.array([0, 0])
         for each_file in estimations:
             reference = None
             if any(ext == os.path.splitext(each_file)[-1] for ext in ANNOTATION_FILE_EXTENSIONS):
@@ -66,6 +68,10 @@ if __name__ == "__main__":
                 estimated_key = (chroma_to_pc(analysis[0]), modename_to_id(analysis[1]))
                 reference_key = (chroma_to_pc(reference[0]), modename_to_id(reference[1]))
 
+                tonic_mode_score = key_tonic_mode(estimated_key, reference_key)
+                true_tonic_mode += tonic_mode_score
+                false_tonic_mode += np.abs(np.subtract(tonic_mode_score, 1))
+
                 score_mirex = key_eval_mirex(estimated_key, reference_key)
                 mirex.append(score_mirex)
 
@@ -73,7 +79,7 @@ if __name__ == "__main__":
                 errors.append(type_error[0])
 
                 results[each_file] = pd.Series([reference[0], reference[1], analysis[0], analysis[1], type_error[1], score_mirex],
-                                                   index=['ref_tonic', 'ref_mode', 'est_tonic', 'est_mode', 'rel_error', 'mirex'])
+                                               index=['ref_tonic', 'ref_mode', 'est_tonic', 'est_mode', 'rel_error', 'mirex'])
 
                 col = reference_key[0] + (reference_key[1] * 12)
                 row = estimated_key[0] + (estimated_key[1] * 12)
@@ -92,6 +98,9 @@ if __name__ == "__main__":
                            mirex.count(0.2),
                            mirex.count(0.0),
                            np.sum(mirex)], float(len(errors)))
+
+        true_tonic_mode = np.divide(true_tonic_mode, float(file_count))
+        false_tonic_mode = np.divide(false_tonic_mode, float(file_count))
 
         # PRINT RESULTS TO CONSOLE
         # ========================
@@ -114,6 +123,10 @@ if __name__ == "__main__":
             mtx_error = pd.DataFrame(mtx_error.T, index=('I', 'i'), columns=DEGREE_LABELS)
             print(mtx_error)
 
+            print("\nTONIC MODE BASELINE:")
+            tonic_mode = pd.DataFrame([true_tonic_mode, false_tonic_mode], index=['true', 'false'], columns=['tonic', 'mode'])
+            print(tonic_mode)
+
             print("\nMIREX RESULTS:")
             mirex = pd.DataFrame(mirex, index=['correct', 'fifth', 'relative', 'parallel', 'other', 'weighted'], columns=['%'])
             print(mirex)
@@ -131,6 +144,7 @@ if __name__ == "__main__":
             writer = pd.ExcelWriter(os.path.splitext(args.save_to_file)[0] + '.xlsx')
             mtx_key.to_excel(writer, 'confusion matrix')
             mtx_error.to_excel(writer, 'relative errors')
+            tonic_mode.to_excel(writer, 'tonic mode')
             mirex.to_excel(writer, 'mirex score')
             results.to_excel(writer, 'results')
             writer.save()

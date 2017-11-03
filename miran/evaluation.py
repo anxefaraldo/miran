@@ -81,3 +81,23 @@ def key_eval_relative_errors(estimated_key_numlist, reference_key_numlist):
     else:
         degree = 'I as ' + degree
     return error_id, degree
+
+
+def key_tonic_mode(estimated_key_tuple, reference_key_tuple):
+    """
+    Performs a baseline evaluation of tonic note and mode.
+
+    :param estimated_key_tuple: tuple with values for estimated key and mode (tonic, mode) :type tuple
+    :param reference_key_tuple: tuple with values for reference key and mode (tonic, mode) :type tuple
+    """
+
+    import numpy as np
+
+    estimated_tonic, estimated_mode = estimated_key_tuple
+    reference_tonic, reference_mode = reference_key_tuple
+
+    result = np.array([estimated_tonic == reference_tonic, estimated_mode == reference_mode])
+
+    return result.astype(int)
+
+

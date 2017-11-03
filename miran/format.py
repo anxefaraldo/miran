@@ -288,10 +288,11 @@ def MIK(input_file, output_dir=None):
     applies. The export field simply reports keys separated by
     slashes ('/') without spaces commas or tabs. In these not
     so frequent situations, I have decided to take the first key
-    as the key estimation for the track.
+    as the key estimation for the track, since Mixed in Key seems
+    to allocate first the most likely candidate.
 
     Besides, MIK has an additional label "All" when it does not detect
-    clearly a specific key.
+    clearly a specific key, eg. spoken word, or drums.
 
     """
 
@@ -411,7 +412,7 @@ def rekordbox(input_file, output_dir=None):
     This function converts a recordbox analysis file into
     a readable format for our evaluation algorithm.
 
-    rekordbox can exports the results of the analysis to an xml
+    rekordbox can export the results of the analysis to an xml
     file, so that different xml files can be created for different corpora.
 
     This function will use the path to the analysis xml file.
@@ -458,13 +459,19 @@ def rekordbox(input_file, output_dir=None):
             output_dir = os.path.split(input_file)[0]
 
         output_file += '.txt'
+        output_file = re.sub("%26", "&", output_file)
         output_file = re.sub("%27", "'", output_file)
+        output_file = re.sub("%20", " ", output_file)
         print(output_file)
 
         with open(os.path.join(output_dir, output_file), 'w') as outfile:
             outfile.write(key)
 
         print("Creating estimation file for '{}' in '{}'".format(output_file, output_dir))
+
+
+def SeratoDJ(input_file, output_dir=None):
+    pass
 
 
 def Traktor(input_file, output_dir=None):
@@ -566,6 +573,7 @@ def VirtualDJ(input_file, output_dir=None):
     with open(DATABASE, 'r') as vdj_data:
         vdj_data = vdj_data.read()
 
+    # TODO
     # I have to find the input file string in the database and then look for key!
     # sin que sea destructivo... simplemente leyendo en el archivo!!!
 
