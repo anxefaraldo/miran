@@ -216,7 +216,7 @@ def chroma_to_pc(chroma_name):
     :type chroma_name: str
 
     """
-    pitch2int = {'Unknown': -1,
+    pitch2int = {'X': -1, # we summarize all not note names as 'x' : unknown...
                  'B#': 0, 'C': 0, 'Dbb': 0,
                  'C#': 1, 'Db': 1,
                  'D': 2, 'Cx': 2, 'Ebb': 2,
@@ -226,11 +226,10 @@ def chroma_to_pc(chroma_name):
                  'F#': 6, 'Gb': 6,
                  'G': 7, 'Fx': 7, 'Abb': 7,
                  'G#': 8, 'Ab': 8,
-                 'A': 9, 'A#': 10,
-                 'Bb': 10, 'B': 11,
-                 'Cb': 11,
-                 '??': 12, '-': 12, 'X': 12, 'All': 12, '(unknown)': 12, 'None':12}
-
+                 'A': 9, 'Gx': 9, 'Bbb': 9,
+                 'A#': 10, 'Bb': 10,
+                 'B': 11, 'Cb': 11
+                 }
     try:
         if chroma_name.islower():
             chroma_name = chroma_name[0].upper() + chroma_name[1:]
@@ -241,25 +240,65 @@ def chroma_to_pc(chroma_name):
         print('KeyError: {} choma not recognised'.format(chroma_name))
 
 
-def modename_to_id(mode=''):
+def pc_to_chroma(pitch_class):
+    """
+    Converts an int onto a pitch_name
+
+    """
+
+    pc2chroma = {-1: 'X',
+                 0: 'C',
+                 1: 'C#',
+                 2: 'D',
+                 3: 'Eb',
+                 4: 'E',
+                 5: 'F',
+                 6: 'F#',
+                 7: 'G',
+                 8: 'Ab',
+                 9: 'A',
+                 10: 'Bb',
+                 11: 'B'}
+
+    try:
+        return pc2chroma[pitch_class]
+
+    except KeyError:
+        raise KeyError('{} pitch class not in range (-1/11)'.format(pitch_class))
+
+
+def mode_to_id(mode='major'):
     """
     Converts a mode label into numeric values.
 
     :type mode: str
 
     """
-    mode2int = {'': 2,
-                'major': 0, 'maj': 0, 'M': 0,
-                'minor': 1, 'min': 1, 'm': 1,
-                'ionian': 11, 'dorian': 12, 'phrygian': 13, 'lydian': 14, 'mixolydian': 15,
-                'aeolian': 16, 'locrian': 17, 'harmonic': 21, 'fifth': 31, 'monotonic': 32,
-                'difficult': 33, 'peak': 34, 'flat': 35,}
+    mode2id = {'': None,
+               'major': 0, 'maj': 0, 'M': 0,
+               'minor': 1, 'min': 1, 'm': 1,
+               'ionian': 11, 'dorian': 12, 'phrygian': 13, 'lydian': 14, 'mixolydian': 15,
+               'aeolian': 16, 'locrian': 17, 'harmonic': 21, 'fifth': 31, 'monotonic': 32,
+               'difficult': 33, 'peak': 34, 'flat': 35}
 
     try:
-        return mode2int[mode]
+        return mode2id[mode]
 
     except KeyError:
         print('KeyError: {} mode name not recognised'.format(mode))
+
+
+def id_to_mode(idx=0):
+
+    id2mode = {None: '',
+               0: 'major',
+               1: 'minor'}
+
+    try:
+        return id2mode[idx]
+
+    except KeyError:
+        print('id_to_mode: {} mode id not recognised'.format(idx))
 
 
 def int_to_key(key_integer):
@@ -300,8 +339,15 @@ def split_key_str(key_string):
     elif " " in key_string:
         key_string = key_string.split()
 
+    if len(key_string) < 2:
+        if chroma_to_pc(key_string) >= 0:
+            key_string = [chroma_to_pc(key_string[0]), mode_to_id()]
+        else:
+            return [chroma_to_pc(key_string), None] # no key is tuple (-1, -100)
+
     else:
-        key_string = (key_string, '')
+        key_string[0] = chroma_to_pc(key_string[0])
+        key_string[1] = mode_to_id(key_string[1])
 
     return key_string
 
@@ -1053,25 +1099,3 @@ def batch_format_converter(input_dir, convert_function, output_dir=None, ext='.w
 #                'B minor': 23}
 #
 #     return key2int[key_symbol]
-
-
-# def pc_to_chroma(pitch_class):
-#     """
-#     Converts an int onto a pitch_name
-#
-#     """
-#     pc2chroma = {0: 'C',
-#                  1: 'C#',
-#                  2: 'D',
-#                  3: 'Eb',
-#                  4: 'E',
-#                  5: 'F',
-#                  6: 'F#',
-#                  7: 'G',
-#                  8: 'Ab',
-#                  9: 'A',
-#                  10: 'Bb',
-#                  11: 'B',
-#                  12: 'NoTonic'}
-#
-#     return pc2chroma[pitch_class]
