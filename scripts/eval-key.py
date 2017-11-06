@@ -15,9 +15,8 @@ if __name__ == "__main__":
     import pandas as pd
     from argparse import ArgumentParser
     from miran.defs import ANNOTATION_FILE_EXTENSIONS, DEGREE_LABELS, KEY_LABELS
-    from miran.utils import chroma_to_pc, modename_to_id
     from miran.evaluation import *
-    from miran.format import split_key_str
+    from miran.format import chroma_to_pc, modename_to_id, split_key_str
 
     parser = ArgumentParser(description="Evaluation of key estimation algorithms.")
     parser.add_argument("references", help="dir with reference annotations.")

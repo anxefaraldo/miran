@@ -1,9 +1,9 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 #  -*- coding: UTF-8 -*-
 
 import os
 import numpy as np
-from miran.utils import chroma_to_pc
+from miran.format import chroma_to_pc
 
 
 def extract_median_pcp(dir_estimations, dir_annotations, pcp_size=36):

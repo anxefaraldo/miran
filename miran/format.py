@@ -1,4 +1,5 @@
-#  -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
+
 
 from __future__ import absolute_import, division, print_function
 
@@ -7,9 +8,8 @@ import pandas as pd
 from miran.utils import folderfiles
 from miran.defs import AUDIO_FILE_EXTENSIONS
 
-CONVERSION_TYPES = {'Beatunes', 'ClassicalDB', 'KeyFinder', 'legacy', 'MIK',
-                    'QM_key', 'Traktor', 'rekordbox', 'SeratoDJ', 'VirtualDJ', 'WTC'}
-
+CONVERSION_TYPES = {'beatunes', 'classicalDB', 'keyFinder', 'legacy', 'MIK', 'MIK2',
+                    'QM_key', 'traktor', 'rekordbox', 'seratoDJ', 'virtualDJ', 'wtc'}
 
 
 def roman_to_pcs(chord_symbol):
@@ -229,7 +229,7 @@ def chroma_to_pc(chroma_name):
                  'A': 9, 'A#': 10,
                  'Bb': 10, 'B': 11,
                  'Cb': 11,
-                 '??': 12, '-': 12, 'X': 12, 'All': 12, '(unknown)': 12}
+                 '??': 12, '-': 12, 'X': 12, 'All': 12, '(unknown)': 12, 'None':12}
 
     try:
         if chroma_name.islower():
@@ -248,9 +248,9 @@ def modename_to_id(mode=''):
     :type mode: str
 
     """
-    mode2int = {'n/a': 100, 'NoMode': 2,
-                '': 0, 'major': 0, 'maj': 0, 'M': 0,
-                 'minor': 1, 'min': 1, 'm': 1,
+    mode2int = {'': 2,
+                'major': 0, 'maj': 0, 'M': 0,
+                'minor': 1, 'min': 1, 'm': 1,
                 'ionian': 11, 'dorian': 12, 'phrygian': 13, 'lydian': 14, 'mixolydian': 15,
                 'aeolian': 16, 'locrian': 17, 'harmonic': 21, 'fifth': 31, 'monotonic': 32,
                 'difficult': 33, 'peak': 34, 'flat': 35,}
@@ -278,7 +278,6 @@ def int_to_key(key_integer):
     return int2key[key_integer]
 
 
-
 def split_key_str(key_string):
     """
     Splits a key_string with various fields separated by
@@ -302,7 +301,7 @@ def split_key_str(key_string):
         key_string = key_string.split()
 
     else:
-        key_string = [key_string, '']
+        key_string = (key_string, '')
 
     return key_string
 
@@ -327,7 +326,7 @@ def create_annotation_file(input_file, annotation, output_dir=None):
     print("Creating annotation file for '{}' in '{}'".format(input_file, output_dir))
 
 
-def Beatunes(input_file, output_dir=None):
+def beatunes(input_file, output_dir=None):
     """
     This function converts a Beatunes tagged file into
     a readable format for our evaluation algorithm.
@@ -386,7 +385,7 @@ def Beatunes(input_file, output_dir=None):
     print("Creating estimation file for '{}' in '{}'".format(input_file, output_dir))
 
 
-def ClassicalDB(input_file, output_dir=None):
+def classicalDB(input_file, output_dir=None):
     """
     This function converts a ClassicalDB analysis file into
     a readable format for our evaluation algorithm.
@@ -422,7 +421,7 @@ def ClassicalDB(input_file, output_dir=None):
     print("Creating estimation file for '{}' in '{}'". format(input_file, output_dir))
 
 
-def WTC(input_file, output_dir=None):
+def wtc(input_file, output_dir=None):
     """
     This function converts a WTC annotation file into
     a readable format for our evaluation algorithm.
@@ -460,7 +459,7 @@ def WTC(input_file, output_dir=None):
     print("Creating estimation file for '{}' in '{}'". format(input_file, output_dir))
 
 
-def KeyFinder(input_file, output_dir=None):
+def keyFinder(input_file, output_dir=None):
     """
     This function converts a KeyFinder analysis file into
     a readable format for our evaluation algorithm.
@@ -530,6 +529,74 @@ def legacy(input_file, output_dir=None):
 
 
 def MIK(input_file, output_dir=None):
+    """
+    This function converts a Mixed-In-Key analysis file into
+    a readable format for our evaluation algorithm.
+
+    Mixed-In-Key can append the key name to the filename
+    after a selected delimiter (-).
+
+    Major keys are written as a pitch alphabetic name in upper case
+    followed by an alteration symbol (low 'b' for flat) if needed (A, Bb)
+    (Users can chose whether to spell with flats or sharps; this script
+    works with flats)
+
+    Minor keys append an 'm' to the tonic written as in major,
+    without spaces between the tonic and the mode (Am, Bbm, ...)
+
+    Ocasionally, MIK detects more than one key for a given track,
+    but it does not export the time positions at which eack key
+    applies. The export field simply reports keys separated by
+    slashes ('/') without spaces commas or tabs. In these not
+    so frequent situations, I have decided to take the first key
+    as the key estimation for the track, since Mixed in Key seems
+    to allocate first the most likely candidate.
+
+    Besides, MIK has an additional label "All" when it does not detect
+    clearly a specific key, eg. spoken word, or drums.
+
+    audio_filename - key.mp3
+
+    """
+
+    if not output_dir:
+        output_dir, output_file = os.path.split(input_file)
+
+    else:
+        output_file = os.path.split(input_file)[1]
+
+
+    if ' - ' not in input_file[-10:]:
+        key = 'None'
+        output_file = os.path.splitext(output_file)[0] + '.txt'
+
+    else:
+        key = input_file[3 + input_file.rfind(' - '):input_file.rfind('.')]
+
+        if '/' in key:
+            key = key.split('/')[0]  # take the first estimations in case there are more than one.
+
+        if ' or ' in key:
+            key = key.split(' or ')[0]
+
+        if key == 'All':
+            key = '-'
+
+        elif key[-1] == 'm':
+            key = key[:-1] + '\tminor\n'
+
+        else:
+            key = key + '\tmajor\n'
+
+        output_file = output_file[:output_file.rfind(' - ')] + '.txt'
+
+    with open(os.path.join(output_dir, output_file), 'w') as outfile:
+        outfile.write(key)
+
+    print("Creating estimation file for '{}' in '{}'". format(input_file, output_dir))
+
+
+def MIK2(input_file, output_dir=None):
     """
     This function converts a Mixed-in-Key analysis file into
     a readable format for our evaluation algorithm.
@@ -741,7 +808,7 @@ def rekordbox(input_file, output_dir=None):
         print("Creating estimation file for '{}' in '{}'".format(output_file, output_dir))
 
 
-def SeratoDJ(input_file, output_dir=None):
+def seratoDJ(input_file, output_dir=None):
     """
     This function converts a Serato tagged file into
     a readable format for our evaluation algorithm.
@@ -802,7 +869,7 @@ def SeratoDJ(input_file, output_dir=None):
     print("Creating estimation file for '{}' in '{}'".format(input_file, output_dir))
 
 
-def Traktor(input_file, output_dir=None):
+def traktor(input_file, output_dir=None):
     """
     This function converts a Traktor analysis file into
     a readable format for our evaluation algorithm.
@@ -870,7 +937,7 @@ def Traktor(input_file, output_dir=None):
     print("Creating estimation file for '{}' in '{}'".format(input_file, output_dir))
 
 
-def VirtualDJ(input_file, output_dir=None):
+def virtualDJ(input_file, output_dir=None):
     """
     This function converts a Virtual DJ analysis key estimation
     into a readable format for our evaluation algorithm.
