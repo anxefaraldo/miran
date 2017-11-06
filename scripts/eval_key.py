@@ -19,7 +19,6 @@ if __name__ == "__main__":
     from miran.evaluation import *
     from miran.format import split_key_str
 
-
     parser = ArgumentParser(description="Evaluation of key estimation algorithms.")
     parser.add_argument("references", help="dir with reference annotations.")
     parser.add_argument("estimations", help="dir with estimated labels")
@@ -35,8 +34,10 @@ if __name__ == "__main__":
         if args.verbose:
             print("\nEvaluating...\n")
 
-        mtx_key = np.array(np.zeros(24 * 24).reshape(24, 24), dtype=int)
-        mtx_error = np.array(np.zeros(24 * 2).reshape(24, 2), dtype=int)
+        # mtx_key = np.array(np.zeros(24 * 24).reshape(24, 24), dtype=int)
+        mtx_key = np.array(np.zeros(26 * 26).reshape(26, 26), dtype=int) #todo: REVISE ADDED 2 more labels (atonical and unpitched)
+        # mtx_error = np.array(np.zeros(24 * 2).reshape(24, 2), dtype=int)
+        mtx_error = np.array(np.zeros(26 * 4).reshape(26, 4), dtype=int)
         mirex = []
         errors = []
         results = {}
@@ -81,6 +82,8 @@ if __name__ == "__main__":
                 results[each_file] = pd.Series([reference[0], reference[1], analysis[0], analysis[1], type_error[1], score_mirex],
                                                index=['ref_tonic', 'ref_mode', 'est_tonic', 'est_mode', 'rel_error', 'mirex'])
 
+                # TODO: añadir 13 para contar los no keys?? Creo que no sólo esto...
+                # TODO: tal vez en vez de mil tenga que annadir un 2 (al menos al modo)
                 col = reference_key[0] + (reference_key[1] * 12)
                 row = estimated_key[0] + (estimated_key[1] * 12)
                 mtx_key[row, col] += 1
@@ -120,7 +123,7 @@ if __name__ == "__main__":
             print(mtx_key)
 
             print("\nRELATIVE ERROR MATRIX:\n")
-            mtx_error = pd.DataFrame(mtx_error.T, index=('I', 'i'), columns=DEGREE_LABELS)
+            mtx_error = pd.DataFrame(mtx_error.T, index=('I', 'i', 'atonical', 'unpitched'), columns=DEGREE_LABELS)
             print(mtx_error)
 
             print("\nTONIC MODE BASELINE:")

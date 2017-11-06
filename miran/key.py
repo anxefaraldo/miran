@@ -50,7 +50,7 @@ def _dur_to_endtime(**kwargs):
         return None
 
 
-def _key2(pcp, profile_type='bgate', interpolation='linear'):
+def _key2(pcp, profile_type='bgate', interpolation='linear', conf_thres=0.5):
     key_templates = {
 
         'bgate': np.array([[1., 0.00, 0.42, 0.00, 0.53, 0.37, 0.00, 0.77, 0.00, 0.38, 0.21, 0.30],
@@ -178,10 +178,16 @@ def _key2(pcp, profile_type='bgate', interpolation='linear'):
         raise IndexError("key_index smaller than zero. Could not find key.")
     else:
         first_to_second_ratio = (first_max - second_max) / first_max
-        return KEY_LABELS[key_index], scale, first_max, first_to_second_ratio
+        if first_max < conf_thres:
+            return 'NoTonic', 'NoMode', first_max, first_to_second_ratio
+            # TODO: we should try to separate tonic from mode id...
+            # TODO: si la confidencia es relativaente alta pero hay muchos candidatos posiblemente sea atonical
+            # TODO: si la confidencia es baja y hay pocos candidatos posiblemente sea unpitched
+        else:
+            return KEY_LABELS[key_index], scale, first_max, first_to_second_ratio
 
 
-def _key3(pcp, profile_type='bgate', interpolation='linear'):
+def _key3(pcp, profile_type='bgate', interpolation='linear', conf_thres=0.5):
     if (pcp.size < 12) or (pcp.size % 12 != 0):
         raise IndexError("Input PCP size is not a positive multiple of 12")
 
@@ -282,10 +288,17 @@ def _key3(pcp, profile_type='bgate', interpolation='linear'):
         raise IndexError("key_index smaller than zero. Could not find key.")
     else:
         first_to_second_ratio = (first_max - second_max) / first_max
-        return KEY_LABELS[key_index], scale, first_max, first_to_second_ratio
+        # try a double conditional here!!
+        if first_max < conf_thres:
+            return 'NoTonic', 'NoMode', first_max, first_to_second_ratio
+            # TODO: we should try to separate tonic from mode id...
+            # TODO: si la confidencia es relativaente alta pero hay muchos candidatos posiblemente sea atonical
+            # TODO: si la confidencia es baja y hay pocos candidatos posiblemente sea unpitched
+        else:
+            return KEY_LABELS[key_index], scale, first_max, first_to_second_ratio
 
 
-def _key7(pcp, interpolation='linear'):
+def _key7(pcp, interpolation='linear', conf_thres=0.5):
     if (pcp.size < 12) or (pcp.size % 12 != 0):
         raise IndexError("Input PCP size is not a positive multiple of 12")
 
@@ -467,7 +480,13 @@ def _key7(pcp, interpolation='linear'):
         raise IndexError("key_index smaller than zero. Could not find key.")
     else:
         first_to_second_ratio = (first_max - second_max) / first_max
-        return KEY_LABELS[key_index], scale, first_max, first_to_second_ratio
+        if first_max < conf_thres:
+            return 'NoTonic', 'NoMode', first_max, first_to_second_ratio
+            # TODO: we should try to separate tonic from mode id...
+            # TODO: si la confidencia es relativaente alta pero hay muchos candidatos posiblemente sea atonical
+            # TODO: si la confidencia es baja y hay pocos candidatos posiblemente sea unpitched
+        else:
+            return KEY_LABELS[key_index], scale, first_max, first_to_second_ratio
 
 
 def key_essentia_extractor(input_audio_file, output_text_file, **kwargs):
@@ -479,10 +498,10 @@ def key_essentia_extractor(input_audio_file, output_text_file, **kwargs):
     loader = estd.MonoLoader(filename=input_audio_file,
                              sampleRate=kwargs["SAMPLE_RATE"])
     ekey = estd.KeyExtractor(frameSize=kwargs["WINDOW_SIZE"],
-                            hopSize=kwargs["HOP_SIZE"],
-                            tuningFrequency=kwargs["HPCP_REFERENCE_HZ"])
+                             hopSize=kwargs["HOP_SIZE"],
+                             tuningFrequency=kwargs["HPCP_REFERENCE_HZ"])
 
-    key, scale, strength = key(loader())
+    key, scale, strength = ekey(loader())
     result = key + '\t' + scale
     textfile = open(output_text_file, 'w')
     textfile.write(result + '\n')

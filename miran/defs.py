@@ -24,12 +24,14 @@ ANNOTATION_FILE_EXTENSIONS = {'.txt', '.key', '.lab'}
 # default key label names
 # -----------------------
 KEY_LABELS = ('C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B',
-              'Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm')
+              'Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm',
+              'atonical', 'unpitched') # unknown is index 24!
 
 # pitch-class integer to relative roman numeral notation
 # ------------------------------------------------------
 DEGREE_LABELS = ('I', 'bII', 'II', 'bIII', 'III', 'IV', '#IV', 'V', 'bVI', 'VI', 'bVII', 'VII',
-                 'i', 'bii', 'ii', 'biii', 'iii', 'iv', '#iv', 'v', 'bvi', 'vi', 'bvii', 'vii')
+                 'i', 'bii', 'ii', 'biii', 'iii', 'iv', '#iv', 'v', 'bvi', 'vi', 'bvii', 'vii',
+                 'atonical', 'unpitched')
 
 # default settings for key estimation algorithm
 # ---------------------------------------------
