@@ -32,3 +32,4 @@ if __name__ == "__main__":
 
     elif os.path.isdir(args.input):
         batch_format_converter(args.input, args.source, args.output_dir, args.ext)
+        print("Done!")

@@ -14,17 +14,34 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # This scripts that Sonic-Annotator is installed in /Applications/Sonic-Annotator
-
-    path = '/Applications/qm-keydetector'
+    path = os.path.join(os.path.split(os.path.realpath(__file__))[0], 'qm-keydetector')
 
     files = preparse_files(args.input)
 
+    idx = 0
+    subs = []
     for f in files:
         fname, fext = os.path.splitext(f)
-        print fname
-        if fext == '.flac':
-            call('{}/qm-keydetector.sh "{}" "{}"'.format(path, f, fname + '.txt'), shell=True)
+        if fext == args.ext:
+            fdir, fname = os.path.split(fname)
+            subs.append((idx, fname))
+            fname = os.path.join(fdir, str(idx))
+
+            os.rename(f, fname + fext)
+
+            call('{}/qm-keydetector.sh "{}" "{}"'.format(path, fname + fext, fname + '.txt'), shell=True)
+
+            idx += 1
+
+    print('Running QM Key Detector in batch mode.')
+    print('WARNING: You should run only one instance of this script at a time.')
+    files = preparse_files(args.input)
+    for f in files:
+        fdir, fname = os.path.split(f)
+        fname, fext = os.path.splitext(fname)
+        for item in subs:
+            if str(item[0]) == fname:
+                os.rename(f, os.path.join(fdir,item[1] + fext))
 
     print("Deleting temporary files")
     call('rm -r {}/out'.format(path), shell=True)

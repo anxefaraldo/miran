@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 
-
 from __future__ import absolute_import, division, print_function
 
 import os.path
-import pandas as pd
 from miran.utils import folderfiles
-from miran.defs import AUDIO_FILE_EXTENSIONS
 
-CONVERSION_TYPES = {'beatunes', 'classicalDB', 'keyFinder', 'legacy', 'MIK', 'MIK2',
-                    'QM_key', 'traktor', 'rekordbox', 'seratoDJ', 'virtualDJ', 'wtc'}
+CONVERSION_TYPES = {'beatunes', 'classicalDB', 'keyFinder', 'legacy', 'MIK',
+                    'traktor', 'rekordbox', 'seratoDJ', 'virtualDJ', 'wtc'}
 
 
 def roman_to_pcs(chord_symbol):
@@ -216,7 +213,7 @@ def chroma_to_pc(chroma_name):
     :type chroma_name: str
 
     """
-    pitch2int = {'X': -1, # we summarize all not note names as 'x' : unknown...
+    pitch2int = {'X': -1, 'All': -1, '(unknown)': -1, "None": -1,
                  'B#': 0, 'C': 0, 'Dbb': 0,
                  'C#': 1, 'Db': 1,
                  'D': 2, 'Cx': 2, 'Ebb': 2,
@@ -339,11 +336,11 @@ def split_key_str(key_string):
     elif " " in key_string:
         key_string = key_string.split()
 
-    if len(key_string) < 2:
+    if type(key_string) is str:
         if chroma_to_pc(key_string) >= 0:
             key_string = [chroma_to_pc(key_string[0]), mode_to_id()]
         else:
-            return [chroma_to_pc(key_string), None] # no key is tuple (-1, -100)
+            return [chroma_to_pc(key_string), None]
 
     else:
         key_string[0] = chroma_to_pc(key_string[0])
@@ -599,7 +596,9 @@ def MIK(input_file, output_dir=None):
     to allocate first the most likely candidate.
 
     Besides, MIK has an additional label "All" when it does not detect
-    clearly a specific key, eg. spoken word, or drums.
+    clearly a specific key, eg. spoken word, or drums. However, this label
+    is not appended to the audio file. Therefore, we assume that tracks without
+    a key label are regarded as 'All' or what is the same, 'No Key'
 
     audio_filename - key.mp3
 
@@ -612,8 +611,8 @@ def MIK(input_file, output_dir=None):
         output_file = os.path.split(input_file)[1]
 
 
-    if ' - ' not in input_file[-10:]:
-        key = 'None'
+    if ' - ' not in input_file[-12:] and ' or ' not in input_file[-12:]:
+        key = 'X'
         output_file = os.path.splitext(output_file)[0] + '.txt'
 
     else:
@@ -626,7 +625,7 @@ def MIK(input_file, output_dir=None):
             key = key.split(' or ')[0]
 
         if key == 'All':
-            key = '-'
+            key = 'X'
 
         elif key[-1] == 'm':
             key = key[:-1] + '\tminor\n'
@@ -640,155 +639,6 @@ def MIK(input_file, output_dir=None):
         outfile.write(key)
 
     print("Creating estimation file for '{}' in '{}'". format(input_file, output_dir))
-
-
-def MIK2(input_file, output_dir=None):
-    """
-    This function converts a Mixed-in-Key analysis file into
-    a readable format for our evaluation algorithm.
-
-    Mixed in Key can export the results to csv files, formatted
-    according to the following columns:
-
-    | Collection name | File name | Key Result | BPM | Energy |
-
-
-    Major keys are written as a pitch alphabetic name in upper case
-    followed by an alteration symbol (low 'b' for flat) if needed (A, Bb).
-
-    (The user can select the export key format, but this function expects
-    non-natural keys spelled with flats.)
-
-    Minor keys append an 'm' to the tonic written as in major,
-    without spaces between the tonic and the mode (Am, Bbm, ...)
-
-    Ocasionally, MIK detects more than one key for a given track,
-    but it does not export the time positions at which eack key
-    applies. The export field simply reports keys separated by
-    slashes ('/') without spaces commas or tabs. In these not
-    so frequent situations, I have decided to take the first key
-    as the key estimation for the track, since Mixed in Key seems
-    to allocate first the most likely candidate.
-
-    Besides, MIK has an additional label "All" when it does not detect
-    clearly a specific key, eg. spoken word, or drums.
-
-    """
-
-    mik = pd.read_csv(input_file)
-
-    if not output_dir:
-        output_dir = os.path.split(input_file)[0]
-
-    print("Creating estimation files from '{}'".format(input_file))
-
-    for row in mik.iterrows():
-        output_file = row[1]["File name"] + '.txt'
-        key = row[1]["Key result"]
-
-        if '/' in key:
-            key = key.split('/')[0] # take the first estimations in case there are more than one.
-
-        if key[-1] == 'm':
-            key = key[:-1] + '\tminor\n'
-
-        else:
-            key = key + '\tmajor\n'
-
-        with open(os.path.join(output_dir, output_file), 'w') as outfile:
-            outfile.write(key)
-
-        print("Saving estimation file to '{}'". format(os.path.join(output_dir, output_file)))
-
-
-def QM_key(input_file, output_dir=None):
-    """
-    This function converts a QM_Key_Detector analysis file into
-    a readable format for our evaluation algorithm.
-
-    QM_Key_Detector estimation files can be created manually with
-    Sonic Visualiser or in batch processes with Sonic-Annotator.
-    In either case, this function expects a .csv file with annotations
-    for each audio file.
-
-    QM_Key_Detector outputs the key on a frame basis, therefore
-    outputing potential key changes. Given this way of working,
-    we had to find a way to reduce the annotations to a single
-    estimation for most of the evaluation tasks. We do this
-    by taking the Key with the longest total duration in the
-    whole audio file.
-
-    QM_Key_Detector csv files have columns representing time instants,
-    followed by the estimated key:
-
-    0.00,1,"C major"
-    1.02,13,"C minor"
-
-    Major keys are in range 1-12 starting at C.
-    Minor keys are in range 13-24 starting at Cm.
-
-    FOR THE MOMENT, QM NEEDS TO HAVE THE ORIGINAL AUDIO FILES IN
-    THE SAME FOLDER AS THE ANNOTATIONS... WE WOULD SOLVE THIS BY
-    ADDING MORE ARGUMENTS, BUT WE DON'T WANT THAT, YET.
-
-    """
-    import csv
-    import numpy as np
-    import madmom.audio.signal as mas
-
-    d = {}
-    values = []
-    keys = []
-
-    with open(input_file, 'r') as qm_data:
-        for row in csv.reader(qm_data):
-            values.append(float(row[0]))
-            keys.append(row[2])
-
-    input_file = input_file[:input_file.rfind('_vamp')]
-
-    total_dur = 0
-    for ext in AUDIO_FILE_EXTENSIONS:
-        try:
-            with open(input_file + ext, 'r') as audiofile:
-                total_dur = mas.Signal(audiofile).length
-            break
-
-        except IOError:
-            # print(ext, 'DID NOT FND RELATED AUDIO TO MATCH DURATION')
-            continue
-
-    values.append(total_dur)
-    values = np.diff(values)
-
-    for v, k in zip(values, keys):
-        if d.has_key(k):
-            d[k] += v
-        else:
-            d[k] = v
-
-    v = list(d.values())
-    k = list(d.keys())
-
-    key = k[v.index(max(v))]
-
-    if '/' in key:
-        key = key[2 + key.find('/'):]
-
-    print(key)
-
-    if not output_dir:
-        output_dir, output_file = os.path.split(input_file)
-
-    else:
-        output_file = os.path.split(input_file)[1]
-
-    output_file = output_file + '.txt'
-
-    with open(os.path.join(output_dir, output_file), 'w') as outfile:
-        outfile.write(key)
-
-    print("Creating estimation file for '{}' in '{}'".format(input_file, output_dir))
 
 
 def rekordbox(input_file, output_dir=None):
@@ -955,15 +805,17 @@ def traktor(input_file, output_dir=None):
         traktor_data = traktor_data.read()
 
     my_dir, my_file = os.path.split(input_file)
+    my_file = re.sub(':', '//', my_file)
     my_file = re.sub('&', '&amp;', my_file)
     my_dir = re.sub('/', '/:', my_dir)
     complex_str = 'LOCATION DIR="{}/:" FILE="{}"'.format(my_dir, my_file)
 
     key_position = traktor_data.find(complex_str) # TODO revisar si esto es realmente redundante!
     key_position += traktor_data[traktor_data.find(complex_str):].find('<MUSICAL_KEY VALUE="') + 20
-    print(input_file)
-    print(traktor_data[key_position-10:key_position + 10])
+    # print(input_file)
+    #print(traktor_data[key_position-10:key_position + 10])
     key_id = traktor_data[key_position:key_position + 2]
+    #print(key_id)
 
 
     if '"' in key_id:
