@@ -51,7 +51,7 @@ def df_to_excel(df, excel_filename, sheet_name="Untitled"):
     if not os.path.isdir(os.path.split(excel_filename)[0]):
         print("\nInvalid export abs path. NOT saving results.")
     else:
-        print("\nSaving evaluation results to {}".format(excel_filename))
+        print("\nSaving dataframe to excel spreadsheet {}".format(excel_filename))
 
     writer = pd.ExcelWriter(os.path.splitext(excel_filename)[0] + '.xlsx')
     df.to_excel(writer, sheet_name)

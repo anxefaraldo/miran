@@ -3,7 +3,7 @@
 from __future__ import absolute_import, division, print_function
 
 import os.path
-from miran.utils import folderfiles
+from miran.utils import folderfiles, strip_filename
 
 CONVERSION_TYPES = {'beatunes', 'classicalDB', 'keyFinder', 'legacy', 'MIK',
                     'traktor', 'rekordbox', 'seratoDJ', 'virtualDJ', 'wtc'}
@@ -611,7 +611,11 @@ def MIK(input_file, output_dir=None):
         output_file = os.path.split(input_file)[1]
 
 
-    if ' - ' not in input_file[-12:] and ' or ' not in input_file[-12:]:
+    # TODO: Should find a better way to detect keys...
+    # TODO: This probably no longer works with other datasets than key Finder!!!!!
+    # if ' - ' not in input_file[-12:] and ' or ' not in input_file[-12:]:
+
+    if strip_filename(input_file).count(' - ') == 1:
         key = 'X'
         output_file = os.path.splitext(output_file)[0] + '.txt'
 
@@ -807,12 +811,13 @@ def traktor(input_file, output_dir=None):
     my_dir, my_file = os.path.split(input_file)
     my_file = re.sub(':', '//', my_file)
     my_file = re.sub('&', '&amp;', my_file)
+    my_file = re.sub('"', '&quot;', my_file)
     my_dir = re.sub('/', '/:', my_dir)
     complex_str = 'LOCATION DIR="{}/:" FILE="{}"'.format(my_dir, my_file)
 
     key_position = traktor_data.find(complex_str) # TODO revisar si esto es realmente redundante!
     key_position += traktor_data[traktor_data.find(complex_str):].find('<MUSICAL_KEY VALUE="') + 20
-    # print(input_file)
+    print(input_file)
     #print(traktor_data[key_position-10:key_position + 10])
     key_id = traktor_data[key_position:key_position + 2]
     #print(key_id)

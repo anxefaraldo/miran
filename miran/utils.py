@@ -309,3 +309,12 @@ def find_mode_flat(mode_array):
         rank.append((dis,mode))
     rank.sort(key=lambda tup: tup[0])
     return rank
+
+
+def strip_filename(filename):
+    """
+    Returns a filename string without specific location (directories) or extension.
+
+    """
+    if os.path.isfile(filename):
+        return os.path.split(os.path.splitext(filename)[0])[1]

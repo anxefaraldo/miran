@@ -115,8 +115,8 @@ def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
         plt.show()
 
 
-def plot_majmin_dist(dataset_dir, name="Key_Distribution",
-                     output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/", ext=".txt", n_keys=12):
+def plot_majmin_dist(dataset_dir, name="Key_Distribution", output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/", ext=".txt", nokey=True):
+
     corpus = folderfiles(dataset_dir, ext=ext)
 
     raw_keys = []
@@ -124,28 +124,34 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution",
         with open(item, 'r') as f:
             raw_keys.append(split_key_str(f.readline()))
 
-    major = np.zeros(n_keys)
-    minor = np.zeros(n_keys)
+    major = np.zeros(12)
+    minor = np.zeros(12)
+    no_key = 0
     for e in raw_keys:
-        if mode_to_id(e[1]) == 0:
-            major[chroma_to_pc(e[0])] += 1
-        elif mode_to_id(e[1]) == 1:
-            minor[chroma_to_pc(e[0])] += 1
+        if e[1] == 0:
+            major[e[0]] += 1
+        elif e[1] == 1:
+            minor[e[0]] += 1
+        else:
+            no_key += 1
 
     total_maj = np.sum(major)
     total_min = np.sum(minor)
-    total_items = total_maj + total_min
+    total_items = total_maj + total_min + no_key
     percentage_factor = 100.00 / total_items
     percentage_major = np.multiply(major, percentage_factor)
     percentage_minor = np.multiply(minor, percentage_factor)
+    percentage_no_key = np.multiply(no_key, percentage_factor)
 
     # NOW THE PLOTTING
-    plt.figure(figsize=(5.16, 2), dpi=150)
+    plt.figure(figsize=(5.16, 2.5), dpi=150)
 
-    gs = mpl.gridspec.GridSpec(2, 1, height_ratios=[1, 9])
+    gs = mpl.gridspec.GridSpec(2, 1, height_ratios=[1, 12])
     ax = plt.subplot(gs[0])
     a = ax.barh(0, total_maj, linewidth=0.0, edgecolor=(.1, .1, .1))
     b = ax.barh(0, total_min, left=total_maj, linewidth=0.0, edgecolor=(.1, .1, .1))
+    if nokey:
+        c = ax.barh(0, no_key, left=total_min+total_maj,  linewidth=0.0, edgecolor=(.1, .1, .1))
     plt.xlim((0, total_items))
     plt.xticks([])
     plt.yticks([])
@@ -161,20 +167,28 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution",
         str_l = len(pmin) + 1
         plt.text(total_maj + (total_min * 0.5) - (str_l * 0.8), -0.25, pmin + '\%', fontsize=7)
 
+    if nokey:
+        for r in c:
+            pnk = "%.1f" % (no_key * percentage_factor)
+            if no_key * percentage_factor > 3:
+                str_l = len(pnk) + 1
+                plt.text(total_maj + total_min + (no_key * 0.5) - (str_l * 0.8), -0.25, pnk + '\%', fontsize=7)
+
     plt.subplot(gs[1])
     plt.xlabel('tonic note')
     plt.ylabel('percentage (\%)')
-    if n_keys == 13:
-        plt.xticks(range(n_keys), (
+    if nokey:
+        plt.xticks(range(13), (
         r'C', r'C$\sharp$', r'D', r'E$\flat$', r'E', r'F', r'F$\sharp$', r'G', r'A$\flat$', r'A', r'B$\flat$', r'B',
         r'--'))
     else:
-        plt.xticks(range(n_keys), (
+        plt.xticks(range(12), (
         r'C', r'C$\sharp$', r'D', r'E$\flat$', r'E', r'F', r'F$\sharp$', r'G', r'A$\flat$', r'A', r'B$\flat$', r'B'))
-    plt.bar(range(n_keys), percentage_major, label='major', linewidth=0, edgecolor=(.1, .1, .1))
-    plt.bar(range(n_keys), percentage_minor, bottom=percentage_major, label='minor', linewidth=0,
-            edgecolor=(.1, .1, .1))
-    plt.legend(fontsize=8)
+    plt.bar(range(12), percentage_major, label='major', linewidth=0, edgecolor=(.1, .1, .1))
+    plt.bar(range(12), percentage_minor, bottom=percentage_major, label='minor', linewidth=0, edgecolor=(.1, .1, .1))
+    if nokey:
+        plt.bar(12, percentage_no_key, label='no key', linewidth=0, edgecolor=(.1, .1, .1))
+    plt.legend(fontsize=8, frameon=True)
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, re.sub(' ', '_', name) + '.pdf'), format="pdf", dpi=1200)
 

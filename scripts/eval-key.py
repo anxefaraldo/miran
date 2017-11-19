@@ -48,7 +48,6 @@ if __name__ == "__main__":
             if any(ext == os.path.splitext(each_file)[-1] for ext in ANNOTATION_FILE_EXTENSIONS):
 
                 with open(os.path.join(args.estimations, each_file), 'r') as analysis:
-                    print(analysis)
                     estimated_key = split_key_str(analysis.readline())
 
                 for ext in ANNOTATION_FILE_EXTENSIONS:

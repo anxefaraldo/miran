@@ -13,7 +13,7 @@ import json
 import re
 import shutil
 import pandas as pd
-from miran.utils import create_dir, preparse_files
+from miran.utils import create_dir, preparse_files, strip_filename
 
 
 def copy_files_in_pddf(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
@@ -205,15 +205,15 @@ def download_track(trackid, output_dir=None, skip_tracks_without_metadata=False)
         print("Saving metadata to", jsonfile)
 
 
-def filepath_to_pdcol(dataframe, searchpath_or_pathlist, ext='.mp3', hide_ext=True):
+def filepath_to_pdcol(dataframe, searchpath_or_pathlist, ext='.mp3', filename_only=True):
     filelist = preparse_files(searchpath_or_pathlist, ext=ext)
 
-    dataframe['path'] = pd.Series()
+    dataframe['filename'] = pd.Series()
     for item in dataframe.iterrows():
         file_path = find_file_by_id(item[1][0], filelist)
-        if hide_ext:
-            file_path = os.path.splitext(file_path)[0]
-        dataframe.set_value(dataframe.index[item[0]], ['path'], file_path)
+        if filename_only:
+            file_path = strip_filename(file_path)
+        dataframe.set_value(dataframe.index[item[0]], ['filename'], file_path)
 
 
 def find_file_by_id(beatport_id, searchpath_or_pathlist, ext='.mp3'):
@@ -266,37 +266,78 @@ def metafile_to_pds(filepath_or_string):
     """
     Metadata file to pandas series.
     Takes a json file or string and creates a pandas Series with it.
-    """
 
+    """
     if os.path.isfile(filepath_or_string):
-        with open(filepath_or_string, 'r') as jsonfile:
-            metadata = json.load(jsonfile)
+
+        #print(filepath_or_string)
+
+        try:
+            with open(filepath_or_string, 'r') as jsonfile:
+                metadata = json.load(jsonfile)
+
+        except:
+            import re
+            with open(filepath_or_string, 'r') as jsonfile:
+
+                metadata = jsonfile.read()
+                metadata = metadata.replace('\t', ' ')
+                metadata = metadata.replace('\n', '')
+                metadata = metadata.replace('  ', ' ')
+                metadata = re.sub(':,', ': null,', metadata)
+                metadata = re.sub(': ,', ': null,', metadata)
+                metadata = re.sub(':}', ': null}', metadata)
+                metadata = re.sub(': }', ': null}', metadata)
+                metadata = re.sub(':  }', ': null}', metadata)
+                metadata = re.sub(':   }', ': null}', metadata)
+                metadata = re.sub('nan', 'null', metadata)
+                metadata = json.loads(metadata)
+
     else:
         metadata = json.loads(filepath_or_string)
 
+
+    try:
+        title = metadata['name']
+        mix = metadata['mix']
+        label = metadata['label']['name']
+    except:
+        title = ''
+        mix = ''
+        label = ''
+
     # unfold arguments containing lists:
     artists = []
-    for entry in metadata["artists"]:
-        if entry["name"] != 'None':
-            artists.append(entry["name"])
-    artists = str.join(', ', artists)
+    try:
+        for entry in metadata["artists"]:
+            if entry["name"] != 'None':
+                artists.append(entry["name"])
+        artists = str.join(', ', artists)
+    except:
+        pass
 
     genres = []
-    for entry in metadata["genres"]:
-        if entry["name"] != 'None':
-            genres.append(entry["name"])
-    genres = str.join(', ', genres)
+    try:
+        for entry in metadata["genres"]:
+            if entry["name"] != 'None':
+                genres.append(entry["name"])
+        genres = str.join(', ', genres)
+    except:
+        pass
 
     sub_genres = []
-    for entry in metadata["sub_genres"]:
-        if entry["name"] != 'None':
-            sub_genres.append(entry["name"])
-        sub_genres = str.join(', ', sub_genres)
+    try:
+        for entry in metadata["sub_genres"]:
+            if entry["name"] != 'None':
+                sub_genres.append(entry["name"])
+            sub_genres = str.join(', ', sub_genres)
+    except:
+        pass
+
 
     # return a pandas series with relevant metadata
-    return pd.Series([os.path.splitext(filepath_or_string)[0], metadata["id"], artists,
-                      metadata["name"], metadata["mix"], metadata["label"]["name"],
-                      genres, sub_genres, metadata["key"]],
+    return pd.Series([os.path.split(os.path.splitext(filepath_or_string)[0])[1], metadata["id"], artists,
+                      title, mix, label, genres, sub_genres, metadata["key"]],
 
                      index=['filename', 'id', 'artists', 'title', 'mix',
                             'label', 'genres', 'subgenres', 'key'])
@@ -327,3 +368,24 @@ def rename_files_without_leading_zeroes(searchpath_or_pathlist, ext=None, recurs
     for item in filelist:
         my_dir, my_file = os.path.split(item)
         os.rename(item, os.path.join(my_dir, str(int(my_file.split()[0])) + my_file[my_file.find(' '):]))
+
+
+# def rename_untitled_tracks():
+#     # rename untitled with names in database!
+#
+#     import shutil
+#
+#     for item in bp.itertuples():
+#         #    print(item[1], item[2], item[3], item[4])
+#         newname = u"{0} {1} - {2} ({3}).mp3".format(str(item[1]), item[2], item[3], item[4])
+#         for doc in u:
+#             fileid = strip_filename(doc).split()[0]
+#             if item[1] == int(fileid):
+#                 newname = os.path.join('/Users/angel/Desktop/UNk', newname)
+#                 print
+#                 doc
+#                 print
+#                 newname
+#                 shutil.copyfile(doc, newname)
+
+#   def make_simple_json()
