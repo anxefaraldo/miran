@@ -193,7 +193,7 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution", output_dir="/Users/an
     plt.savefig(os.path.join(output_dir, re.sub(' ', '_', name) + '.pdf'), format="pdf", dpi=1200)
 
 
-def plot_profiles(profile_name, output_dir="/Users/angelosx/Dropbox/Apps/Texpad/Thesis/figures/",
+def plot_profiles(profile_name, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/",
                   yr=None, yt=None, loc=None, yl="weigths", fy1=7, fy2=0, fx=0):
     plt.figure(figsize=(5.16, 2.5), dpi=150)
     a = plt.plot(key_templates[profile_name][0], '-o', linewidth=1, markersize=4, label="major")
@@ -228,7 +228,7 @@ def plot_profiles(profile_name, output_dir="/Users/angelosx/Dropbox/Apps/Texpad/
     plt.show()
 
 
-def plot_single_profile(data, output_dir="/Users/angelosx/Dropbox/Apps/Texpad/Thesis/figures",
+def plot_single_profile(data, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures",
                   yr=None, yt=None, loc=None, label="", yl="weigths", fy=7, fx=0):
 
     plt.figure(figsize=(5.16, 2.5), dpi=150)
