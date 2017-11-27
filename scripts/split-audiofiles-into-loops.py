@@ -7,18 +7,21 @@ from __future__ import absolute_import, division, print_function
 if __name__ == "__main__":
 
     import os.path
-    from time import clock
+    from time import clock, sleep
     import madmom as mmm
+    from subprocess import call
     from numpy import multiply
     from argparse import ArgumentParser
     # from essentia.standard import AudioWriter, MonoWriter
     from miran.defs import AUDIO_FILE_EXTENSIONS
-    from miran.utils import create_dir, folderfiles
+    from miran.utils import create_dir, folderfiles, audio_to_mp3_96
 
     clock()
     parser = ArgumentParser(description="Create text files with hypermetrical estimations.")
     parser.add_argument("input", help="file or dir to analyse for hypermetrical positions.")
     parser.add_argument("-o", "--output_dir", help="dir to write results to.")
+    parser.add_argument("-d", "--downgrade", action="store_true",
+                        help="convert files to mp3 @ 96 Kbps.")
     parser.add_argument("-w", "--write_labels_to_file", action="store_true",
                         help="write hypermeter positions onto a textfile.")
 
@@ -73,6 +76,15 @@ if __name__ == "__main__":
                                                  filename=loop_name,
                                                  sample_rate=audio_file.sample_rate)
 
+                if args.downgrade:
+                    print('Converting to {}'.format(os.path.splitext(loop_name)[0] + '.mp3'))
+                    call('sox "{}" -C 96.0 "{}"'.format(loop_name, os.path.splitext(loop_name)[0] + '.mp3'), shell=True)
+                    print('Removing intermediate wav ({})'.format(loop_name))
+                    os.remove(loop_name)
+
             count_files += 1
 
+
     print("\n{} audio files analysed in {} seconds".format(count_files, clock()))
+    print('converted')
+
