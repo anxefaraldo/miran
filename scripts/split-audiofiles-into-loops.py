@@ -7,14 +7,14 @@ from __future__ import absolute_import, division, print_function
 if __name__ == "__main__":
 
     import os.path
-    from time import clock, sleep
+    from time import clock
     import madmom as mmm
     from subprocess import call
     from numpy import multiply
     from argparse import ArgumentParser
     # from essentia.standard import AudioWriter, MonoWriter
     from miran.defs import AUDIO_FILE_EXTENSIONS
-    from miran.utils import create_dir, folderfiles, audio_to_mp3_96
+    from miran.utils import create_dir, folderfiles
 
     clock()
     parser = ArgumentParser(description="Create text files with hypermetrical estimations.")
