@@ -56,3 +56,10 @@ def df_to_excel(df, excel_filename, sheet_name="Untitled"):
     writer = pd.ExcelWriter(os.path.splitext(excel_filename)[0] + '.xlsx')
     df.to_excel(writer, sheet_name)
     writer.save()
+
+
+def csv_to_numpy(csv_file):
+    """
+    This function converts a csv file to a numpy array"""
+    return pd.DataFrame.from_csv(csv_file).as_matrix()
+

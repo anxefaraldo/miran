@@ -318,3 +318,5 @@ def strip_filename(filename):
     """
     if os.path.isfile(filename):
         return os.path.split(os.path.splitext(filename)[0])[1]
+
+()
