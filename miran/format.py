@@ -5,7 +5,7 @@ from __future__ import absolute_import, division, print_function
 import os.path
 from miran.utils import folderfiles, strip_filename
 
-CONVERSION_TYPES = {'beatunes', 'classicalDB', 'keyFinder', 'legacy', 'MIK',
+CONVERSION_TYPES = {'beatunes', 'classicalDB', 'keyFinder', 'legacy', 'MIK1', 'MIK2',
                     'traktor', 'rekordbox', 'seratoDJ', 'virtualDJ', 'wtc'}
 
 
@@ -571,7 +571,7 @@ def legacy(input_file, output_dir=None):
     print("Creating estimation file for '{}' in '{}'". format(input_file, output_dir))
 
 
-def MIK(input_file, output_dir=None):
+def MIK1(input_file, output_dir=None):
     """
     This function converts a Mixed-In-Key analysis file into
     a readable format for our evaluation algorithm.
@@ -616,6 +616,74 @@ def MIK(input_file, output_dir=None):
     # if ' - ' not in input_file[-12:] and ' or ' not in input_file[-12:]:
 
     if strip_filename(input_file).count(' - ') == 1:
+        key = 'X'
+        output_file = os.path.splitext(output_file)[0] + '.txt'
+
+    else:
+        key = input_file[3 + input_file.rfind(' - '):input_file.rfind('.')]
+
+        if '/' in key:
+            key = key.split('/')[0]  # take the first estimations in case there are more than one.
+
+        if ' or ' in key:
+            key = key.split(' or ')[0]
+
+        if key == 'All':
+            key = 'X'
+
+        elif key[-1] == 'm':
+            key = key[:-1] + '\tminor\n'
+
+        else:
+            key = key + '\tmajor\n'
+
+        output_file = output_file[:output_file.rfind(' - ')] + '.txt'
+
+    with open(os.path.join(output_dir, output_file), 'w') as outfile:
+        outfile.write(key)
+
+    print("Creating estimation file for '{}' in '{}'". format(input_file, output_dir))
+
+def MIK2(input_file, output_dir=None):
+    """
+    This function converts a Mixed-In-Key analysis file into
+    a readable format for our evaluation algorithm.
+
+    Mixed-In-Key can append the key name to the filename
+    after a selected delimiter (-).
+
+    Major keys are written as a pitch alphabetic name in upper case
+    followed by an alteration symbol (low 'b' for flat) if needed (A, Bb)
+    (Users can chose whether to spell with flats or sharps; this script
+    works with flats)
+
+    Minor keys append an 'm' to the tonic written as in major,
+    without spaces between the tonic and the mode (Am, Bbm, ...)
+
+    Ocasionally, MIK detects more than one key for a given track,
+    but it does not export the time positions at which eack key
+    applies. The export field simply reports keys separated by
+    slashes ('/') without spaces commas or tabs. In these not
+    so frequent situations, I have decided to take the first key
+    as the key estimation for the track, since Mixed in Key seems
+    to allocate first the most likely candidate.
+
+    Besides, MIK has an additional label "All" when it does not detect
+    clearly a specific key, eg. spoken word, or drums. However, this label
+    is not appended to the audio file. Therefore, we assume that tracks without
+    a key label are regarded as 'All' or what is the same, 'No Key'
+
+    audio_filename - key.mp3
+
+    """
+
+    if not output_dir:
+        output_dir, output_file = os.path.split(input_file)
+
+    else:
+        output_file = os.path.split(input_file)[1]
+
+    if ' - ' not in input_file[-12:] and ' or ' not in input_file[-12:]:
         key = 'X'
         output_file = os.path.splitext(output_file)[0] + '.txt'
 

@@ -61,5 +61,5 @@ def df_to_excel(df, excel_filename, sheet_name="Untitled"):
 def csv_to_numpy(csv_file):
     """
     This function converts a csv file to a numpy array"""
-    return pd.DataFrame.from_csv(csv_file).as_matrix()
+    return pd.DataFrame.from_csv(csv_file,  header=None, index_col=None).as_matrix()
 

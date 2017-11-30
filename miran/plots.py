@@ -96,7 +96,6 @@ def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
 
     from librosa.display import specshow
     with sns.axes_style('ticks'):
-
         if chromagram.shape[0] == 12:
             plt.figure(figsize=(5.16, 2), dpi=150)
             plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
@@ -108,9 +107,9 @@ def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
 
         specshow(chromagram, x_axis='time', sr=sr, hop_length=hl)
         plt.xlabel('time (secs.)')
-        plt.ylabel('pitch classes')
+        plt.ylabel('chroma')
+        plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
         plt.tight_layout()
-        # plt.colorbar()
         plt.savefig(os.path.join(output_dir, name + '.pdf'), format="pdf", dpi=1200)
         plt.show()
 
