@@ -6,6 +6,7 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
     from subprocess import call
     from miran.utils import preparse_files
+    from miran.defs import AUDIO_FILE_EXTENSIONS
     import os.path
 
     parser = ArgumentParser(description="QM-Key Extractor")
@@ -20,9 +21,11 @@ if __name__ == "__main__":
 
     idx = 0
     subs = []
+
     for f in files:
-        fname, fext = os.path.splitext(f)
-        if fext == args.ext:
+        if any(soundfile_type in f for soundfile_type in AUDIO_FILE_EXTENSIONS):
+            fname, fext = os.path.splitext(f)
+            #if fext == args.ext:
             fdir, fname = os.path.split(fname)
             subs.append((idx, fname))
             fname = os.path.join(fdir, str(idx))
