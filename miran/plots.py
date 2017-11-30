@@ -114,6 +114,43 @@ def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
         plt.show()
 
 
+def plot_bchroma(chromagram, name="untitled", sr=44100, hl=2048,
+                output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures"):
+
+
+    from librosa.display import specshow
+    with sns.axes_style('ticks'):
+        if chromagram.shape[0] != 24:
+            print('does not look like a compound chromagram')
+            return
+
+        else:
+            plt.figure(figsize=(5.16, 2), dpi=150)
+
+            plt.subplot(2, 1, 1)
+            specshow(chromagram[:12], x_axis='time', sr=sr, hop_length=hl)
+            #plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
+            #plt.ylabel()
+            #plt.xticks([])
+            #plt.xlabel('')
+
+            plt.subplot(2, 1, 2)
+            #plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
+            specshow(chromagram[12:], x_axis='time', sr=sr, hop_length=hl)
+            # plt.title('(a) classical', fontsize=8)
+            #plt.ylabel('hz.')
+            #plt.xticks([])
+            #plt.xlabel('')
+
+            specshow(chromagram, x_axis='time', sr=sr, hop_length=hl)
+            plt.xlabel('time (secs.)')
+            plt.ylabel('chroma')
+            plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
+            plt.tight_layout()
+            plt.savefig(os.path.join(output_dir, name + '.pdf'), format="pdf", dpi=1200)
+            plt.show()
+
+
 def plot_majmin_dist(dataset_dir, name="Key_Distribution", output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/", ext=".txt", nokey=True):
 
     corpus = folderfiles(dataset_dir, ext=ext)

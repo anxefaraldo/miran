@@ -8,13 +8,13 @@ if __name__ == "__main__":
     from miran.utils import preparse_files
     import os.path
 
-    parser = ArgumentParser(description="Semi-automatic time interval annotation tool")
+    parser = ArgumentParser(description="QM-Key Extractor")
     parser.add_argument("input", help="file or dir to analyse")
     parser.add_argument("-e", "--ext", help="extension of the audio files to parse", default='.wav')
 
     args = parser.parse_args()
 
-    path = os.path.join(os.path.split(os.path.realpath(__file__))[0], 'qm-keydetector')
+    path = os.path.join(os.path.split(os.path.realpath(__file__))[0], 'sonic-annotator')
 
     files = preparse_files(args.input)
 

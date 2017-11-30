@@ -1,0 +1,1 @@
+./sonic-annotator -r -t /Users/angel/Desktop/nnls.n3 -w csv --csv-basedir /Users/angel/Desktop/nn1 --csv-force /Users/angel/Desktop/nnn

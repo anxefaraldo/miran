@@ -63,3 +63,8 @@ def csv_to_numpy(csv_file):
     This function converts a csv file to a numpy array"""
     return pd.DataFrame.from_csv(csv_file,  header=None, index_col=None).as_matrix()
 
+
+def csv_to_numpy2(csv_file):
+    """
+    This function converts a csv file to a numpy array"""
+    return pd.DataFrame.from_csv(csv_file,  header=None).as_matrix()
