@@ -1039,4 +1039,3 @@ def key_angel(input_audio_file, output_text_file, **kwargs):
     textfile.close()
 
     return key, correlation_value
-
