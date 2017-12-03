@@ -225,8 +225,7 @@ def chroma_to_pc(chroma_name):
                  'G#': 8, 'Ab': 8,
                  'A': 9, 'Gx': 9, 'Bbb': 9,
                  'A#': 10, 'Bb': 10,
-                 'B': 11, 'Cb': 11
-                 }
+                 'B': 11, 'Cb': 11}
     try:
         if chroma_name.islower():
             chroma_name = chroma_name[0].upper() + chroma_name[1:]
@@ -309,12 +308,13 @@ def int_to_key(key_integer):
     """
     # TODO: Check that the entry 24 as 'unknown' has a real use.
 
-    int2key = {0: 'C major', 1: 'C# major', 2: 'D major', 3: 'Eb major', 4: 'E major',
-               5: 'F major', 6: 'F# major', 7: 'G major', 8: 'Ab major', 9: 'A major',
-               10: 'Bb major', 11: 'B major', 12: 'C minor', 13: 'C# minor', 14: 'D minor',
-               15: 'Eb minor', 16: 'E minor', 17: 'F minor', 18: 'F# minor', 19: 'G minor',
-               20: 'Ab minor', 21: 'A minor', 22: 'Bb minor', 23: 'B minor',
-               24: 'unknown'}
+    int2key = {0: 'C major', 1: 'C# major', 2: 'D major', 3: 'Eb major', 4: 'E major', 5: 'F major',
+               6: 'F# major', 7: 'G major', 8: 'Ab major', 9: 'A major', 10: 'Bb major', 11: 'B major',
+               12: 'C minor', 13: 'C# minor', 14: 'D minor', 15: 'Eb minor', 16: 'E minor', 17: 'F minor',
+               18: 'F# minor', 19: 'G minor', 20: 'Ab minor', 21: 'A minor', 22: 'Bb minor', 23: 'B minor',
+               24: 'C other', 25: 'C# other', 26: 'D other', 27: 'Eb other', 28: 'E other', 29: 'F other',
+               30: 'F# other', 31: 'G other', 32: 'Ab other', 33: 'A other', 34: 'Bb other', 45: 'B other',
+               36: 'nokey'}
 
     return int2key[key_integer]
 
