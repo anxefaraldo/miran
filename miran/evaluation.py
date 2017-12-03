@@ -24,6 +24,10 @@ def key_eval_mirex(estimated_key_tuple, reference_key_tuple):
     :param reference_key_tuple: tuple with values for reference key and mode (tonic, mode) :type tuple
     """
 
+    # removes additional modal information if existing
+    estimated_key_tuple = estimated_key_tuple[:2]
+    reference_key_tuple = reference_key_tuple[:2]
+
     estimated_tonic, estimated_mode = estimated_key_tuple
     reference_tonic, reference_mode = reference_key_tuple
 
@@ -63,29 +67,35 @@ def key_eval_relative_errors(estimated_key_numlist, reference_key_numlist):
 
     """
     PC2DEGREE = {0: 'I', 1: 'bII', 2: 'II', 3: 'bIII', 4: 'III', 5: 'IV',
-                 6: '#IV', 7: 'V', 8: 'bVI', 9: 'VI', 10: 'bVII', 11: 'VII'}
+                 6: '#IV', 7: 'V', 8: 'bVI', 9: 'VI', 10: 'bVII', 11: 'VII',}
+
+    # removes additional modal information if existing
+    estimated_key_numlist = estimated_key_numlist[:2]
+    reference_key_numlist = reference_key_numlist[:2]
 
     estimated_tonic, estimated_mode = estimated_key_numlist
-    reference_tonic, reference_mode = reference_key_numlist
+    reference_tonic, reference_mode  = reference_key_numlist
 
     if estimated_key_numlist == [-1, None]:
         if reference_mode == 0:
-            return 72, 'I as X'
+            return (37 * 4) - 4, 'I as X'
         elif reference_mode == 1:
-            return 73, 'i as X'
+            return (37 * 4) - 3, 'i as X'
+        elif reference_mode == 2:
+            return (37 * 4) - 2, '1? as X'
         elif reference_mode is None:
-            return 74, 'X as X'
+            return (37 * 4) - 1, 'X as X'
 
     elif reference_key_numlist == [-1, None]:
         if estimated_mode == 0:
-            return 2, 'X as I'
+            return 3, 'X as I'
         elif estimated_mode == 1:
-            return 38, 'X as i'
+            return (12 * 4) + 2, 'X as i'
 
     else:
         interval = (estimated_tonic - reference_tonic) % 12
         degree = PC2DEGREE[interval]
-        error_id = 3 * (interval + (estimated_mode * 12)) + reference_mode
+        error_id = 4 * (interval + (estimated_mode * 12)) + reference_mode
         if estimated_mode == 1:
             degree = degree.lower()
         else:
@@ -108,8 +118,13 @@ def key_tonic_mode(estimated_key_tuple, reference_key_tuple):
 
     import numpy as np
 
+    # removes additional modal information if existing
+    estimated_key_tuple = estimated_key_tuple[:2]
+    reference_key_tuple = reference_key_tuple[:2]
+
     estimated_tonic, estimated_mode = estimated_key_tuple
     reference_tonic, reference_mode = reference_key_tuple
+
 
     result = np.array([estimated_tonic == reference_tonic, estimated_mode == reference_mode])
 

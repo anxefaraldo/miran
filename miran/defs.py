@@ -25,12 +25,14 @@ ANNOTATION_FILE_EXTENSIONS = {'.txt', '.key', '.lab'}
 # -----------------------
 KEY_LABELS = ('C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B',
               'Cm', 'C#m', 'Dm', 'Ebm', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'Bbm', 'Bm',
+              'C?', 'C#?', 'D?', 'Eb?', 'E?', 'F?', 'F#?', 'G?', 'Ab?', 'A?', 'Bb?', 'B?',
               'X') # No Key is index 24, which can be accessed as index -1!
 
 # pitch-class integer to relative roman numeral notation
 # ------------------------------------------------------
 DEGREE_LABELS = ('I', 'bII', 'II', 'bIII', 'III', 'IV', '#IV', 'V', 'bVI', 'VI', 'bVII', 'VII',
                  'i', 'bii', 'ii', 'biii', 'iii', 'iv', '#iv', 'v', 'bvi', 'vi', 'bvii', 'vii',
+                 '1?', 'b2?', '2?', 'b3?', '3?', '4?', '#4?', '5?', 'b6?', '6?', 'b7?', '7?',
                  'X') # No Key is last index, which can be accessed as index -1!
 
 # default settings for key estimation algorithm

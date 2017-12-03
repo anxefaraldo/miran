@@ -21,7 +21,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description="Evaluation of key estimation algorithms.")
     parser.add_argument("references", help="dir with reference annotations.")
     parser.add_argument("estimations", help="dir with estimated labels")
-    parser.add_argument("-v", "--verbose", action="store_true", help="print results to console")
+    parser.add_argument("-v", "--vocabulary", default="other", help="select_vocabulary to display details (majmin, other)")
     parser.add_argument("-s", "--save_to_file", help="save the evaluation results to an excel spreadsheet")
 
     args = parser.parse_args()
@@ -30,11 +30,11 @@ if __name__ == "__main__":
         raise parser.error("Warning: '{}' or '{}' not a directory.".format(args.references, args.estimations))
 
     else:
-        if args.verbose:
-            print("\nEvaluating...\n")
+        print("\nEvaluating...\n")
 
-        mtx_key = np.array(np.zeros(25 * 25).reshape(25, 25), dtype=int)
-        mtx_error = np.array(np.zeros(25 * 3).reshape(25, 3), dtype=int)#todo: must add 1 row
+        mtx_key = np.array(np.zeros(37 * 37).reshape(37, 37), dtype=int)
+        mtx_error = np.array(np.zeros(37 * 4).reshape(37, 4), dtype=int)
+
         mirex = []
         errors = []
         results = {}
@@ -77,8 +77,8 @@ if __name__ == "__main__":
                                                 pc_to_chroma(estimated_key[0]), id_to_mode(estimated_key[1]),
                                                 type_error[1], score_mirex],
                                                 index=['ref_tonic', 'ref_mode',
-                                                      'est_tonic', 'est_mode',
-                                                      'rel_error', 'mirex'])
+                                                       'est_tonic', 'est_mode',
+                                                       'rel_error', 'mirex'])
 
                 if estimated_key[1] is None:
                     estimated_key[1] = 0
@@ -94,7 +94,7 @@ if __name__ == "__main__":
         # GENERAL EVALUATION
         # ==================
         for item in errors:
-            mtx_error[int(item / 3), (item % 3)] += 1
+            mtx_error[int(item / 4), (item % 4)] += 1
 
         mirex = np.divide([mirex.count(1.0),
                            mirex.count(0.5),
@@ -108,32 +108,37 @@ if __name__ == "__main__":
 
         # PRINT RESULTS TO CONSOLE
         # ========================
-        if args.verbose:
-            # convert matrixes to pandas for better visualisation...
-            pd.set_option('max_rows', 999)
-            pd.set_option('max_columns', 100)
-            pd.set_option('expand_frame_repr', False)
+        # convert matrixes to pandas for better visualisation...
+        pd.set_option('max_rows', 999)
+        pd.set_option('max_columns', 100)
+        pd.set_option('expand_frame_repr', False)
 
-            if args.verbose:
-                results = pd.DataFrame(results, index=['ref_tonic', 'ref_mode', 'est_tonic', 'est_mode', 'rel_error', 'mirex']).T
-                print(results)
+        results = pd.DataFrame(results, index=['ref_tonic', 'ref_mode', 'est_tonic', 'est_mode', 'rel_error', 'mirex']).T
+        print(results)
 
-            print('\nCONFUSION MATRIX:')
-            print('reference keys (cols) vs. estimations (rows)\n')
-            mtx_key = pd.DataFrame(mtx_key.T, index=KEY_LABELS, columns=KEY_LABELS)
-            print(mtx_key)
+        print('\nCONFUSION MATRIX:')
+        print('reference keys (cols) vs. estimations (rows)\n')
+        mtx_key = pd.DataFrame(mtx_key.T, index=KEY_LABELS, columns=KEY_LABELS)
+        if args.vocabulary == 'majmin':
+            mtx_key = mtx_key[:24]
+            mtx_key = mtx_key.filter(KEY_LABELS[:24])
+        print(mtx_key)
 
-            print("\nRELATIVE ERROR MATRIX:\n")
-            mtx_error = pd.DataFrame(mtx_error.T, index=('I', 'i', 'X'), columns=DEGREE_LABELS)
-            print(mtx_error)
+        print("\nRELATIVE ERROR MATRIX:\n")
+        mtx_error = pd.DataFrame(mtx_error.T, index=('I', 'i', '1?', 'X'), columns=DEGREE_LABELS)
+        #if args.vocabulary == 'majmin':
+         #   mtx_error = mtx_error[:2]
+          #  mtx_error = mtx_error.filter(DEGREE_LABELS[:24])
 
-            print("\nTONIC MODE BASELINE:")
-            tonic_mode = pd.DataFrame([true_tonic_mode, false_tonic_mode], index=['true', 'false'], columns=['tonic', 'mode'])
-            print(tonic_mode)
+        print(mtx_error)
 
-            print("\nMIREX RESULTS:")
-            mirex = pd.DataFrame(mirex, index=['correct', 'fifth', 'relative', 'parallel', 'other', 'weighted'], columns=['%'])
-            print(mirex)
+        print("\nTONIC MODE BASELINE:")
+        tonic_mode = pd.DataFrame([true_tonic_mode, false_tonic_mode], index=['true', 'false'], columns=['tonic', 'mode'])
+        print(tonic_mode)
+
+        print("\nMIREX RESULTS:")
+        mirex = pd.DataFrame(mirex, index=['correct', 'fifth', 'relative', 'parallel', 'other', 'weighted'], columns=['%'])
+        print(mirex)
 
         print("\n{} files evaluated".format(file_count))
 

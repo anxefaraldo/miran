@@ -213,7 +213,7 @@ def chroma_to_pc(chroma_name):
     :type chroma_name: str
 
     """
-    pitch2int = {'X': -1, 'All': -1, '(unknown)': -1, "None": -1,
+    pitch2int = {'X': -1, 'All': -1, '(unknown)': -1, "None": -1, "-": -1,
                  'B#': 0, 'C': 0, 'Dbb': 0,
                  'C#': 1, 'Db': 1,
                  'D': 2, 'Cx': 2, 'Ebb': 2,
@@ -231,6 +231,8 @@ def chroma_to_pc(chroma_name):
         if chroma_name.islower():
             chroma_name = chroma_name[0].upper() + chroma_name[1:]
 
+        chroma_name = chroma_name.replace('^', '')
+        chroma_name = chroma_name.replace('_', '')
         return pitch2int[chroma_name]
 
     except KeyError:
@@ -274,6 +276,7 @@ def mode_to_id(mode='major'):
     mode2id = {'': None,
                'major': 0, 'maj': 0, 'M': 0,
                'minor': 1, 'min': 1, 'm': 1,
+               'other': 2,
                'ionian': 11, 'dorian': 12, 'phrygian': 13, 'lydian': 14, 'mixolydian': 15,
                'aeolian': 16, 'locrian': 17, 'harmonic': 21, 'fifth': 31, 'monotonic': 32,
                'difficult': 33, 'peak': 34, 'flat': 35}
@@ -289,7 +292,8 @@ def id_to_mode(idx=0):
 
     id2mode = {None: '',
                0: 'major',
-               1: 'minor'}
+               1: 'minor',
+               2: 'other'}
 
     try:
         return id2mode[idx]
@@ -309,7 +313,8 @@ def int_to_key(key_integer):
                5: 'F major', 6: 'F# major', 7: 'G major', 8: 'Ab major', 9: 'A major',
                10: 'Bb major', 11: 'B major', 12: 'C minor', 13: 'C# minor', 14: 'D minor',
                15: 'Eb minor', 16: 'E minor', 17: 'F minor', 18: 'F# minor', 19: 'G minor',
-               20: 'Ab minor', 21: 'A minor', 22: 'Bb minor', 23: 'B minor', 24: 'unknown'}
+               20: 'Ab minor', 21: 'A minor', 22: 'Bb minor', 23: 'B minor',
+               24: 'unknown'}
 
     return int2key[key_integer]
 
