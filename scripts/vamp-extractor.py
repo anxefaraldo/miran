@@ -48,20 +48,15 @@ if __name__ == "__main__":
 
     if args.skeleton == 'nnls':
         cue =  '_vamp_nnls-chroma_nnls-chroma_chroma.csv'
-    if args.skeleton == 'nnlsbc':
+    if args.skeleton == 'nnlsbt':
         cue = '_vamp_nnls-chroma_nnls-chroma_bothchroma.csv'
-
-    print cue
 
     ofiles = preparse_files(odir)
     for f in ofiles:
          ofdir, ofname = os.path.split(f)
-         #ofname, ofext = os.path.splitext(ofname)
          print ofdir, ofname
          if cue in ofname:
-            #ofname, ofext = os.path.splitext(ofname)
             ofname = ofname[:ofname.find(cue)]
             os.rename(f, os.path.join(odir, ofname + '.' + args.skeleton))
-
 
     print("\nDone")
