@@ -179,6 +179,7 @@ def _key2(pcp, profile_type='bgate', interpolation='linear', conf_thres=0.5):
     else:
         first_to_second_ratio = (first_max - second_max) / first_max
         if first_max < conf_thres:
+            #return 'NoTonic', 'NoMode', first_max, first_to_second_ratio
             return 'NoTonic', 'NoMode', first_max, first_to_second_ratio
             # TODO: we should try to separate tonic from mode id...
             # TODO: si la confidencia es relativaente alta pero hay muchos candidatos posiblemente sea atonical
@@ -599,7 +600,8 @@ def key_ecir(input_audio_file, output_text_file, **kwargs):
                                 maxPeaks=kwargs["SPECTRAL_PEAKS_MAX"],
                                 sampleRate=kwargs["SAMPLE_RATE"])
     hpcp = estd.HPCP(bandPreset=kwargs["HPCP_BAND_PRESET"],
-                     bandSplitFrequency=kwargs["HPCP_SPLIT_HZ"],
+                     #bandSplitFrequency=kwargs["HPCP_SPLIT_HZ"],
+                     splitFrequency=kwargs["HPCP_SPLIT_HZ"],
                      harmonics=kwargs["HPCP_HARMONICS"],
                      maxFrequency=kwargs["MAX_HZ"],
                      minFrequency=kwargs["MIN_HZ"],
@@ -644,12 +646,12 @@ def key_ecir(input_audio_file, output_text_file, **kwargs):
     if kwargs["DETUNING_CORRECTION"] and kwargs["DETUNING_CORRECTION_SCOPE"] == 'average':
         chroma = _detuning_correction(chroma, kwargs["HPCP_SIZE"])
     key = key(chroma.tolist())
+    confidence = (key[2],key[3])
     key = key[0] + '\t' + key[1]
-    correlation_value = key[2]
     textfile = open(output_text_file, 'w')
     textfile.write(key + '\n')
     textfile.close()
-    return key, correlation_value
+    return key, confidence
 
 
 def key_essentia(input_audio_file, output_text_file, **kwargs):
@@ -926,7 +928,7 @@ def key_essentia_scope(input_audio_file, output_text_file, **kwargs):
 def key_angel(input_audio_file, output_text_file, **kwargs):
     """
     This function estimates the overall key of an audio track
-    optionaly with extra modal information.
+    optionally with extra modal information.
     :type input_audio_file: str
     :type output_text_file: str
 
@@ -954,7 +956,8 @@ def key_angel(input_audio_file, output_text_file, **kwargs):
                                 sampleRate=kwargs["SAMPLE_RATE"])
 
     hpcp = estd.HPCP(bandPreset=kwargs["HPCP_BAND_PRESET"],
-                     bandSplitFrequency=kwargs["HPCP_SPLIT_HZ"],
+                     #bandSplitFrequency=kwargs["HPCP_SPLIT_HZ"],
+                     splitFrequency=kwargs["HPCP_SPLIT_HZ"],
                      harmonics=kwargs["HPCP_HARMONICS"],
                      maxFrequency=kwargs["MAX_HZ"],
                      minFrequency=kwargs["MIN_HZ"],
@@ -1035,7 +1038,8 @@ def key_angel(input_audio_file, output_text_file, **kwargs):
         key = key_1
 
     textfile = open(output_text_file, 'w')
-    textfile.write(key + '\t' + str(correlation_value) + '\n')
+    #textfile.write(key + '\t' + str(correlation_value) + '\n')
+    textfile.write(key)
     textfile.close()
 
     return key, correlation_value

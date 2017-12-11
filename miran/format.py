@@ -226,6 +226,9 @@ def chroma_to_pc(chroma_name):
                  'A': 9, 'Gx': 9, 'Bbb': 9,
                  'A#': 10, 'Bb': 10,
                  'B': 11, 'Cb': 11}
+
+    chroma_name = chroma_name.strip()
+
     try:
         if chroma_name.islower():
             chroma_name = chroma_name[0].upper() + chroma_name[1:]
@@ -244,7 +247,8 @@ def pc_to_chroma(pitch_class):
 
     """
 
-    pc2chroma = {-1: 'X',
+    pc2chroma = {-1: 'unknown',
+                -1: 'X',
                  0: 'C',
                  1: 'C#',
                  2: 'D',
@@ -306,8 +310,6 @@ def int_to_key(key_integer):
     Converts an int onto a key symbol with root and scale.
 
     """
-    # TODO: Check that the entry 24 as 'unknown' has a real use.
-
     int2key = {0: 'C major', 1: 'C# major', 2: 'D major', 3: 'Eb major', 4: 'E major', 5: 'F major',
                6: 'F# major', 7: 'G major', 8: 'Ab major', 9: 'A major', 10: 'Bb major', 11: 'B major',
                12: 'C minor', 13: 'C# minor', 14: 'D minor', 15: 'Eb minor', 16: 'E minor', 17: 'F minor',
@@ -648,6 +650,7 @@ def MIK1(input_file, output_dir=None):
         outfile.write(key)
 
     print("Creating estimation file for '{}' in '{}'". format(input_file, output_dir))
+
 
 def MIK2(input_file, output_dir=None):
     """
@@ -999,6 +1002,7 @@ def batch_format_converter(input_dir, convert_function, output_dir=None, ext='.w
 
 # def key_to_int(key_symbol):
 #     # TODO: DO WE NEED TO DELETE THIS!!?
+#       useful for traktor???
 #     """
 #     Converts a key symbol (i.e. C major) type to int
 #     """

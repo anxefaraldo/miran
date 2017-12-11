@@ -13,6 +13,8 @@ if __name__ == "__main__":
     parser.add_argument("input", help="file or dir to analyse")
     parser.add_argument("-s", "--skeleton", help="vamp-plugin skeleton", default='nnlsbt')
     parser.add_argument("-o", "--output_dir", help="dir to save the results to")
+    parser.add_argument("-r", "--recursive", action="store_true", help="recursive")
+
 
     args = parser.parse_args()
 
@@ -33,7 +35,7 @@ if __name__ == "__main__":
         else:
             odir = args.output_dir
 
-    files = preparse_files(args.input)
+    files = preparse_files(args.input, recursive=args.recursive)
 
     print('Extracting features with {}.n3 in batch mode.'.format(args.skeleton))
 

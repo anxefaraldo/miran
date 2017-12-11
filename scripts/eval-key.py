@@ -48,12 +48,22 @@ if __name__ == "__main__":
             if any(ext == os.path.splitext(each_file)[-1] for ext in ANNOTATION_FILE_EXTENSIONS):
 
                 with open(os.path.join(args.estimations, each_file), 'r') as analysis:
-                    estimated_key = split_key_str(analysis.readline())
+                    print(each_file)
+                    raw_estimation = analysis.readline()
+                    raw_estimations = raw_estimation.split(' | ')  # check for bimodal annotation
+                    ests = []
+                    for item in raw_estimations:
+                        ests.append(split_key_str(item))
+
 
                 for ext in ANNOTATION_FILE_EXTENSIONS:
                     try:
                         with open(os.path.join(args.references, os.path.splitext(each_file)[0] + ext), 'r') as reference:
-                            reference_key = split_key_str(reference.readline())
+                            raw_reference = reference.readline()
+                            raw_references = raw_reference.split(' | ') # check for bimodal annotation
+                            refs = []
+                            for item in raw_references:
+                                refs.append(split_key_str(item))
                         break
 
                     except IOError:
@@ -63,22 +73,42 @@ if __name__ == "__main__":
                     print("{} - Didn't find reference annotation".format(each_file))
                     continue
 
+                premirex = []
+                for estimated_key in ests:
+                    for reference_key in refs:
+                        score_mirex = key_eval_mirex(estimated_key, reference_key)
+                        premirex.append(score_mirex)
+
+                #print(premirex)
+
+                reference_key = refs[premirex.index(max(premirex)) % 2]
+                estimated_key = ests[premirex.index(max(premirex)) / 2]
+                #print(reference_key, estimated_key)
+
+                score_mirex = key_eval_mirex(estimated_key, reference_key)
                 tonic_mode_score = key_tonic_mode(estimated_key, reference_key)
                 true_tonic_mode += tonic_mode_score
                 false_tonic_mode += np.abs(np.subtract(tonic_mode_score, 1))
 
-                score_mirex = key_eval_mirex(estimated_key, reference_key)
                 mirex.append(score_mirex)
 
                 type_error = key_eval_relative_errors(estimated_key, reference_key)
                 errors.append(type_error[0])
 
+                # PRE BIMODAL
                 results[each_file] = pd.Series([pc_to_chroma(reference_key[0]), id_to_mode(reference_key[1]),
                                                 pc_to_chroma(estimated_key[0]), id_to_mode(estimated_key[1]),
                                                 type_error[1], score_mirex],
                                                 index=['ref_tonic', 'ref_mode',
                                                        'est_tonic', 'est_mode',
                                                        'rel_error', 'mirex'])
+
+                # POST BIMODAL
+                # results[each_file] = pd.Series([raw_reference,
+                #                                 raw_estimation,
+                #                                 type_error[1], score_mirex],
+                #                                 index=['reference', 'estimation', 'rel_error', 'mirex'])
+
 
                 if estimated_key[1] is None:
                     estimated_key[1] = 0
@@ -113,7 +143,11 @@ if __name__ == "__main__":
         pd.set_option('max_columns', 100)
         pd.set_option('expand_frame_repr', False)
 
+        # PRE-BIMODAL
         results = pd.DataFrame(results, index=['ref_tonic', 'ref_mode', 'est_tonic', 'est_mode', 'rel_error', 'mirex']).T
+
+        # POST BIMODAL
+        #results = pd.DataFrame(results, index=['reference', 'estimation', 'rel_error', 'mirex']).T
         print(results)
 
         print('\nCONFUSION MATRIX:')

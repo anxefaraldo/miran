@@ -368,24 +368,3 @@ def rename_files_without_leading_zeroes(searchpath_or_pathlist, ext=None, recurs
     for item in filelist:
         my_dir, my_file = os.path.split(item)
         os.rename(item, os.path.join(my_dir, str(int(my_file.split()[0])) + my_file[my_file.find(' '):]))
-
-
-# def rename_untitled_tracks():
-#     # rename untitled with names in database!
-#
-#     import shutil
-#
-#     for item in bp.itertuples():
-#         #    print(item[1], item[2], item[3], item[4])
-#         newname = u"{0} {1} - {2} ({3}).mp3".format(str(item[1]), item[2], item[3], item[4])
-#         for doc in u:
-#             fileid = strip_filename(doc).split()[0]
-#             if item[1] == int(fileid):
-#                 newname = os.path.join('/Users/angel/Desktop/UNk', newname)
-#                 print
-#                 doc
-#                 print
-#                 newname
-#                 shutil.copyfile(doc, newname)
-
-#   def make_simple_json()

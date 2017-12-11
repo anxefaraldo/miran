@@ -92,7 +92,7 @@ key_templates = {
 
 
 def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
-                output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures"):
+                output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", cmap='magma'):
 
     from librosa.display import specshow
     with sns.axes_style('ticks'):
@@ -105,7 +105,7 @@ def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
             plt.yticks((0.5, 3.5, 6.5, 9.5, 12.5, 15.5, 18.5, 21.5, 24.5, 27.5, 30.5, 33.5),
                        ('c', r'c$\sharp$', 'd', r'e$\flat$', 'e', 'f', r'f$\sharp$', 'g', r'a$\flat$', 'a', r'b$\flat$', 'b'))
 
-        specshow(chromagram, x_axis='time', sr=sr, hop_length=hl)
+        specshow(chromagram, x_axis='time', sr=sr, hop_length=hl, cmap=cmap)
         plt.xlabel('time (secs.)')
         plt.ylabel('chroma')
         plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
@@ -115,40 +115,39 @@ def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
 
 
 def plot_bchroma(chromagram, name="untitled", sr=44100, hl=2048,
-                output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures"):
-
+                output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", save=True, cmap='magma'):
 
     from librosa.display import specshow
     with sns.axes_style('ticks'):
         if chromagram.shape[0] != 24:
-            print('does not look like a compound chromagram')
-            return
+            chromagram = chromagram.T
+            if chromagram.shape[0] != 24:
+                print('does not look like a compound chromagram')
+                return
 
-        else:
-            plt.figure(figsize=(5.16, 2), dpi=150)
+        plt.figure(figsize=(5.16, 3), dpi=150)
 
-            plt.subplot(2, 1, 1)
-            specshow(chromagram[:12], x_axis='time', sr=sr, hop_length=hl)
-            #plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
-            #plt.ylabel()
-            #plt.xticks([])
-            #plt.xlabel('')
+        bass = chromagram[:12].T
+        bass = np.roll(bass, -3)
 
-            plt.subplot(2, 1, 2)
-            #plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
-            specshow(chromagram[12:], x_axis='time', sr=sr, hop_length=hl)
-            # plt.title('(a) classical', fontsize=8)
-            #plt.ylabel('hz.')
-            #plt.xticks([])
-            #plt.xlabel('')
+        treble = chromagram[12:].T
+        treble = np.roll(treble, -3)
 
-            specshow(chromagram, x_axis='time', sr=sr, hop_length=hl)
-            plt.xlabel('time (secs.)')
-            plt.ylabel('chroma')
-            plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
-            plt.tight_layout()
+        plt.subplot(2, 1, 1)
+        specshow(treble.T, x_axis='time', sr=sr, hop_length=hl,cmap=cmap)
+        plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
+        plt.xticks([])
+        plt.xlabel('')
+        plt.ylabel('treble')
+
+        plt.subplot(2, 1, 2)
+        specshow(bass.T, x_axis='time', sr=sr, hop_length=hl,cmap=cmap)
+        plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
+        plt.ylabel('bass')
+        plt.xlabel('time (secs.)')
+        if save:
             plt.savefig(os.path.join(output_dir, name + '.pdf'), format="pdf", dpi=1200)
-            plt.show()
+        plt.show()
 
 
 def plot_majmin_dist(dataset_dir, name="Key_Distribution", output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/", ext=".txt", nokey=True):
@@ -184,7 +183,7 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution", output_dir="/Users/an
 
     gs = mpl.gridspec.GridSpec(2, 1, height_ratios=[1, 12])
     ax = plt.subplot(gs[0])
-    a = ax.barh(0, total_maj, linewidth=0.0, edgecolor=(.1, .1, .1))
+    a = ax.barh(0, total_maj, linewidth=0.0, edgecolor=(.1, .1, .1), color='white')
     b = ax.barh(0, total_min, left=total_maj, linewidth=0.0, edgecolor=(.1, .1, .1))
     if nokey:
         c = ax.barh(0, no_key, left=total_min+total_maj,  linewidth=0.0, edgecolor=(.1, .1, .1))
@@ -196,19 +195,19 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution", output_dir="/Users/an
     for r in a:
         pmaj = "%.1f" % (total_maj * percentage_factor)
         str_l = len(pmaj) + 1
-        plt.text((total_maj * 0.5) - (str_l * 0.8), -0.25, pmaj + '\%', fontsize=7)
+        plt.text((total_maj * 0.5) - (str_l * 0.8), -0.25, pmaj + '\%', fontsize=8)
 
     for r in b:
         pmin = "%.1f" % (total_min * percentage_factor)
         str_l = len(pmin) + 1
-        plt.text(total_maj + (total_min * 0.5) - (str_l * 0.8), -0.25, pmin + '\%', fontsize=7)
+        plt.text(total_maj + (total_min * 0.5) - (str_l * 0.8), -0.25, pmin + '\%', fontsize=8)
 
     if nokey:
         for r in c:
             pnk = "%.1f" % (no_key * percentage_factor)
             if no_key * percentage_factor > 3:
                 str_l = len(pnk) + 1
-                plt.text(total_maj + total_min + (no_key * 0.5) - (str_l * 0.8), -0.25, pnk + '\%', fontsize=7)
+                plt.text(total_maj + total_min + (no_key * 0.5) - (str_l * 0.8), -0.25, pnk + '\%', fontsize=8)
 
     plt.subplot(gs[1])
     plt.xlabel('tonic note')
@@ -265,10 +264,10 @@ def plot_profiles(profile_name, output_dir="/Users/angel/Dropbox/Apps/Texpad/The
 
 
 def plot_single_profile(data, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures",
-                  yr=None, yt=None, loc=None, label="", yl="weigths", fy=7, fx=0):
+                  yr=None, yt=None, loc=None, label="", yl="weigths", fy=7, fx=0, save=True):
 
     plt.figure(figsize=(5.16, 2.5), dpi=150)
-    a = plt.plot(data, '-gp', linewidth=1, markersize=4, label=label)
+    a = plt.plot(data, '-p', linewidth=1, markersize=4, label=label) # used to be '-gp' to force green
     c1 = a[0].get_color()
     plt.xlabel('relative scale degrees')
     plt.ylabel(yl)
@@ -288,7 +287,6 @@ def plot_single_profile(data, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesi
     else:
         plt.legend(fontsize=8,loc=loc) # typically some (0.8,0.6)
     plt.tight_layout(pad=2, rect=(0, 0, 1, 1))
-    plt.savefig(os.path.join(output_dir, label + '_single_profile.pdf'), format="pdf", dpi=1200)
+    if save:
+        plt.savefig(os.path.join(output_dir, label + '_single_profile.pdf'), format="pdf", dpi=1200)
     plt.show()
-
-

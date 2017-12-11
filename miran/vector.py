@@ -96,7 +96,7 @@ def standard_score(v):
     return np.divide(np.subtract(v, np.mean(v)), np.std(v))
 
 
-def unit_vector(v, ord=2):
+def unit_vector(v, order=2):
     """
     Scale input vectors individually to unit norm (vector length = 1)
     The most commonly encountered vector norm is the L2-norm
@@ -110,31 +110,10 @@ def unit_vector(v, ord=2):
      "normal vector" (perpendicular vector) and "normalized v" (unit-length vector).
 
     """
-    vector_norm = np.linalg.norm(v, ord=ord)  # L2-Norm
+    vector_norm = np.linalg.norm(v, ord=order)  # L2-Norm
     if vector_norm == 0:
         return v
     return v / vector_norm
-
-def unit_vector_max(v, ord=2):
-    # exactly the same as normalizing to peak 1
-
-    """
-    Scale input vectors individually to unit norm (vector length = 1)
-    The most commonly encountered vector norm is the L2-norm
-    (sometimes called the magnitude of a vector)
-
-     The unit vector obtained by normalizing the normal vector
-     (i.e., dividing a nonzero normal vector by its vector norm)
-      is the unit normal vector, often known simply as the "unit normal."
-
-      Care should be taken to not confuse the terms "vector norm" (length of vector),
-     "normal vector" (perpendicular vector) and "normalized v" (unit-length vector).
-
-    """
-    vector_norm = np.linalg.norm(v, ord=ord)  # L2-Norm
-    if vector_norm == 0:
-        return v
-    return norm_peak(v / vector_norm)
 
 
 def vector_threshold(pcp, threshold):
