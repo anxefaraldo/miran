@@ -290,3 +290,5 @@ def plot_single_profile(data, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesi
     if save:
         plt.savefig(os.path.join(output_dir, label + '_single_profile.pdf'), format="pdf", dpi=1200)
     plt.show()
+
+

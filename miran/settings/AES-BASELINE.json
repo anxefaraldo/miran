@@ -8,7 +8,7 @@
   "WINDOW_SHAPE": "hann",
 
   "PCP_THRESHOLD": null,
-  "HIGHPASS_CUTOFF": 250,
+  "HIGHPASS_CUTOFF": null,
   "SPECTRAL_WHITENING": true,
   "DETUNING_CORRECTION": true,
   "DETUNING_CORRECTION_SCOPE": "average",
@@ -42,7 +42,6 @@
   "KEY_PROFILE": "edma",
   "USE_THREE_PROFILES": false,
   "WITH_MODAL_DETAILS": false,
-
 
 
   "OPTIONS": {

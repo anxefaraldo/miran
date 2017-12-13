@@ -733,6 +733,7 @@ def key_ecir(input_audio_file, output_text_file, **kwargs):
                      weightType=kwargs["HPCP_WEIGHT_TYPE"],
                      windowSize=kwargs["HPCP_WEIGHT_WINDOW_SEMITONES"],
                      maxShifted=kwargs["HPCP_SHIFT"])
+
     key = estd.Key(numHarmonics=kwargs["KEY_HARMONICS"],
                    pcpSize=kwargs["HPCP_SIZE"],
                    profileType=kwargs["KEY_PROFILE"],
@@ -741,6 +742,11 @@ def key_ecir(input_audio_file, output_text_file, **kwargs):
                    useThreeChords=kwargs["KEY_USE_THREE_CHORDS"])
 
     audio = loader()
+
+    if kwargs["HIGHPASS_CUTOFF"] is not None:
+        hpf = estd.HighPass(cutoffFrequency=kwargs["HIGHPASS_CUTOFF"], sampleRate=kwargs["SAMPLE_RATE"])
+        audio = hpf(hpf(hpf(audio)))
+
     if kwargs["DURATION"] is not None:
         audio = audio[(kwargs["START_TIME"] * kwargs["SAMPLE_RATE"]):(kwargs["DURATION"] * kwargs["SAMPLE_RATE"])]
 
@@ -766,7 +772,7 @@ def key_ecir(input_audio_file, output_text_file, **kwargs):
     if kwargs["DETUNING_CORRECTION"] and kwargs["DETUNING_CORRECTION_SCOPE"] == 'average':
         chroma = _detuning_correction(chroma, kwargs["HPCP_SIZE"])
     key = key(chroma.tolist())
-    confidence = (key[2],key[3])
+    confidence = (key[2], key[3])
     key = key[0] + '\t' + key[1]
     textfile = open(output_text_file, 'w')
     textfile.write(key + '\n')
@@ -800,7 +806,8 @@ def key_essentia(input_audio_file, output_text_file, **kwargs):
                                 maxPeaks=kwargs["SPECTRAL_PEAKS_MAX"],
                                 sampleRate=kwargs["SAMPLE_RATE"])
     hpcp = estd.HPCP(bandPreset=kwargs["HPCP_BAND_PRESET"],
-                     bandSplitFrequency=kwargs["HPCP_SPLIT_HZ"],
+                     splitFrequency=kwargs["HPCP_SPLIT_HZ"],
+                     #bandSplitFrequency=kwargs["HPCP_SPLIT_HZ"],
                      harmonics=kwargs["HPCP_HARMONICS"],
                      maxFrequency=kwargs["MAX_HZ"],
                      minFrequency=kwargs["MIN_HZ"],
@@ -812,10 +819,12 @@ def key_essentia(input_audio_file, output_text_file, **kwargs):
                      weightType=kwargs["HPCP_WEIGHT_TYPE"],
                      windowSize=kwargs["HPCP_WEIGHT_WINDOW_SEMITONES"],
                      maxShifted=kwargs["HPCP_SHIFT"])
+
     if kwargs["USE_THREE_PROFILES"]:
         key_1 = estd.KeyEDM3(pcpSize=kwargs["HPCP_SIZE"], profileType=kwargs["KEY_PROFILE"])
     else:
         key_1 = estd.KeyEDM(pcpSize=kwargs["HPCP_SIZE"], profileType=kwargs["KEY_PROFILE"])
+
     if kwargs["HIGHPASS_CUTOFF"] is not None:
         hpf = estd.HighPass(cutoffFrequency=kwargs["HIGHPASS_CUTOFF"], sampleRate=kwargs["SAMPLE_RATE"])
         audio = hpf(hpf(hpf(loader())))
@@ -858,6 +867,7 @@ def key_essentia(input_audio_file, output_text_file, **kwargs):
     estimation_1 = key_1(chroma)
     key_1 = estimation_1[0] + '\t' + estimation_1[1]
     correlation_value = estimation_1[2]
+
     if kwargs["WITH_MODAL_DETAILS"]:
         key_2 = estd.KeyExtended(pcpSize=kwargs["HPCP_SIZE"])
         estimation_2 = key_2(chroma)

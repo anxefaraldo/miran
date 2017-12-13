@@ -68,3 +68,20 @@ def csv_to_numpy2(csv_file):
     """
     This function converts a csv file to a numpy array"""
     return pd.DataFrame.from_csv(csv_file,  header=None).as_matrix()
+
+
+def get_scores_from_xlsx(list_of_excel_files):
+    cor = []
+    nei = []
+    rel = []
+    wei = []
+    par = []
+
+    for f in list_of_excel_files:
+        df = pd.read_excel(f, sheetname=3).T
+        cor.append(float(df.correct))
+        nei.append(float(df.fifth))
+        rel.append(float(df.relative))
+        par.append(float(df.parallel))
+        wei.append(float(df.weighted))
+    return [cor, nei, rel, par, wei]
