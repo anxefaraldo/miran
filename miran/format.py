@@ -213,7 +213,7 @@ def chroma_to_pc(chroma_name):
     :type chroma_name: str
 
     """
-    pitch2int = {'X': -1, 'All': -1, '(unknown)': -1, "None": -1, "-": -1,
+    pitch2int = {'X': -1, 'All': -1, '(unknown)': -1, "None": -1, "-": -1, 'unknown': -1, 'Unknown': -1,
                  'B#': 0, 'C': 0, 'Dbb': 0,
                  'C#': 1, 'Db': 1,
                  'D': 2, 'Cx': 2, 'Ebb': 2,
@@ -238,7 +238,7 @@ def chroma_to_pc(chroma_name):
         return pitch2int[chroma_name]
 
     except KeyError:
-        print('KeyError: {} choma not recognised'.format(chroma_name))
+        print('KeyError: "{}" choma not recognised'.format(chroma_name))
 
 
 def pc_to_chroma(pitch_class):
@@ -247,7 +247,8 @@ def pc_to_chroma(pitch_class):
 
     """
 
-    pc2chroma = {-1: 'unknown',
+    pc2chroma = {-1: 'Unknown',
+                 -1: 'unknown',
                 -1: 'X',
                  0: 'C',
                  1: 'C#',
@@ -266,7 +267,7 @@ def pc_to_chroma(pitch_class):
         return pc2chroma[pitch_class]
 
     except KeyError:
-        raise KeyError('{} pitch class not in range (-1/11)'.format(pitch_class))
+        raise KeyError('"{}" pitch class not in range (-1/11)'.format(pitch_class))
 
 
 def mode_to_id(mode='major'):
@@ -288,7 +289,7 @@ def mode_to_id(mode='major'):
         return mode2id[mode]
 
     except KeyError:
-        print('KeyError: {} mode name not recognised'.format(mode))
+        print('KeyError: "{}" mode name not recognised'.format(mode))
 
 
 def id_to_mode(idx=0):

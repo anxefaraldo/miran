@@ -183,7 +183,7 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution", output_dir="/Users/an
 
     gs = mpl.gridspec.GridSpec(2, 1, height_ratios=[1, 12])
     ax = plt.subplot(gs[0])
-    a = ax.barh(0, total_maj, linewidth=0.0, edgecolor=(.1, .1, .1), color='white')
+    a = ax.barh(0, total_maj, linewidth=0.0, edgecolor=(.1, .1, .1))
     b = ax.barh(0, total_min, left=total_maj, linewidth=0.0, edgecolor=(.1, .1, .1))
     if nokey:
         c = ax.barh(0, no_key, left=total_min+total_maj,  linewidth=0.0, edgecolor=(.1, .1, .1))
@@ -195,7 +195,7 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution", output_dir="/Users/an
     for r in a:
         pmaj = "%.1f" % (total_maj * percentage_factor)
         str_l = len(pmaj) + 1
-        plt.text((total_maj * 0.5) - (str_l * 0.8), -0.25, pmaj + '\%', fontsize=8)
+        plt.text((total_maj * 0.5) - (str_l * 0.8), -0.25, pmaj + '\%', fontsize=8, color='white')
 
     for r in b:
         pmin = "%.1f" % (total_min * percentage_factor)
@@ -254,9 +254,9 @@ def plot_profiles(profile_name, output_dir="/Users/angel/Dropbox/Apps/Texpad/The
         i += 1
 
     if not loc:
-        plt.legend(fontsize=8)
+        plt.legend(fontsize=8, frameon=True)
     else:
-        plt.legend(fontsize=8, loc=loc)  # typically some (0.8,0.6)
+        plt.legend(fontsize=8, loc=loc, frameon=True)  # typically some (0.8,0.6)
 
     plt.tight_layout(pad=2, rect=(0, 0, 1, 1))
     plt.savefig(os.path.join(output_dir, profile_name + '_profiles.pdf'), format="pdf", dpi=1200)
@@ -283,9 +283,9 @@ def plot_single_profile(data, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesi
         plt.text(i + fx, fy, '%.2f' % f, fontsize=8, color=c1)
         i += 1
     if not loc:
-        plt.legend(fontsize=8)
+        plt.legend(fontsize=8, frameon=True)
     else:
-        plt.legend(fontsize=8,loc=loc) # typically some (0.8,0.6)
+        plt.legend(fontsize=8,loc=loc, frameon=True) # typically some (0.8,0.6)
     plt.tight_layout(pad=2, rect=(0, 0, 1, 1))
     if save:
         plt.savefig(os.path.join(output_dir, label + '_single_profile.pdf'), format="pdf", dpi=1200)

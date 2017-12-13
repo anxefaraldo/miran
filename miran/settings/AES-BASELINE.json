@@ -8,7 +8,7 @@
   "WINDOW_SHAPE": "hann",
 
   "PCP_THRESHOLD": null,
-  "HIGHPASS_CUTOFF": null,
+  "HIGHPASS_CUTOFF": 250,
   "SPECTRAL_WHITENING": true,
   "DETUNING_CORRECTION": true,
   "DETUNING_CORRECTION_SCOPE": "average",
@@ -28,13 +28,22 @@
   "HPCP_SIZE": 36,
   "HPCP_WEIGHT_WINDOW_SEMITONES": 1,
   "HPCP_WEIGHT_TYPE": "cosine",
+  "PROFILE_INTERPOLATION": "linear",
 
   "KEY_POLYPHONY": false,
   "KEY_USE_THREE_CHORDS": false,
   "KEY_HARMONICS": 15,
   "KEY_SLOPE": 0.2,
 
-  "KEY_PROFILE": "edmm",
+  "ANALYSIS_TYPE": "global",
+  "N_WINDOWS": 100,
+  "WINDOW_INCREMENT": 100,
+
+  "KEY_PROFILE": "edma",
+  "USE_THREE_PROFILES": false,
+  "WITH_MODAL_DETAILS": false,
+
+
 
   "OPTIONS": {
     "DETUNING_CORRECTION_SCOPE": [
@@ -52,10 +61,14 @@
       "squaredCosine"
     ],
     "KEY_PROFILE": [
-      "temperley",
-      "shaath",
+      "bgate",
+      "braw",
       "edma",
       "edmm"
+    ],
+    "ANALYSIS_TYPE": [
+      "global",
+      "local"
     ]
   }
 }

@@ -10,7 +10,7 @@
   "PCP_THRESHOLD": null,
   "HIGHPASS_CUTOFF": null,
   "SPECTRAL_WHITENING": true,
-  "DETUNING_CORRECTION": true,
+  "DETUNING_CORRECTION": false,
   "DETUNING_CORRECTION_SCOPE": "average",
 
   "MIN_HZ": 25.0,
@@ -19,7 +19,7 @@
   "SPECTRAL_PEAKS_MAX": 60,
 
   "HPCP_BAND_PRESET": false,
-  "HPCP_SPLIT_HZ": 250,
+  "HPCP_SPLIT_HZ": 500,
   "HPCP_HARMONICS": 4,
   "HPCP_REFERENCE_HZ": 440,
   "HPCP_NON_LINEAR": false,
@@ -34,7 +34,7 @@
   "KEY_HARMONICS": 15,
   "KEY_SLOPE": 0.2,
 
-  "KEY_PROFILE": "edmm",
+  "KEY_PROFILE": "edma",
 
   "OPTIONS": {
     "DETUNING_CORRECTION_SCOPE": [
@@ -52,7 +52,7 @@
       "squaredCosine"
     ],
     "KEY_PROFILE": [
-      "temperley",
+      "temperley99",
       "shaath",
       "edma",
       "edmm"

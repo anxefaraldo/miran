@@ -54,7 +54,7 @@ if __name__ == "__main__":
                     ests = []
                     for item in raw_estimations:
                         ests.append(split_key_str(item))
-
+                    print('ests', ests)
 
                 for ext in ANNOTATION_FILE_EXTENSIONS:
                     try:
@@ -75,15 +75,17 @@ if __name__ == "__main__":
 
                 premirex = []
                 for estimated_key in ests:
+                    print('indest', estimated_key)
                     for reference_key in refs:
                         score_mirex = key_eval_mirex(estimated_key, reference_key)
+                        print('score',score_mirex)
                         premirex.append(score_mirex)
 
-                #print(premirex)
+                print('pre', premirex)
 
                 reference_key = refs[premirex.index(max(premirex)) % 2]
                 estimated_key = ests[premirex.index(max(premirex)) / 2]
-                #print(reference_key, estimated_key)
+                print('ey', reference_key, estimated_key)
 
                 score_mirex = key_eval_mirex(estimated_key, reference_key)
                 tonic_mode_score = key_tonic_mode(estimated_key, reference_key)
