@@ -313,11 +313,20 @@ def int_to_key(key_integer):
     """
     int2key = {0: 'C major', 1: 'C# major', 2: 'D major', 3: 'Eb major', 4: 'E major', 5: 'F major',
                6: 'F# major', 7: 'G major', 8: 'Ab major', 9: 'A major', 10: 'Bb major', 11: 'B major',
+
                12: 'C minor', 13: 'C# minor', 14: 'D minor', 15: 'Eb minor', 16: 'E minor', 17: 'F minor',
                18: 'F# minor', 19: 'G minor', 20: 'Ab minor', 21: 'A minor', 22: 'Bb minor', 23: 'B minor',
-               24: 'C other', 25: 'C# other', 26: 'D other', 27: 'Eb other', 28: 'E other', 29: 'F other',
-               30: 'F# other', 31: 'G other', 32: 'Ab other', 33: 'A other', 34: 'Bb other', 45: 'B other',
-               36: 'nokey'}
+
+               24: 'C minor | C major', 25: 'C# minor | C# major', 26: 'D minor | D major', 27: 'Eb minor | Eb major', 28: 'E minor | E major', 29: 'F minor | F major',
+               30: 'F# minor | F# major', 31: 'G minor | G major', 32: 'Ab minor | Ab major', 33: 'A minor | A major', 34: 'Bb minor | Bb major', 35: 'B minor | B major',
+
+               36: 'C other', 37: 'C# other', 38: 'D other', 39: 'Eb other', 40: 'E other', 41: 'F other',
+               42: 'F# other', 43: 'G other', 44: 'Ab other', 45: 'A other', 46: 'Bb other', 47: 'B other',
+
+               48: 'C other monotonic', 49: 'C# other monotonic', 50: 'D other monotonic', 51: 'Eb other monotonic', 52: 'E other monotonic', 53: 'F other monotonic',
+               54: 'F# other monotonic', 55: 'G other monotonic', 56: 'Ab other monotonic', 57: 'A other monotonic', 58: 'Bb other monotonic', 59: 'B other monotonic',
+
+               60: 'nokey'}
 
     return int2key[key_integer]
 

@@ -14,7 +14,7 @@ if __name__ == "__main__":
     from time import clock
     from argparse import ArgumentParser
     from miran.key import *
-    from miran.defs import AUDIO_FILE_EXTENSIONS, KEY_SETTINGS
+    from miran.defs import AUDIO_FILE_EXTENSIONS, KEY_SETTINGS, KEY2, KEY3
     from miran.utils import load_settings_as_dict, create_dir, folderfiles
 
 
@@ -36,6 +36,8 @@ if __name__ == "__main__":
     else:
         settings = KEY_SETTINGS
         print("Loading default key estimation keyconfigs")
+
+    print()
 
     if args.profile:
         settings["KEY_PROFILE"] = args.profile

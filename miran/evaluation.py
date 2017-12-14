@@ -8,57 +8,6 @@ estimation algorithms.
 
 """
 
-
-def key_eval_pop(estimated_key_tuple, reference_key_tuple):
-    """
-    Performs an evaluation of the key estimation
-    according to our newly defined protocol
-
-    - 1.0 point to correctly identified keys (single or compound)
-    - 0.8 points to single keys within a multiple annotation
-    - 0.6 points to relative keys (over neighbours, given the shorter distance in a modal context)
-    - 0.4 points to parallel keys (given the major-minor compound identity in pop)
-    - 0.2 points to neighbouring keys
-
-    :param estimated_key_tuple: tuple with values for estimated key and mode (tonic, mode) :type tuple
-    :param reference_key_tuple: tuple with values for reference key and mode (tonic, mode) :type tuple
-    """
-
-    # removes additional modal information if existing
-    estimated_key_tuple = estimated_key_tuple[:2]
-    reference_key_tuple = reference_key_tuple[:2]
-
-    estimated_tonic, estimated_mode = estimated_key_tuple
-    reference_tonic, reference_mode = reference_key_tuple
-
-    # if both tonic and mode are equal = 1
-    if estimated_tonic == reference_tonic and estimated_mode == reference_mode:
-        score = 1.
-
-    # fifth error = neighbouring keys in the circle of fifths with the same mode
-    elif estimated_tonic == (reference_tonic + 7) % 12 and estimated_mode == reference_mode:
-            score = 0.2
-    # mir_eval only considers ascending fifths, so next line does not apply for them
-    elif estimated_tonic == (reference_tonic + 5) % 12 and estimated_mode == reference_mode:
-            score = 0.2
-
-    # relative error = 0.3
-    elif estimated_tonic == (reference_tonic + 3) % 12 and estimated_mode == 0 and reference_mode == 1:
-        score = 0.6
-    elif estimated_tonic == (reference_tonic - 3) % 12 and estimated_mode == 1 and reference_mode == 0:
-        score = 0.6
-
-    # parallel error = 0.2
-    elif estimated_tonic == reference_tonic and estimated_mode != reference_mode:
-        score = 0.4
-
-    else:
-        score = 0.0
-
-    return score
-
-
-
 def key_eval_mirex(estimated_key_tuple, reference_key_tuple):
     """
     Performs an evaluation of the key estimation
@@ -141,6 +90,8 @@ def key_eval_relative_errors(estimated_key_numlist, reference_key_numlist):
             return 3, 'X as I'
         elif estimated_mode == 1:
             return (12 * 4) + 2, 'X as i'
+        elif estimated_mode == 2:
+            return (24 * 4) + 3, 'X as 1?'
 
     else:
         interval = (estimated_tonic - reference_tonic) % 12
