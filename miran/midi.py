@@ -72,6 +72,11 @@ def dur_in_bars(mid):
     return dur_in_ticks / (beats_per_bar * mid.ticks_per_beat)
 
 
+def midi2freq(midi_note):
+    """Takes a midi note number and returns its frequency in Hz."""
+    return pow(1.059463094359293, midi_note-69) * 440.0
+
+
 def mid_to_matrix(mid, output='nested_list'):  # {"nested_list", "pandas"}
     """
     Takes a midi file or stream and returns a matrix with rows representing midi events

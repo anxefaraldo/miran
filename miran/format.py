@@ -213,7 +213,8 @@ def chroma_to_pc(chroma_name):
     :type chroma_name: str
 
     """
-    pitch2int = {'X': -1, 'All': -1, '(unknown)': -1, "None": -1, "-": -1, 'unknown': -1, 'Unknown': -1,
+    pitch2int = {'Unknown': -2, '(unknown)': -2, 'unknown': -2,
+                 'X': -1, 'All': -1, "None": -1, "-": -1,
                  'B#': 0, 'C': 0, 'Dbb': 0,
                  'C#': 1, 'Db': 1,
                  'D': 2, 'Cx': 2, 'Ebb': 2,
@@ -247,21 +248,10 @@ def pc_to_chroma(pitch_class):
 
     """
 
-    pc2chroma = {-1: 'Unknown',
-                 -1: 'unknown',
-                -1: 'X',
-                 0: 'C',
-                 1: 'C#',
-                 2: 'D',
-                 3: 'Eb',
-                 4: 'E',
-                 5: 'F',
-                 6: 'F#',
-                 7: 'G',
-                 8: 'Ab',
-                 9: 'A',
-                 10: 'Bb',
-                 11: 'B'}
+    pc2chroma = {-2: 'Unknown',
+                 -1: 'X',
+                 0: 'C', 1: 'C#', 2: 'D', 3: 'Eb', 4: 'E', 5: 'F',
+                 6: 'F#', 7: 'G', 8: 'Ab', 9: 'A', 10: 'Bb', 11: 'B'}
 
     try:
         return pc2chroma[pitch_class]
@@ -290,6 +280,25 @@ def mode_to_id(mode='major'):
 
     except KeyError:
         print('KeyError: "{}" mode name not recognised'.format(mode))
+
+
+def modetail_to_id(modetype='eaolian'):
+    """
+    Converts a mode detailed label into numeric values.
+
+    :type modetype: str
+
+    """
+    modetype2id= {'': None,
+                  'ionian': 1, 'dorian': 2, 'phrygian': 3, 'lydian': 4, 'mixolydian': 5, 'aeolian': 7, 'locrian': 7,
+                  'harmonic': 21, 'fifth': 31, 'monotonic': 32, 'difficult': 33, 'peak': 34, 'flat': 35}
+
+    try:
+        return modetype2id[modetype]
+
+    except KeyError:
+        print('KeyError: "{}" mode type name not recognised'.format(modetype))
+
 
 
 def id_to_mode(idx=0):

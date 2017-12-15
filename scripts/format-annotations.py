@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-
 if __name__ == "__main__":
 
     from miran.format import *
@@ -11,7 +10,7 @@ if __name__ == "__main__":
     parser.add_argument("input", help="file or dir to convert to a regular format")
     parser.add_argument("source", help="source format of the files to convert")
     parser.add_argument("-o", "--output_dir", help="dir to save the reformatted annotation files")
-    parser.add_argument("-e", "--ext", help="file_extension", default=".wav")
+    parser.add_argument("-e", "--ext", help="file_extension", default=".flac,.mp3")
 
     args = parser.parse_args()
 
@@ -31,7 +30,8 @@ if __name__ == "__main__":
         eval(args.source)(args.input, args.output_dir)
 
 
-
     elif os.path.isdir(args.input):
-        batch_format_converter(args.input, args.source, args.output_dir, args.ext)
+        e = args.ext.split(',')
+        print e
+        batch_format_converter(args.input, args.source, args.output_dir, e)
         print("Done!")

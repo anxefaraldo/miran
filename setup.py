@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #  -*- coding: UTF-8 -*-
 
-import sys
+# import sys
 from setuptools import setup, find_packages
 
 
@@ -41,6 +41,7 @@ setup(
         'numpy',
         'openpyxl',
         'pandas',
+        # 'pyo',
         'scipy',
         'seaborn',
         # urllib

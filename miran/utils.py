@@ -77,7 +77,7 @@ def folderfiles(folderpath, ext=None, recursive=False):
     for myFile in list_of_files:
         if not ext:
             my_files.append(myFile)
-        elif os.path.splitext(myFile)[1] == ext:
+        elif os.path.splitext(myFile)[1] in ext:
             my_files.append(myFile)
         else:
             pass
@@ -227,66 +227,12 @@ def windowing(window_type, size=4096, beta=0.2):
 
 
 def bin_to_pc(binary, pcp_size=36):
-    # TODO DELETE AFTER REVISIONG KEY ESTINAMTISNSDF1
     """
     Returns the pitch-class of the specified pcp vector.
     It assumes (bin[0] == pc9) as implemeted in Essentia.
     """
     return int(binary / (pcp_size / 12.0))
 
-
-def wav2aiff(input_path, replace=True):
-
-    from subprocess import call
-    files = preparse_files(input_path)
-
-    for f in files:
-        fname, fext = os.path.splitext(f)
-        if fext == '.wav':
-            call('ffmpeg -i "{}" "{}"'.format(f, fname + '.aif'), shell=True)
-            if replace:
-                os.remove(f)
-
-
-def first_n_secs(input_path, duration=7.5, ext='.mp3'):
-
-    from subprocess import call
-
-    files = preparse_files(input_path, ext=ext)
-
-    if os.path.isfile(input_path):
-        my_dir = os.path.split(input_path)[0]
-        temp_dir = os.path.join(my_dir, '{}s'.format(duration))
-    elif os.path.isdir(input_path):
-        temp_dir = os.path.join(input_path, '{}s'.format(duration))
-        os.mkdir(temp_dir)
-    else:
-        temp_dir = os.getcwd()
-
-    for f in files:
-        fdir, fname = os.path.split(f)
-        call('sox "{}" "{}" trim 0 00:{}'.format(f, os.path.join(temp_dir, fname), duration), shell=True)
-        print("Cutting {} to first {} seconds".format(fname, duration))
-
-
-def audio_to_mp3_96(input_path, ext='.mp3'):
-
-    from subprocess import call
-
-    files = preparse_files(input_path)
-
-    if os.path.isfile(input_path):
-        my_dir = os.path.split(input_path)[0]
-        temp_dir = os.path.join(my_dir, '96kbps')
-    else:
-        temp_dir = os.path.join(input_path, '96kbps')
-        os.mkdir(temp_dir)
-
-    for f in files:
-        fname, fext = os.path.splitext(f)
-        if fext == ext:
-            call('sox "{}" -C 96.0 "{}"'.format(f, os.path.join(temp_dir, os.path.split(fname)[1] + ext)), shell=True)
-            print("Converting {} to 96 Kbps.".format((os.path.split(f)[1])))
 
 
 def find_mode_flat(mode_array):

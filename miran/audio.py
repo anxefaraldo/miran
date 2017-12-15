@@ -1,12 +1,65 @@
-import pyo
+
+# import pyo
+
 from random import randint
-from math import pow
 from numpy import divide
+from miran.midi import midi2freq
+from miran.utils import *
 
 
-def midi2freq(midi_note):
-    """Takes a midi note number and returns its frequency in Hz."""
-    return pow(1.059463094359293, midi_note-69) * 440.0
+def wav2aiff(input_path, replace=True):
+
+    from subprocess import call
+    files = preparse_files(input_path)
+
+    for f in files:
+        fname, fext = os.path.splitext(f)
+        if fext == '.wav':
+            call('ffmpeg -i "{}" "{}"'.format(f, fname + '.aif'), shell=True)
+            if replace:
+                os.remove(f)
+
+
+def first_n_secs(input_path, duration=7.5, ext='.mp3'):
+
+    from subprocess import call
+
+    files = preparse_files(input_path, ext=ext)
+
+    if os.path.isfile(input_path):
+        my_dir = os.path.split(input_path)[0]
+        temp_dir = os.path.join(my_dir, '{}s'.format(duration))
+    elif os.path.isdir(input_path):
+        temp_dir = os.path.join(input_path, '{}s'.format(duration))
+        os.mkdir(temp_dir)
+    else:
+        temp_dir = os.getcwd()
+
+    for f in files:
+        fdir, fname = os.path.split(f)
+        call('sox "{}" "{}" trim 0 00:{}'.format(f, os.path.join(temp_dir, fname), duration), shell=True)
+        print("Cutting {} to first {} seconds".format(fname, duration))
+
+
+def audio_to_mp3_96(input_path, ext='.mp3'):
+
+    from subprocess import call
+
+    files = preparse_files(input_path)
+
+    if os.path.isfile(input_path):
+        my_dir = os.path.split(input_path)[0]
+        temp_dir = os.path.join(my_dir, '96kbps')
+    else:
+        temp_dir = os.path.join(input_path, '96kbps')
+        os.mkdir(temp_dir)
+
+    for f in files:
+        fname, fext = os.path.splitext(f)
+        if fext == ext:
+            call('sox "{}" -C 96.0 "{}"'.format(f, os.path.join(temp_dir, os.path.split(fname)[1] + ext)), shell=True)
+            print("Converting {} to 96 Kbps.".format((os.path.split(f)[1])))
+
 
 
 def randsinemix(server=pyo.Server().boot(), n_sines=3, min_freq=100,

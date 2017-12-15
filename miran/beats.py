@@ -56,17 +56,3 @@ def beat_stats(window_indexes, feature, n_beats=1, window_increment=1):
     return stats
 
 
-if __name__ == "__main__":
-    import sys
-    try:
-        o = extract_onsets(sys.argv[1])
-        print o
-        # print sec_to_nwindow(extract_beat_positions(sys.argv[1], False))
-        # b = beat_stats(a, audio_features, 4, 1)
-        print 'Done!'
-    except StandardError:
-        print "usage: filename.py <folder to analyse>\n"
-        sys.exit()
-
-
-
