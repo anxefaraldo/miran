@@ -75,12 +75,14 @@ def folderfiles(folderpath, ext=None, recursive=False):
 
     my_files = []
     for myFile in list_of_files:
-        if not ext:
-            my_files.append(myFile)
-        elif os.path.splitext(myFile)[1] in ext:
-            my_files.append(myFile)
-        else:
-            pass
+        if not '.DS_Store' in myFile:
+
+            if not ext:
+                my_files.append(myFile)
+            elif os.path.splitext(myFile)[1] in ext:
+                my_files.append(myFile)
+            else:
+                pass
 
     if not my_files:
         # raise FileNotFoundError("Did not find any file with the given extension.") PYTHON3
@@ -157,6 +159,7 @@ def replace_chars(my_str, chars={"&", "<", ">", '"', "'"}, replacement=''):
 
 
 def return_random_track(path_or_filelist, ext=None, recursive=False):
+    """Returns a random track filepath from a folder or a list of valid filepaths."""
 
     from random import randint
     my_list = preparse_files(path_or_filelist, ext=ext, recursive=recursive)
@@ -164,10 +167,8 @@ def return_random_track(path_or_filelist, ext=None, recursive=False):
 
 
 def show_in_finder(filepath):
-    """
-    Show a file in OSX's Finder.
+    """Show a file in OSX's Finder."""
 
-    """
     from appscript import app, mactypes
     app("Finder").reveal(mactypes.Alias(filepath).alias)
 
@@ -205,10 +206,8 @@ def write_regular_timespans(textfile, duration=120):
 
 
 def windowing(window_type, size=4096, beta=0.2):
-    """
-    Returns an array of the specified size
-    with the desired window shape.
-    """
+    """Returns an array of the specified size with the desired window shape."""
+
     if window_type == "bartlett":
         return np.bartlett(size)
     elif window_type == "blackmann":

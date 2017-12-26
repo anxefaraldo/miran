@@ -1,0 +1,46 @@
+vamp:vamp-libxtract:mean::Low Level Features
+vamp:vamp-libxtract:variance::Low Level Features
+vamp:vamp-libxtract:standard_deviation::Low Level Features
+vamp:vamp-libxtract:average_deviation::Low Level Features
+vamp:vamp-libxtract:skewness::Low Level Features
+vamp:vamp-libxtract:kurtosis::Low Level Features
+vamp:vamp-libxtract:spectral_variance::Low Level Features
+vamp:vamp-libxtract:spectral_standard_deviation::Low Level Features
+vamp:vamp-libxtract:spectral_average_deviation::Low Level Features
+vamp:vamp-libxtract:spectral_skewness::Low Level Features
+vamp:vamp-libxtract:spectral_kurtosis::Low Level Features
+vamp:vamp-libxtract:spectral_centroid::Low Level Features
+vamp:vamp-libxtract:irregularity_k::Low Level Features
+vamp:vamp-libxtract:irregularity_j::Low Level Features
+vamp:vamp-libxtract:tristimulus_1::Low Level Features
+vamp:vamp-libxtract:tristimulus_2::Low Level Features
+vamp:vamp-libxtract:tristimulus_3::Low Level Features
+vamp:vamp-libxtract:smoothness::Low Level Features
+vamp:vamp-libxtract:spread::Low Level Features
+vamp:vamp-libxtract:zcr::Low Level Features
+vamp:vamp-libxtract:rolloff::Low Level Features
+vamp:vamp-libxtract:loudness::Low Level Features
+vamp:vamp-libxtract:flatness::Low Level Features
+vamp:vamp-libxtract:tonality::Low Level Features
+vamp:vamp-libxtract:crest::Low Level Features
+vamp:vamp-libxtract:noisiness::Low Level Features
+vamp:vamp-libxtract:rms_amplitude::Low Level Features
+vamp:vamp-libxtract:spectral_inharmonicity::Low Level Features
+vamp:vamp-libxtract:odd_even_ratio::Low Level Features
+vamp:vamp-libxtract:sharpness::Low Level Features
+vamp:vamp-libxtract:spectral_slope::Low Level Features
+vamp:vamp-libxtract:lowest_value::Low Level Features
+vamp:vamp-libxtract:highest_value::Low Level Features
+vamp:vamp-libxtract:sum::Low Level Features
+vamp:vamp-libxtract:nonzero_count::Low Level Features
+vamp:vamp-libxtract:f0::Low Level Features
+vamp:vamp-libxtract:failsafe_f0::Low Level Features
+vamp:vamp-libxtract:autocorrelation::Low Level Features
+vamp:vamp-libxtract:amdf::Low Level Features
+vamp:vamp-libxtract:asdf::Low Level Features
+vamp:vamp-libxtract:bark_coefficients::Low Level Features
+vamp:vamp-libxtract:peak_spectrum::Visualisation
+vamp:vamp-libxtract:harmonic_spectrum::Visualisation
+vamp:vamp-libxtract:spectrum::Visualisation
+vamp:vamp-libxtract:mfcc::Low Level Features
+vamp:vamp-libxtract:dct::Visualisation

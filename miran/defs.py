@@ -223,7 +223,8 @@ KEY_SETTINGS = {"DURATION": None,
                 "KEY_SLOPE": None,
 
                 "KEY_PROFILE": "bgate",
+                "KEY_VOCABULARY": 4,
+                "NOKEY_THRESHOLD": 0,
                 "USE_THREE_PROFILES": False,
                 "WITH_MODAL_DETAILS": False,
-
                 }

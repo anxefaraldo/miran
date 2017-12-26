@@ -7,7 +7,7 @@
   "HOP_SIZE": 16384,
   "WINDOW_SHAPE": "hann",
 
-  "PCP_THRESHOLD": 0.2,
+  "PCP_THRESHOLD": null,
   "HIGHPASS_CUTOFF": 100,
   "SPECTRAL_WHITENING": true,
   "DETUNING_CORRECTION": true,
@@ -35,13 +35,13 @@
   "KEY_HARMONICS": null,
   "KEY_SLOPE": null,
 
-
   "ANALYSIS_TYPE": null,
   "N_WINDOWS": null,
   "WINDOW_INCREMENT": null,
 
   "KEY_PROFILE": "bgate",
   "KEY_VOCABULARY": 2,
+  "NOKEY_THRESHOLD": 0,
 
   "USE_THREE_PROFILES": false,
   "WITH_MODAL_DETAILS": false,

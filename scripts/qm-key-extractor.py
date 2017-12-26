@@ -11,7 +11,6 @@ if __name__ == "__main__":
 
     parser = ArgumentParser(description="QM-Key Extractor")
     parser.add_argument("input", help="file or dir to analyse")
-    parser.add_argument("-e", "--ext", help="extension of the audio files to parse", default='.wav')
 
     args = parser.parse_args()
 
@@ -25,7 +24,6 @@ if __name__ == "__main__":
     for f in files:
         if any(soundfile_type in f for soundfile_type in AUDIO_FILE_EXTENSIONS):
             fname, fext = os.path.splitext(f)
-            #if fext == args.ext:
             fdir, fname = os.path.split(fname)
             subs.append((idx, fname))
             fname = os.path.join(fdir, str(idx))

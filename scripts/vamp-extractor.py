@@ -46,8 +46,6 @@ if __name__ == "__main__":
 
     print("\nRenaming files")
 
-    # as many as available skeletons!
-
     if args.skeleton == 'nnls':
         cue =  '_vamp_nnls-chroma_nnls-chroma_chroma.csv'
     if args.skeleton == 'nnlsbt':

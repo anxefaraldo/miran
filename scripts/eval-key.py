@@ -17,9 +17,9 @@ if __name__ == "__main__":
     import numpy as np
     import pandas as pd
     from argparse import ArgumentParser
-    from miran.defs import ANNOTATION_FILE_EXTENSIONS, DEGREE_LABELS, KEY_LABELS
     from miran.evaluation import *
-    from miran.format import split_key_str # , pc_to_chroma, id_to_mode
+    from miran.format import split_key_str
+    from miran.defs import ANNOTATION_FILE_EXTENSIONS, DEGREE_LABELS, KEY_LABELS
 
     parser = ArgumentParser(description="Evaluation of key estimation algorithms.")
     parser.add_argument("references", help="dir with reference annotations.")
@@ -57,31 +57,36 @@ if __name__ == "__main__":
 
                 with open(os.path.join(args.estimations, each_file), 'r') as analysis:
                     raw_estimation = analysis.readline()
-                    if 'majmin' in args.vocabulary:
-                        if 'other' in raw_estimation:
-                            print("estimation has 'other'", analysis)
-                            file_count += 1
-                            unknown_files += 1
-                            continue
-                        elif 'X' in raw_estimation:
-                            print("estimation has 'no-key' in", analysis)
-                            file_count += 1
-                            unknown_files += 1
-                            continue
+                    # if 'majmin' in args.vocabulary:
+                    #     if 'other' in raw_estimation:
+                    #         print("estimation has 'other'", analysis)
+                    #         file_count += 1
+                    #         unknown_files += 1
+                    #         continue
+                    #     elif 'X' in raw_estimation:
+                    #         print("estimation has 'no-key' in", analysis)
+                    #         file_count += 1
+                    #         unknown_files += 1
+                    #         continue
+                    #
+                    # elif 'other' in args.vocabulary:
+                    #     if 'X' in raw_estimation:
+                    #         print("estimation has 'no-key' in", raw_estimation)
+                    #         file_count += 1
+                    #         unknown_files += 1
+                    #         continue
+                    #
+                    # elif 'nokey' in args.vocabulary:
+                    #     if 'other' in raw_estimation:
+                    #         print("estimation has 'other' in", raw_estimation)
+                    #         file_count += 1
+                    #         unknown_files += 1
+                    #         continue
 
-                    elif 'other' in args.vocabulary:
-                        if 'X' in raw_estimation:
-                            print("estimation has 'no-key' in", raw_estimation)
-                            file_count += 1
-                            unknown_files += 1
-                            continue
+                    # TODO: poner la cuenta de archivos al final del ifs..
+                    # Con 'other' en el argumento funciona diferente!
+                    # Ahora NO>... ejem....
 
-                    elif 'nokey' in args.vocabulary:
-                        if 'other' in raw_estimation:
-                            print("estimation has 'other' in", raw_estimation)
-                            file_count += 1
-                            unknown_files += 1
-                            continue
 
                     raw_estimations = raw_estimation.split(' | ')
                     print raw_estimation

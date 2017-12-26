@@ -8,7 +8,7 @@ miran
 
 mir and music analysis tools in python. Mostly tonality related stuff for EDM.
 
-Documentation, including installation and usage information: http://angelfaraldo.github.io/mira/
+Documentation, including installation and usage information: http://angelfaraldo.github.io/miran/
 
 Dependencies:
 
