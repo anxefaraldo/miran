@@ -257,7 +257,7 @@ def pc_to_chroma(pitch_class):
         return pc2chroma[pitch_class]
 
     except KeyError:
-        raise KeyError('"{}" pitch class not in range (-1/11)'.format(pitch_class))
+        raise KeyError('"{}" pitch class not in range (-2/11)'.format(pitch_class))
 
 
 def mode_to_id(mode='major'):
@@ -338,6 +338,23 @@ def int_to_key(key_integer):
                60: 'nokey'}
 
     return int2key[key_integer]
+
+
+
+def key_to_int(key_name):
+    """
+    Converts a key symbol into an integer identifier
+
+    """
+    key2int = {'C major': 0, 'C# major': 1, 'D major': 2, 'Eb major': 3, 'E major': 4, 'F major': 5,
+               'F# major': 6, 'G major':  7, 'Ab major': 8, 'A major': 9, 'Bb major': 10, 'B major': 11,
+
+               'C minor': 12, 'C# minor': 13, 'D minor': 14, 'Eb minor': 15, 'E minor': 16, 'F minor': 17,
+               'F# minor': 18, 'G minor': 19, 'Ab minor': 20, 'A minor': 21, 'Bb minor': 22, 'B minor': 23,
+
+               'nokey': 60}
+
+    return key2int[key_name]
 
 
 def split_key_str(key_string):

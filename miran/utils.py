@@ -5,10 +5,8 @@ import numpy as np
 
 
 def change_file_extension(directory, in_ext='.txt', out_ext='.key', recursive=False):
-    """
-    Looks for specific file types in a directory and changes their
-    extension to a new given one.
-    """
+    """Looks for specific file types in a directory and changes their extension to a new given one."""
+
     number_of_files = 0
     list_of_files = folderfiles(directory, recursive=recursive)
     for item in list_of_files:
@@ -27,10 +25,8 @@ def create_dir(dir_name):
     Creates a new directory.
 
     If dir_name is a valid abspath it will create it where specified,
-    if dir_name is a NOT a valid abspath but a valid name, it will
-     create a dir in the current directory.
+    if dir_name is a NOT a valid abspath but a valid name, it will create a dir in the current directory.
 
-    :type dir_name: str
     """
     if not os.path.isdir(dir_name):
         root_folder, new_folder = os.path.split(dir_name)
@@ -56,10 +52,8 @@ def create_dir(dir_name):
 
 
 def folderfiles(folderpath, ext=None, recursive=False):
-    """
-    Returns a list of absolute paths with the filesystem in the specified folder.
+    """Returns a list of absolute paths with the filesystem in the specified folder."""
 
-    """
     if recursive:
         def _rlistdir(path):
             rlist = []
@@ -118,6 +112,7 @@ def load_settings_as_vars(json_settings):
 
 
 def preparse_files(searchpath_or_pathlist, ext=None, recursive=False):
+
     if type(searchpath_or_pathlist) is not list:
 
         if os.path.isdir(searchpath_or_pathlist):
@@ -127,7 +122,7 @@ def preparse_files(searchpath_or_pathlist, ext=None, recursive=False):
             searchpath_or_pathlist = [searchpath_or_pathlist]
 
         else:
-            raise TypeError("argument must be either a valid filepath, dirpath or a list of paths.")
+            raise TypeError("Argument must be either a valid filepath, dirpath or a list of paths.")
 
         return searchpath_or_pathlist
 
@@ -136,10 +131,8 @@ def preparse_files(searchpath_or_pathlist, ext=None, recursive=False):
 
 
 def prepend_str_to_filename(directory, matching_substring, string_to_prepend):
-    """
-    Prepend a string to an existing filename if it contains a matching substring.
+    """Prepend a string to an existing filename if it contains a matching substring."""
 
-    """
     list_of_files = folderfiles(directory)
     for item in list_of_files:
         if matching_substring in item:
@@ -158,8 +151,8 @@ def replace_chars(my_str, chars={"&", "<", ">", '"', "'"}, replacement=''):
     return my_str
 
 
-def return_random_track(path_or_filelist, ext=None, recursive=False):
-    """Returns a random track filepath from a folder or a list of valid filepaths."""
+def random_filepath(path_or_filelist, ext=None, recursive=False):
+    """Returns a random filepath from a folder or a list of valid filepaths."""
 
     from random import randint
     my_list = preparse_files(path_or_filelist, ext=ext, recursive=recursive)
@@ -229,12 +222,15 @@ def bin_to_pc(binary, pcp_size=36):
     """
     Returns the pitch-class of the specified pcp vector.
     It assumes (bin[0] == pc9) as implemeted in Essentia.
+
     """
     return int(binary / (pcp_size / 12.0))
 
 
 
 def find_mode_flat(mode_array):
+    """Calculates the closest diatonic mode to a given vector."""
+
 
     from vector import distance
 
@@ -258,10 +254,7 @@ def find_mode_flat(mode_array):
 
 
 def strip_filename(filename):
-    """
-    Returns a filename string without specific location (directories) or extension.
-
-    """
+    """Returns a filename string without root directory and extension."""
     if os.path.isfile(filename):
         return os.path.split(os.path.splitext(filename)[0])[1]
 

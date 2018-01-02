@@ -9,6 +9,7 @@ from miran.defs import *
 
 
 def _select_profile_type(profile, templates_dict):
+
     try:
         return templates_dict[profile]
     except:
@@ -315,6 +316,7 @@ def key_essentia_extractor(input_audio_file, output_text_file, **kwargs):
 
     return result, strength
 
+
 def key_ecir(input_audio_file, output_text_file, **kwargs):
 
     if not kwargs:
@@ -479,7 +481,7 @@ def key_aes(input_audio_file, output_text_file, **kwargs):
     if kwargs["DETUNING_CORRECTION"] and kwargs["DETUNING_CORRECTION_SCOPE"] == 'average':
         chroma = _detuning_correction(chroma, kwargs["HPCP_SIZE"])
 
-    # IMPORTANT! Adjust to essentia's HPCP calculation starting on A...
+    # Adjust to essentia's HPCP calculation starting on A (pc = 9)
     chroma = np.roll(chroma, -3 * (kwargs["HPCP_SIZE"] // 12))
 
     estimation_1 = estimate_key(chroma, kwargs["KEY_PROFILE"], kwargs["PROFILE_INTERPOLATION"],
@@ -503,7 +505,6 @@ def key_aes(input_audio_file, output_text_file, **kwargs):
         key = key_1
 
     textfile = open(output_text_file, 'w')
-    #textfile.write(key + '\t' + str(correlation_value) + '\n')
     textfile.write(key)
     textfile.close()
 

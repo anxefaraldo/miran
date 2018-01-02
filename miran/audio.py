@@ -1,6 +1,9 @@
+# -*- coding: UTF-8 -*-
 
-# import pyo
+# no estaba
+from __future__ import absolute_import, division, print_function
 
+import pyo
 from random import randint
 from numpy import divide
 from miran.midi import midi2freq
@@ -110,22 +113,3 @@ def notes2pcp(list_of_notes):
     for item in list_of_notes:
         pcp[item % 12] += 1.0
     return divide(pcp, max(pcp))
-
-
-if __name__ == "__main__":
-
-    from argparse import ArgumentParser
-
-    parser = ArgumentParser(description="Generates tuned sine-tone mixtures")
-    parser.add_argument("--filepath", help="path to write filesystem to")
-    args = parser.parse_args()
-
-    if args.filepath:
-        path = args.filepath
-    else:
-        path = './'
-
-    for test_file in range(5):
-        components = rand_sine_tempered(filename='sinetest_{:02d}.wav'.format(test_file))
-        print components
-        print notes2pcp(components)

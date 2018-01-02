@@ -126,7 +126,6 @@ def key_tonic_mode(estimated_key_tuple, reference_key_tuple):
     estimated_tonic, estimated_mode = estimated_key_tuple
     reference_tonic, reference_mode = reference_key_tuple
 
-
     result = np.array([estimated_tonic == reference_tonic, estimated_mode == reference_mode])
 
     return result.astype(int)
