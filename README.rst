@@ -1,9 +1,7 @@
 miran
 =====
 
-mir and music analysis tools in python. Mostly tonality related stuff for EDM.
-
-Documentation, including installation and usage information: http://angelfaraldo.github.io/miran/
+MIR and music analysis tools in python. Mostly tonality related stuff for analyising Electronic Dance Music.
 
 Dependencies:
 
