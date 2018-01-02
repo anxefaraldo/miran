@@ -1,8 +1,3 @@
-.. image:: https://travis-ci.org/angelfaraldo/miran.svg?branch=master
-    :target: https://travis-ci.org/angelfaraldo/miran
-.. image:: https://coveralls.io/repos/angelfaraldo/miran/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/angelfaraldo/miran?branch=master
-
 miran
 =====
 
