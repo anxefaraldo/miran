@@ -1,3 +1,8 @@
+# -*- coding: UTF-8 -*-
+
+# no estaba
+# from __future__ import absolute_import, division, print_function
+
 import numpy as np
 import os.path
 import essentia.standard as estd
@@ -54,19 +59,5 @@ def beat_stats(window_indexes, feature, n_beats=1, window_increment=1):
         stats.append(beat_info)
         i += window_increment
     return stats
-
-
-if __name__ == "__main__":
-    import sys
-    try:
-        o = extract_onsets(sys.argv[1])
-        print o
-        # print sec_to_nwindow(extract_beat_positions(sys.argv[1], False))
-        # b = beat_stats(a, audio_features, 4, 1)
-        print 'Done!'
-    except StandardError:
-        print "usage: filename.py <folder to analyse>\n"
-        sys.exit()
-
 
 

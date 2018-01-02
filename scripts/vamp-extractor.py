@@ -39,26 +39,32 @@ if __name__ == "__main__":
 
     print('Extracting features with {}.n3 in batch mode.'.format(args.skeleton))
 
+    idx = 0
+
     for f in files:
+
         if any(soundfile_type in f for soundfile_type in AUDIO_FILE_EXTENSIONS):
 
-            call('{0}/sonic-annotator -r -t {0}/{1}.n3 -w csv --csv-force --csv-basedir "{2}" "{3}"'.format(path, args.skeleton, odir, f), shell=True)
+            fname, fext = os.path.splitext(f)
+            fdir, fname = os.path.split(fname)
+            fname = os.path.join(fdir, str(idx))
+            f2 = fname + fext
+            os.rename(f, f2)
 
-    print("\nRenaming files")
+            call('{0}/sonic-annotator -r -t {0}/{1}.n3 -w csv --csv-force --csv-basedir "{2}" "{3}"'.format(path, args.skeleton, odir, f2), shell=True)
 
-    # as many as available skeletons!
+            cue = 'csv'
 
-    if args.skeleton == 'nnls':
-        cue =  '_vamp_nnls-chroma_nnls-chroma_chroma.csv'
-    if args.skeleton == 'nnlsbt':
-        cue = '_vamp_nnls-chroma_nnls-chroma_bothchroma.csv'
+            if args.skeleton == 'nnls':
+                cue = '_vamp_nnls-chroma_nnls-chroma_chroma.csv'
 
-    ofiles = preparse_files(odir)
-    for f in ofiles:
-         ofdir, ofname = os.path.split(f)
-         print ofdir, ofname
-         if cue in ofname:
-            ofname = ofname[:ofname.find(cue)]
-            os.rename(f, os.path.join(odir, ofname + '.' + args.skeleton))
+            if args.skeleton == 'nnlsbt':
+                cue = '_vamp_nnls-chroma_nnls-chroma_bothchroma.csv'
+
+            os.rename(f2, f)
+            os.rename(os.path.join(odir, os.path.split(os.path.splitext(f2)[0])[1] + cue), os.path.join(odir, os.path.split(os.path.splitext(f)[0])[1] + '.' + args.skeleton))
+
+            idx += 1
 
     print("\nDone")
+

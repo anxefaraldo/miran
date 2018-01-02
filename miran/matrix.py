@@ -51,7 +51,7 @@ def df_to_excel(df, excel_filename, sheet_name="Untitled"):
     if not os.path.isdir(os.path.split(excel_filename)[0]):
         print("\nInvalid export abs path. NOT saving results.")
     else:
-        print("\nSaving dataframe to excel spreadsheet {}".format(excel_filename))
+        print("\nSaving dataframe to excel spreadsheet {}.xlsx".format(excel_filename))
 
     writer = pd.ExcelWriter(os.path.splitext(excel_filename)[0] + '.xlsx')
     df.to_excel(writer, sheet_name)
@@ -59,14 +59,12 @@ def df_to_excel(df, excel_filename, sheet_name="Untitled"):
 
 
 def csv_to_numpy(csv_file):
-    """
-    This function converts a csv file to a numpy array"""
+    """Convert a csv file into a numpy array"""
     return pd.DataFrame.from_csv(csv_file,  header=None, index_col=None).as_matrix()
 
 
 def csv_to_numpy2(csv_file):
-    """
-    This function converts a csv file to a numpy array"""
+    """This function converts a csv file to a numpy array"""
     return pd.DataFrame.from_csv(csv_file,  header=None).as_matrix()
 
 

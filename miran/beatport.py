@@ -27,10 +27,16 @@ def copy_files_in_pddf(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
         output_dir = create_dir(output_dir)
 
     for row in pd_col_with_filename:
+        print(row)
         for extension in ext:
-            output_file = os.path.join(output_dir, os.path.split(row)[1] + extension)
+            print(row)
+            print(os.path.split(row)[1])
+
+            print(ext)
+            output_file = os.path.join(output_dir, os.path.split(row)[1])
+            print('s', output_file)
             print("copying '{}' to '{}'".format(row, output_file))
-            shutil.copyfile(row + extension, output_file)
+            shutil.copyfile(row, output_file)
 
 
 def move_files_in_pddf(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
@@ -205,7 +211,7 @@ def download_track(trackid, output_dir=None, skip_tracks_without_metadata=False)
         print("Saving metadata to", jsonfile)
 
 
-def filepath_to_pdcol(dataframe, searchpath_or_pathlist, ext='.mp3', filename_only=True):
+def filepath_to_pdcol(dataframe, searchpath_or_pathlist, ext='.mp3', filename_only=True, remove_extension=True):
     filelist = preparse_files(searchpath_or_pathlist, ext=ext)
 
     dataframe['filename'] = pd.Series()
@@ -213,6 +219,9 @@ def filepath_to_pdcol(dataframe, searchpath_or_pathlist, ext='.mp3', filename_on
         file_path = find_file_by_id(item[1][0], filelist)
         if filename_only:
             file_path = strip_filename(file_path)
+        if remove_extension:
+            file_path = os.path.splitext(file_path)[0]
+            print(file_path)
         dataframe.set_value(dataframe.index[item[0]], ['filename'], file_path)
 
 
@@ -334,8 +343,6 @@ def metafile_to_pds(filepath_or_string):
     except:
         pass
 
-
-    # return a pandas series with relevant metadata
     return pd.Series([os.path.split(os.path.splitext(filepath_or_string)[0])[1], metadata["id"], artists,
                       title, mix, label, genres, sub_genres, metadata["key"]],
 

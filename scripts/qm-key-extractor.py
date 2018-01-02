@@ -5,48 +5,61 @@ if __name__ == "__main__":
 
     from argparse import ArgumentParser
     from subprocess import call
-    from miran.utils import preparse_files
+    from miran.utils import preparse_files, create_dir
     from miran.defs import AUDIO_FILE_EXTENSIONS
     import os.path
 
     parser = ArgumentParser(description="QM-Key Extractor")
     parser.add_argument("input", help="file or dir to analyse")
-    parser.add_argument("-e", "--ext", help="extension of the audio files to parse", default='.wav')
+    parser.add_argument("-o", "--output_dir", help="dir to save the results to")
+    parser.add_argument("-r", "--recursive", action="store_true", help="recursive")
+
+    print('Running QM Key Detector.')
 
     args = parser.parse_args()
-
     path = os.path.join(os.path.split(os.path.realpath(__file__))[0], 'sonic-annotator')
 
-    files = preparse_files(args.input)
+    if os.path.isfile(args.input):
+
+        odir = os.path.split(args.input)[0]
+
+    elif os.path.isdir(args.input):
+
+        odir = args.input
+
+    else:
+
+        raise NameError("Invalid input. Make sure it is a valid file or dir.")
+
+
+    if args.output_dir:
+
+        if not os.path.isdir(args.output_dir):
+
+            odir = create_dir(args.output_dir)
+
+        else:
+
+            odir = args.output_dir
 
     idx = 0
-    subs = []
+
+    files = preparse_files(args.input, recursive=args.recursive)
 
     for f in files:
+
         if any(soundfile_type in f for soundfile_type in AUDIO_FILE_EXTENSIONS):
+
             fname, fext = os.path.splitext(f)
-            #if fext == args.ext:
             fdir, fname = os.path.split(fname)
-            subs.append((idx, fname))
-            fname = os.path.join(fdir, str(idx))
-
-            os.rename(f, fname + fext)
-
-            call('{}/qm-keydetector.sh "{}" "{}"'.format(path, fname + fext, fname + '.txt'), shell=True)
-
+            ftemp = os.path.join(fdir, str(idx))
+            os.rename(f, ftemp + fext)
+            call('{}/qm-keydetector.sh "{}" "{}"'.format(path, ftemp + fext, ftemp + '.txt'), shell=True)
+            os.rename(ftemp + fext, f)
+            os.rename(ftemp + '.txt', os.path.join(odir, fname + '.txt'))
             idx += 1
 
-    print('Running QM Key Detector in batch mode.')
-    print('WARNING: You should run only one instance of this script at a time.')
-    files = preparse_files(args.input)
-    for f in files:
-        fdir, fname = os.path.split(f)
-        fname, fext = os.path.splitext(fname)
-        for item in subs:
-            if str(item[0]) == fname:
-                os.rename(f, os.path.join(fdir,item[1] + fext))
-
-    print("Deleting temporary files")
     call('rm -r {}/out'.format(path), shell=True)
 
-    print("\nDone")
+    print("Deleting temporary files.")
+    print("\nDone.")

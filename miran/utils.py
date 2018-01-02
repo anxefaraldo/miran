@@ -5,10 +5,8 @@ import numpy as np
 
 
 def change_file_extension(directory, in_ext='.txt', out_ext='.key', recursive=False):
-    """
-    Looks for specific file types in a directory and changes their
-    extension to a new given one.
-    """
+    """Looks for specific file types in a directory and changes their extension to a new given one."""
+
     number_of_files = 0
     list_of_files = folderfiles(directory, recursive=recursive)
     for item in list_of_files:
@@ -27,10 +25,8 @@ def create_dir(dir_name):
     Creates a new directory.
 
     If dir_name is a valid abspath it will create it where specified,
-    if dir_name is a NOT a valid abspath but a valid name, it will
-     create a dir in the current directory.
+    if dir_name is a NOT a valid abspath but a valid name, it will create a dir in the current directory.
 
-    :type dir_name: str
     """
     if not os.path.isdir(dir_name):
         root_folder, new_folder = os.path.split(dir_name)
@@ -56,10 +52,8 @@ def create_dir(dir_name):
 
 
 def folderfiles(folderpath, ext=None, recursive=False):
-    """
-    Returns a list of absolute paths with the filesystem in the specified folder.
+    """Returns a list of absolute paths with the filesystem in the specified folder."""
 
-    """
     if recursive:
         def _rlistdir(path):
             rlist = []
@@ -75,12 +69,14 @@ def folderfiles(folderpath, ext=None, recursive=False):
 
     my_files = []
     for myFile in list_of_files:
-        if not ext:
-            my_files.append(myFile)
-        elif os.path.splitext(myFile)[1] == ext:
-            my_files.append(myFile)
-        else:
-            pass
+        if not '.DS_Store' in myFile:
+
+            if not ext:
+                my_files.append(myFile)
+            elif os.path.splitext(myFile)[1] in ext:
+                my_files.append(myFile)
+            else:
+                pass
 
     if not my_files:
         # raise FileNotFoundError("Did not find any file with the given extension.") PYTHON3
@@ -116,6 +112,7 @@ def load_settings_as_vars(json_settings):
 
 
 def preparse_files(searchpath_or_pathlist, ext=None, recursive=False):
+
     if type(searchpath_or_pathlist) is not list:
 
         if os.path.isdir(searchpath_or_pathlist):
@@ -125,7 +122,7 @@ def preparse_files(searchpath_or_pathlist, ext=None, recursive=False):
             searchpath_or_pathlist = [searchpath_or_pathlist]
 
         else:
-            raise TypeError("argument must be either a valid filepath, dirpath or a list of paths.")
+            raise TypeError("Argument must be either a valid filepath, dirpath or a list of paths.")
 
         return searchpath_or_pathlist
 
@@ -134,10 +131,8 @@ def preparse_files(searchpath_or_pathlist, ext=None, recursive=False):
 
 
 def prepend_str_to_filename(directory, matching_substring, string_to_prepend):
-    """
-    Prepend a string to an existing filename if it contains a matching substring.
+    """Prepend a string to an existing filename if it contains a matching substring."""
 
-    """
     list_of_files = folderfiles(directory)
     for item in list_of_files:
         if matching_substring in item:
@@ -156,7 +151,8 @@ def replace_chars(my_str, chars={"&", "<", ">", '"', "'"}, replacement=''):
     return my_str
 
 
-def return_random_track(path_or_filelist, ext=None, recursive=False):
+def random_filepath(path_or_filelist, ext=None, recursive=False):
+    """Returns a random filepath from a folder or a list of valid filepaths."""
 
     from random import randint
     my_list = preparse_files(path_or_filelist, ext=ext, recursive=recursive)
@@ -164,10 +160,8 @@ def return_random_track(path_or_filelist, ext=None, recursive=False):
 
 
 def show_in_finder(filepath):
-    """
-    Show a file in OSX's Finder.
+    """Show a file in OSX's Finder."""
 
-    """
     from appscript import app, mactypes
     app("Finder").reveal(mactypes.Alias(filepath).alias)
 
@@ -205,10 +199,8 @@ def write_regular_timespans(textfile, duration=120):
 
 
 def windowing(window_type, size=4096, beta=0.2):
-    """
-    Returns an array of the specified size
-    with the desired window shape.
-    """
+    """Returns an array of the specified size with the desired window shape."""
+
     if window_type == "bartlett":
         return np.bartlett(size)
     elif window_type == "blackmann":
@@ -227,69 +219,18 @@ def windowing(window_type, size=4096, beta=0.2):
 
 
 def bin_to_pc(binary, pcp_size=36):
-    # TODO DELETE AFTER REVISIONG KEY ESTINAMTISNSDF1
     """
     Returns the pitch-class of the specified pcp vector.
     It assumes (bin[0] == pc9) as implemeted in Essentia.
+
     """
     return int(binary / (pcp_size / 12.0))
 
 
-def wav2aiff(input_path, replace=True):
-
-    from subprocess import call
-    files = preparse_files(input_path)
-
-    for f in files:
-        fname, fext = os.path.splitext(f)
-        if fext == '.wav':
-            call('ffmpeg -i "{}" "{}"'.format(f, fname + '.aif'), shell=True)
-            if replace:
-                os.remove(f)
-
-
-def first_n_secs(input_path, duration=7.5, ext='.mp3'):
-
-    from subprocess import call
-
-    files = preparse_files(input_path, ext=ext)
-
-    if os.path.isfile(input_path):
-        my_dir = os.path.split(input_path)[0]
-        temp_dir = os.path.join(my_dir, '{}s'.format(duration))
-    elif os.path.isdir(input_path):
-        temp_dir = os.path.join(input_path, '{}s'.format(duration))
-        os.mkdir(temp_dir)
-    else:
-        temp_dir = os.getcwd()
-
-    for f in files:
-        fdir, fname = os.path.split(f)
-        call('sox "{}" "{}" trim 0 00:{}'.format(f, os.path.join(temp_dir, fname), duration), shell=True)
-        print("Cutting {} to first {} seconds".format(fname, duration))
-
-
-def audio_to_mp3_96(input_path, ext='.mp3'):
-
-    from subprocess import call
-
-    files = preparse_files(input_path)
-
-    if os.path.isfile(input_path):
-        my_dir = os.path.split(input_path)[0]
-        temp_dir = os.path.join(my_dir, '96kbps')
-    else:
-        temp_dir = os.path.join(input_path, '96kbps')
-        os.mkdir(temp_dir)
-
-    for f in files:
-        fname, fext = os.path.splitext(f)
-        if fext == ext:
-            call('sox "{}" -C 96.0 "{}"'.format(f, os.path.join(temp_dir, os.path.split(fname)[1] + ext)), shell=True)
-            print("Converting {} to 96 Kbps.".format((os.path.split(f)[1])))
-
 
 def find_mode_flat(mode_array):
+    """Calculates the closest diatonic mode to a given vector."""
+
 
     from vector import distance
 
@@ -313,10 +254,7 @@ def find_mode_flat(mode_array):
 
 
 def strip_filename(filename):
-    """
-    Returns a filename string without specific location (directories) or extension.
-
-    """
+    """Returns a filename string without root directory and extension."""
     if os.path.isfile(filename):
         return os.path.split(os.path.splitext(filename)[0])[1]
 
