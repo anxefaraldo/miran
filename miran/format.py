@@ -213,7 +213,8 @@ def chroma_to_pc(chroma_name):
     :type chroma_name: str
 
     """
-    pitch2int = {'Unknown': -2, '(unknown)': -2, 'unknown': -2,
+    pitch2int = {'Excluded': -3,
+                 'Unknown': -2, '(unknown)': -2, 'unknown': -2,
                  'X': -1, 'All': -1, "None": -1, "-": -1,
                  'B#': 0, 'C': 0, 'Dbb': 0,
                  'C#': 1, 'Db': 1,
@@ -243,15 +244,13 @@ def chroma_to_pc(chroma_name):
 
 
 def pc_to_chroma(pitch_class):
-    """
-    Converts an int onto a pitch_name
+    """Converts a pitch-class integer into its chroma name."""
 
-    """
-
-    pc2chroma = {-2: 'Unknown',
+    pc2chroma = {-3: 'Excluded',
+                 -2: 'Unknown',
                  -1: 'X',
-                 0: 'C', 1: 'C#', 2: 'D', 3: 'Eb', 4: 'E', 5: 'F',
-                 6: 'F#', 7: 'G', 8: 'Ab', 9: 'A', 10: 'Bb', 11: 'B'}
+                  0: 'C', 1: 'C#', 2: 'D', 3: 'Eb', 4: 'E', 5: 'F',
+                  6: 'F#', 7: 'G', 8: 'Ab', 9: 'A', 10: 'Bb', 11: 'B'}
 
     try:
         return pc2chroma[pitch_class]
@@ -389,7 +388,8 @@ def split_key_str(key_string):
         key_string[0] = chroma_to_pc(key_string[0])
         key_string[1] = mode_to_id(key_string[1])
 
-    return key_string
+    # TODO: add remainding args numerically (now they are trimmed!)
+    return key_string[:2]
 
 
 def create_annotation_file(input_file, annotation, output_dir=None):
@@ -849,7 +849,6 @@ def seratoDJ(input_file, output_dir=None):
         d = mutagen.aiff.Open(input_file)
         key = d["TKEY"][0]
 
-    # todo: check when testing on audio files!
     elif fext == '.flac':
         import mutagen.flac
         d = mutagen.flac.Open(input_file)
@@ -927,13 +926,9 @@ def traktor(input_file, output_dir=None):
     my_dir = re.sub('/', '/:', my_dir)
     complex_str = 'LOCATION DIR="{}/:" FILE="{}"'.format(my_dir, my_file)
 
-    key_position = traktor_data.find(complex_str) # TODO revisar si esto es realmente redundante!
+    key_position = traktor_data.find(complex_str)
     key_position += traktor_data[traktor_data.find(complex_str):].find('<MUSICAL_KEY VALUE="') + 20
-    print(input_file)
-    #print(traktor_data[key_position-10:key_position + 10])
     key_id = traktor_data[key_position:key_position + 2]
-    #print(key_id)
-
 
     if '"' in key_id:
         key_id = key_id[:-1]
@@ -1017,55 +1012,19 @@ def virtualDJ(input_file, output_dir=None):
 
 
 def batch_format_converter(input_dir, convert_function, output_dir=None, ext='.wav'):
-    """This function batch-processes a given folder with
-    the desired conversion function.
+    """
+    This function batch-processes a given folder with the desired conversion function.
 
-    This is a convenient way to mass convert from the various
-    annotation formats used by different applictions
-    into our standard format, that is, a essentia_process_file one line
+    This is a convenient way to mass convert from the various annotation formats
+    used by different applictions into our standard format, that is, a one line
     text file per estimation in the format:
 
     tonic mode
 
-    These can be separated by commas, tabs or spaces,
-    and followed by and undefined sequence of other descriptors.
+    separated by either commas, tabs or spaces, and followed by and undefined
+    sequence of other descriptors.
 
     """
     batch = folderfiles(input_dir, ext)
     for item in batch:
         eval(convert_function)(item, output_dir)
-
-
-# def key_to_int(key_symbol):
-#     # TODO: DO WE NEED TO DELETE THIS!!?
-#       useful for traktor???
-#     """
-#     Converts a key symbol (i.e. C major) type to int
-#     """
-#     key2int = {'C major': 0,
-#                'C# major': 1, 'Db major': 1,
-#                'D major': 2,
-#                'D# major': 3, 'Eb major': 3,
-#                'E major': 4,
-#                'F major': 5,
-#                'F# major': 6, 'Gb major': 6,
-#                'G major': 7,
-#                'G# major': 8, 'Ab major': 8,
-#                'A major': 9,
-#                'A# major': 10, 'Bb major': 10,
-#                'B major': 11,
-#
-#                'C minor': 12,
-#                'C# minor': 13, 'Db minor': 13,
-#                'D minor': 14,
-#                'D# minor': 15, 'Eb minor': 15,
-#                'E minor': 16,
-#                'F minor': 17,
-#                'F# minor': 18, 'Gb minor': 18,
-#                'G minor': 19,
-#                'G# minor': 20, 'Ab minor': 20,
-#                'A minor': 21,
-#                'A# minor': 22, 'Bb minor': 22,
-#                'B minor': 23}
-#
-#     return key2int[key_symbol]

@@ -27,28 +27,34 @@ def key_eval_mirex(estimated_key_tuple, reference_key_tuple):
     estimated_key_tuple = estimated_key_tuple[:2]
     reference_key_tuple = reference_key_tuple[:2]
 
+    # directly score 0 for unknown files!
+    if -2 in estimated_key_tuple or -2 in reference_key_tuple:
+        return 0
+
+    # return to the main process without performing an evaluation!
+    if -3 in estimated_key_tuple or -3 in reference_key_tuple:
+        return
+
     estimated_tonic, estimated_mode = estimated_key_tuple
     reference_tonic, reference_mode = reference_key_tuple
 
-    # if both tonic and mode are equal = 1
+    # perfect match
     if estimated_tonic == reference_tonic and estimated_mode == reference_mode:
         score = 1.
 
-    # fifth error = neighbouring keys in the circle of fifths with the same mode
-    # by distance of ascending fifth...
+    # neighbouring keys (circle of fifths with the same mode)
     elif estimated_tonic == (reference_tonic + 7) % 12 and estimated_mode == reference_mode:
             score = 0.5
-    # mir_eval only considers ascending fifths, so next line does not apply for them
     elif estimated_tonic == (reference_tonic + 5) % 12 and estimated_mode == reference_mode:
             score = 0.5
 
-    # relative error = 0.3
+    # relative error (0.3)
     elif estimated_tonic == (reference_tonic + 3) % 12 and estimated_mode == 0 and reference_mode == 1:
         score = 0.3
     elif estimated_tonic == (reference_tonic - 3) % 12 and estimated_mode == 1 and reference_mode == 0:
         score = 0.3
 
-    # parallel error = 0.2
+    # parallel error (0.2)
     elif estimated_tonic == reference_tonic and estimated_mode != reference_mode:
         score = 0.2
 
@@ -58,24 +64,32 @@ def key_eval_mirex(estimated_key_tuple, reference_key_tuple):
     return score
 
 
-def key_eval_relative_errors(estimated_key_numlist, reference_key_numlist):
+def key_eval_relative_errors(estimated_key_tuple, reference_key_tuple):
     """
     Performs a detailed evaluation of the key each_file.
-    :type estimated_key_numlist: tuple with numeric values for key and mode
-    :type reference_key_numlist: tuple with numeric values for key and mode
+    :type estimated_key_tuple: tuple with numeric values for key and mode
+    :type reference_key_tuple: tuple with numeric values for key and mode
 
     """
     PC2DEGREE = {0: 'I', 1: 'bII', 2: 'II', 3: 'bIII', 4: 'III', 5: 'IV',
                  6: '#IV', 7: 'V', 8: 'bVI', 9: 'VI', 10: 'bVII', 11: 'VII',}
 
     # removes additional modal information if existing
-    estimated_key_numlist = estimated_key_numlist[:2]
-    reference_key_numlist = reference_key_numlist[:2]
+    estimated_key_tuple = estimated_key_tuple[:2]
+    reference_key_tuple = reference_key_tuple[:2]
 
-    estimated_tonic, estimated_mode = estimated_key_numlist
-    reference_tonic, reference_mode  = reference_key_numlist
+    # directly score 0 for unknown files!
+    if -2 in estimated_key_tuple or -2 in reference_key_tuple:
+        return 0, 'UNKNOWN'
 
-    if estimated_key_numlist == [-1, None]:
+    # return to the main process without performing an evaluation!
+    if -3 in estimated_key_tuple or -3 in reference_key_tuple:
+        return None, 'EXCLUDED'
+
+    estimated_tonic, estimated_mode = estimated_key_tuple
+    reference_tonic, reference_mode  = reference_key_tuple
+
+    if estimated_key_tuple == [-1, None]:
         if reference_mode == 0:
             return (37 * 4) - 4, 'I as X'
         elif reference_mode == 1:
@@ -85,7 +99,7 @@ def key_eval_relative_errors(estimated_key_numlist, reference_key_numlist):
         elif reference_mode is None:
             return (37 * 4) - 1, 'X as X'
 
-    elif reference_key_numlist == [-1, None]:
+    elif reference_key_tuple == [-1, None]:
         if estimated_mode == 0:
             return 3, 'X as I'
         elif estimated_mode == 1:
@@ -123,8 +137,17 @@ def key_tonic_mode(estimated_key_tuple, reference_key_tuple):
     estimated_key_tuple = estimated_key_tuple[:2]
     reference_key_tuple = reference_key_tuple[:2]
 
+    # directly score 0 for unknown files!
+    if -2 in estimated_key_tuple or -2 in reference_key_tuple:
+        return 0
+
+    # return to the main process without performing an evaluation!
+    if -3 in estimated_key_tuple or -3 in reference_key_tuple:
+        return
+
     estimated_tonic, estimated_mode = estimated_key_tuple
     reference_tonic, reference_mode = reference_key_tuple
+
 
     result = np.array([estimated_tonic == reference_tonic, estimated_mode == reference_mode])
 

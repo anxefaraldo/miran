@@ -14,7 +14,7 @@ import numpy as np
 
 AUDIO_FILE_EXTENSIONS = {'.wav', '.mp3', 'flac', '.aiff', '.ogg', '.aif'}
 
-ANNOTATION_FILE_EXTENSIONS = {'.txt', '.key', '.lab'}
+ANNOTATION_FILE_EXTENSIONS = {'.txt', '.key'}
 
 
 # default key label names
