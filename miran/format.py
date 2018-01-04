@@ -5,9 +5,6 @@ from __future__ import absolute_import, division, print_function
 import os.path
 from miran.utils import folderfiles, strip_filename
 
-CONVERSION_TYPES = {'beatunes', 'classicalDB', 'keyFinder', 'legacy', 'MIK1', 'MIK2',
-                    'traktor', 'rekordbox', 'seratoDJ', 'virtualDJ', 'wtc'}
-
 
 def roman_to_pcs(chord_symbol):
 

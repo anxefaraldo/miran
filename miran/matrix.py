@@ -1,12 +1,11 @@
 # -*- coding: UTF-8 -*-
 
-from __future__ import absolute_import, division, print_function
-
-import os
+import os.path
 import pandas as pd
 
 
 def values_greater_than(my_dataframe, my_col, threshold=0):
+
     counts = my_dataframe[my_col].value_counts()
     fields_kept = []
     for i in range(len(counts)):
@@ -19,7 +18,9 @@ def values_greater_than(my_dataframe, my_col, threshold=0):
     return temp
 
 
+
 def n_most_frequent_values(my_dataframe, my_col, n_most_freq=6):
+
     counts = my_dataframe[my_col].value_counts()
 
     if len(counts) <= n_most_freq:
@@ -35,9 +36,10 @@ def n_most_frequent_values(my_dataframe, my_col, n_most_freq=6):
     return temp
 
 
+
 def find_identical_rows(df, row_index):
     """
-    Search an entire Pandas dataframe for rows with identical content to a given row.
+    Search an entire Pandas dataframe for rows identical to a given one.
 
     """
     find_row = df.loc[row_index]
@@ -58,14 +60,19 @@ def df_to_excel(df, excel_filename, sheet_name="Untitled"):
     writer.save()
 
 
-def csv_to_numpy(csv_file):
-    """Convert a csv file into a numpy array"""
-    return pd.DataFrame.from_csv(csv_file,  header=None, index_col=None).as_matrix()
+
+def csv_to_numpy(csv_file, index_col=False):
+    """
+    Convert a csv file into a numpy array.
+
+    Index_col= TRUE used to be csv_to_nupy2"""
 
 
-def csv_to_numpy2(csv_file):
-    """This function converts a csv file to a numpy array"""
-    return pd.DataFrame.from_csv(csv_file,  header=None).as_matrix()
+    if not index_col:
+        return pd.DataFrame.from_csv(csv_file,  header=None, index_col=None).as_matrix()
+    else:
+        return pd.DataFrame.from_csv(csv_file, header=None).as_matrix()
+
 
 
 def get_scores_from_xlsx(list_of_excel_files):

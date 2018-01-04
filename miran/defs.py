@@ -1,20 +1,14 @@
 # -*- coding: UTF-8 -*-
 
-"""
-This file contains the default definitions of the main pararameters,
-including key estimation profiles, and label conversions.
-
-Ángel Faraldo.
-
-(last update: December 2017)
-
-"""
 import numpy as np
 
 
 AUDIO_FILE_EXTENSIONS = {'.wav', '.mp3', 'flac', '.aiff', '.ogg', '.aif'}
 
 ANNOTATION_FILE_EXTENSIONS = {'.txt', '.key'}
+
+CONVERSION_TYPES = {'beatunes', 'classicalDB', 'keyFinder', 'legacy', 'MIK1', 'MIK2',
+                    'traktor', 'rekordbox', 'seratoDJ', 'virtualDJ', 'wtc'}
 
 
 # default key label names
@@ -180,7 +174,6 @@ KEY5 = {'bgate': np.array([[1., 0.00, 0.42, 0.00, 0.53, 0.37, 0.00, 0.77, 0.00, 
                           [1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.65, 0.00, 0.00, 0.00, 0.00],
                           [1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]])
         }
-
 
 
 # Key Estimation Default Settings

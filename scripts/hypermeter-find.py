@@ -21,6 +21,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print("\nPreparing the Algorithm...")
+
     # create a madmom 'processor' to find the hypermetrical positions ONLY.
     beat_tracker = mmm.features.beats.DBNDownBeatTrackingProcessor(beats_per_bar=16, fps=100, downbeats=True)
 

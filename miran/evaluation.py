@@ -1,12 +1,5 @@
 #  -*- coding: UTF-8 -*-
 
-"""
-This file contains functions relative to the evaluation of
-estimation algorithms.
-
-Ángel Faraldo, July 2017.
-
-"""
 
 def key_eval_mirex(estimated_key_tuple, reference_key_tuple):
     """
