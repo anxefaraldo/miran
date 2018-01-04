@@ -6,9 +6,8 @@ import numpy as np
 import pandas as pd
 
 import matplotlib.gridspec as gr
-from matplotlib.colors import LogNorm
 import matplotlib.pyplot as plt
-
+from matplotlib.colors import LogNorm
 from librosa.display import specshow
 from miran.format import split_key_str
 from miran.utils import folderfiles
@@ -16,7 +15,7 @@ from miran.defs import KEY2
 
 
 def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
-                output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", cmap='Reds'):
+                output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", cmap='Reds', save=False):
 
     if chromagram.shape[0] == 12:
         plt.figure(figsize=(5.16, 2), dpi=150)
@@ -32,13 +31,14 @@ def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
         plt.ylabel('chroma')
         plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
         plt.tight_layout()
-        plt.savefig(os.path.join(output_dir, name + '.pdf'), format="pdf", dpi=1200)
+        if save:
+            plt.savefig(os.path.join(output_dir, name + '.pdf'), format="pdf", dpi=1200)
         plt.show()
 
 
 
 def plot_bchroma(chromagram, name="untitled", sr=44100, hl=2048,
-                output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", save=True, cmap='Reds'):
+                output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", cmap='Reds', save=False):
 
     if chromagram.shape[0] != 24:
         chromagram = chromagram.T
@@ -72,8 +72,7 @@ def plot_bchroma(chromagram, name="untitled", sr=44100, hl=2048,
 
 
 
-def plot_majmin_dist(dataset_dir, name="Key_Distribution",
-                     output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/", ext=".txt", nokey=True):
+def plot_majmin_dist(dataset_dir, name="Key_Distribution", output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/", ext=".txt", nokey=True, save=False):
 
     corpus = folderfiles(dataset_dir, ext=ext)
 
@@ -104,12 +103,12 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution",
     # NOW THE PLOTTING
     plt.figure(figsize=(5.16, 2.5), dpi=150)
 
-    gs = gr.GridSpec(2, 1, height_ratios=[1, 12])
+    gs = gr.GridSpec(2, 1, height_ratios=[1.4, 12])
     ax = plt.subplot(gs[0])
-    a = ax.barh(0, total_maj, linewidth=0.0, edgecolor=(.0, .0, .0))
-    b = ax.barh(0, total_min, left=total_maj, linewidth=0.0, edgecolor=(.0, .0, .0))
+    a = ax.barh(0, total_maj)
+    b = ax.barh(0, total_min, left=total_maj)
     if nokey:
-        c = ax.barh(0, no_key, left=total_min+total_maj,  linewidth=0.0, edgecolor=(.0, .0, .0))
+        c = ax.barh(0, no_key, left=total_min+total_maj)
     plt.xlim((0, total_items))
     plt.xticks([])
     plt.yticks([])
@@ -142,13 +141,15 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution",
     else:
         plt.xticks(range(12), (
         r'C', r'C$\sharp$', r'D', r'E$\flat$', r'E', r'F', r'F$\sharp$', r'G', r'A$\flat$', r'A', r'B$\flat$', r'B'))
-    plt.bar(range(12), percentage_major, label='major', linewidth=0, edgecolor=(.0, .0, .0))
-    plt.bar(range(12), percentage_minor, bottom=percentage_major, label='minor', linewidth=0, edgecolor=(.0, .0, .0))
+    plt.bar(range(12), percentage_major, label='major')
+    plt.bar(range(12), percentage_minor, bottom=percentage_major, label='minor')
     if nokey:
-        plt.bar(12, percentage_no_key, label='no key', linewidth=0, edgecolor=(.0, .0, .0))
+        plt.bar(12, percentage_no_key, label='no key')
     plt.legend(fontsize=8, frameon=True)
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, re.sub(' ', '_', name) + '.pdf'), format="pdf", dpi=1200)
+    if save:
+        plt.savefig(os.path.join(output_dir, re.sub(' ', '_', name) + '.pdf'), format="pdf", dpi=1200)
+    plt.show()
 
 
 
@@ -217,7 +218,7 @@ def plot_single_profile(data, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesi
     plt.show()
 
 
-def plot_relative_mtx(xlx_with_valid_matrix, label='', output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", save=True):
+def plot_relative_mtx(xlx_with_valid_matrix, label='', output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", save=False):
 
     a = pd.read_excel(xlx_with_valid_matrix, sheetname=1)
     aa = a.as_matrix()
@@ -252,7 +253,7 @@ def plot_relative_mtx(xlx_with_valid_matrix, label='', output_dir="/Users/angel/
 
 
 
-def plot_confusion_mtx(xlx_with_valid_matrix, label='', output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", save=True):
+def plot_confusion_mtx(xlx_with_valid_matrix, label='', output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", save=False):
 
     a = pd.read_excel(xlx_with_valid_matrix, sheetname=0)
     aa = a.as_matrix()
@@ -288,3 +289,4 @@ def plot_confusion_mtx(xlx_with_valid_matrix, label='', output_dir="/Users/angel
     if save:
         plt.savefig(os.path.join(output_dir, label + '_confusion_matrix.pdf'), format="pdf", dpi=1200)
     plt.show()
+
