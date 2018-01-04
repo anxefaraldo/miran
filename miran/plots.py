@@ -10,27 +10,39 @@ from miran.format import *
 from miran.defs import KEY2
 
 
-sns.set_style('darkgrid')
+# sns.set_style('darkgrid')
+# mpl.rc('font', **{'family':'serif', 'serif':['Times']})
+# mpl.rc('xtick', labelsize=8)
+# mpl.rc('ytick', labelsize=8)
+# mpl.rc('axes', labelsize=9)
+# mpl.rc('text', usetex=True)
+
+
+sns.set_style('ticks', {'axes.linewidth': 0.2,  'axes.edgecolor': 'black',})
 mpl.rc('font', **{'family':'serif', 'serif':['Times']})
 mpl.rc('xtick', labelsize=8)
 mpl.rc('ytick', labelsize=8)
 mpl.rc('axes', labelsize=9)
 mpl.rc('text', usetex=True)
+mpl.rcParams['ytick.major.size'] = 5
+mpl.rcParams['ytick.major.width'] = 0.3
+mpl.rcParams['xtick.major.size'] = 5
+mpl.rcParams['xtick.major.width'] = 0.3
 
 
 def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
-                output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", cmap='magma'):
+                output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", cmap='Reds'):
 
     from librosa.display import specshow
-    with sns.axes_style('ticks'):
-        if chromagram.shape[0] == 12:
-            plt.figure(figsize=(5.16, 2), dpi=150)
-            plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
+    #with sns.axes_style('ticks'):
+    if chromagram.shape[0] == 12:
+        plt.figure(figsize=(5.16, 2), dpi=150)
+        plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
 
-        elif chromagram.shape[0] == 36:
-            plt.figure(figsize=(5.16, 2.5), dpi=150)
-            plt.yticks((0.5, 3.5, 6.5, 9.5, 12.5, 15.5, 18.5, 21.5, 24.5, 27.5, 30.5, 33.5),
-                       ('c', r'c$\sharp$', 'd', r'e$\flat$', 'e', 'f', r'f$\sharp$', 'g', r'a$\flat$', 'a', r'b$\flat$', 'b'))
+    elif chromagram.shape[0] == 36:
+        plt.figure(figsize=(5.16, 2.5), dpi=150)
+        plt.yticks((0.5, 3.5, 6.5, 9.5, 12.5, 15.5, 18.5, 21.5, 24.5, 27.5, 30.5, 33.5),
+                   ('c', r'c$\sharp$', 'd', r'e$\flat$', 'e', 'f', r'f$\sharp$', 'g', r'a$\flat$', 'a', r'b$\flat$', 'b'))
 
         specshow(chromagram, x_axis='time', sr=sr, hop_length=hl, cmap=cmap)
         plt.xlabel('time (secs.)')
@@ -41,17 +53,16 @@ def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
         plt.show()
 
 
-
 def plot_bchroma(chromagram, name="untitled", sr=44100, hl=2048,
-                output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", save=True, cmap='magma'):
+                output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", save=True, cmap='Reds'):
 
     from librosa.display import specshow
-    with sns.axes_style('ticks'):
+    #with sns.axes_style('ticks'):
+    if chromagram.shape[0] != 24:
+        chromagram = chromagram.T
         if chromagram.shape[0] != 24:
-            chromagram = chromagram.T
-            if chromagram.shape[0] != 24:
-                print('does not look like a compound chromagram')
-                return
+            print('does not look like a compound chromagram')
+            return
 
         plt.figure(figsize=(5.16, 3), dpi=150)
 
@@ -79,7 +90,8 @@ def plot_bchroma(chromagram, name="untitled", sr=44100, hl=2048,
 
 
 
-def plot_majmin_dist(dataset_dir, name="Key_Distribution", output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/", ext=".txt", nokey=True):
+def plot_majmin_dist(dataset_dir, name="Key_Distribution",
+                     output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/", ext=".txt", nokey=True):
 
     corpus = folderfiles(dataset_dir, ext=ext)
 
