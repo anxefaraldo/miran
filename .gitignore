@@ -6,4 +6,4 @@ __pycache__/
 .idea/
 miran.egg-info/
 *.pyc
-/miran/discarded/*
+/discarded/*
