@@ -1,40 +1,23 @@
 # -*- coding: utf-8 -*-
 
 import re
+import os.path
 import numpy as np
-import seaborn as sns
-import matplotlib as mpl
+import pandas as pd
+
+import matplotlib.gridspec as gr
+from matplotlib.colors import LogNorm
 import matplotlib.pyplot as plt
 
-from miran.format import *
+from librosa.display import specshow
+from miran.format import split_key_str
+from miran.utils import folderfiles
 from miran.defs import KEY2
-
-
-# sns.set_style('darkgrid')
-# mpl.rc('font', **{'family':'serif', 'serif':['Times']})
-# mpl.rc('xtick', labelsize=8)
-# mpl.rc('ytick', labelsize=8)
-# mpl.rc('axes', labelsize=9)
-# mpl.rc('text', usetex=True)
-
-
-sns.set_style('ticks', {'axes.linewidth': 0.2,  'axes.edgecolor': 'black',})
-mpl.rc('font', **{'family':'serif', 'serif':['Times']})
-mpl.rc('xtick', labelsize=8)
-mpl.rc('ytick', labelsize=8)
-mpl.rc('axes', labelsize=9)
-mpl.rc('text', usetex=True)
-mpl.rcParams['ytick.major.size'] = 5
-mpl.rcParams['ytick.major.width'] = 0.3
-mpl.rcParams['xtick.major.size'] = 5
-mpl.rcParams['xtick.major.width'] = 0.3
 
 
 def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
                 output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", cmap='Reds'):
 
-    from librosa.display import specshow
-    #with sns.axes_style('ticks'):
     if chromagram.shape[0] == 12:
         plt.figure(figsize=(5.16, 2), dpi=150)
         plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
@@ -53,11 +36,10 @@ def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
         plt.show()
 
 
+
 def plot_bchroma(chromagram, name="untitled", sr=44100, hl=2048,
                 output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", save=True, cmap='Reds'):
 
-    from librosa.display import specshow
-    #with sns.axes_style('ticks'):
     if chromagram.shape[0] != 24:
         chromagram = chromagram.T
         if chromagram.shape[0] != 24:
@@ -122,12 +104,12 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution",
     # NOW THE PLOTTING
     plt.figure(figsize=(5.16, 2.5), dpi=150)
 
-    gs = mpl.gridspec.GridSpec(2, 1, height_ratios=[1, 12])
+    gs = gr.GridSpec(2, 1, height_ratios=[1, 12])
     ax = plt.subplot(gs[0])
-    a = ax.barh(0, total_maj, linewidth=0.0, edgecolor=(.1, .1, .1))
-    b = ax.barh(0, total_min, left=total_maj, linewidth=0.0, edgecolor=(.1, .1, .1))
+    a = ax.barh(0, total_maj, linewidth=0.0, edgecolor=(.0, .0, .0))
+    b = ax.barh(0, total_min, left=total_maj, linewidth=0.0, edgecolor=(.0, .0, .0))
     if nokey:
-        c = ax.barh(0, no_key, left=total_min+total_maj,  linewidth=0.0, edgecolor=(.1, .1, .1))
+        c = ax.barh(0, no_key, left=total_min+total_maj,  linewidth=0.0, edgecolor=(.0, .0, .0))
     plt.xlim((0, total_items))
     plt.xticks([])
     plt.yticks([])
@@ -160,22 +142,22 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution",
     else:
         plt.xticks(range(12), (
         r'C', r'C$\sharp$', r'D', r'E$\flat$', r'E', r'F', r'F$\sharp$', r'G', r'A$\flat$', r'A', r'B$\flat$', r'B'))
-    plt.bar(range(12), percentage_major, label='major', linewidth=0, edgecolor=(.1, .1, .1))
-    plt.bar(range(12), percentage_minor, bottom=percentage_major, label='minor', linewidth=0, edgecolor=(.1, .1, .1))
+    plt.bar(range(12), percentage_major, label='major', linewidth=0, edgecolor=(.0, .0, .0))
+    plt.bar(range(12), percentage_minor, bottom=percentage_major, label='minor', linewidth=0, edgecolor=(.0, .0, .0))
     if nokey:
-        plt.bar(12, percentage_no_key, label='no key', linewidth=0, edgecolor=(.1, .1, .1))
+        plt.bar(12, percentage_no_key, label='no key', linewidth=0, edgecolor=(.0, .0, .0))
     plt.legend(fontsize=8, frameon=True)
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, re.sub(' ', '_', name) + '.pdf'), format="pdf", dpi=1200)
 
 
 
-def plot_profiles(profile_name, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/",
-                  yr=None, yt=None, loc=None, yl="weigths", fy1=7, fy2=0, fx=0):
+def plot_bin_profiles(profile_name, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/",
+                      yr=None, yt=None, loc=None, yl="weigths", fy1=7, fy2=0, fx=0, l1='major', l2='minor'):
     plt.figure(figsize=(5.16, 2.5), dpi=150)
-    a = plt.plot(KEY2[profile_name][0], '-o', linewidth=1, markersize=4, label="major")
+    a = plt.plot(KEY2[profile_name][0], '-o', linewidth=1, markersize=4, label=l1)
     c1 = a[0].get_color()
-    b = plt.plot(KEY2[profile_name][1], '--s', linewidth=1, markersize=4, label="minor")
+    b = plt.plot(KEY2[profile_name][1], '--s', linewidth=1, markersize=4, label=l2)
     c2 = b[0].get_color()
     plt.xlabel('relative scale degrees')
     plt.ylabel(yl)
@@ -210,7 +192,7 @@ def plot_single_profile(data, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesi
                   yr=None, yt=None, loc=None, label="", yl="weigths", fy=7, fx=0, save=True):
 
     plt.figure(figsize=(5.16, 2.5), dpi=150)
-    a = plt.plot(data, '-p', linewidth=1, markersize=4, label=label) # used to be '-gp' to force green
+    a = plt.plot(data, '-p', linewidth=1, markersize=4, label=label)
     c1 = a[0].get_color()
     plt.xlabel('relative scale degrees')
     plt.ylabel(yl)
@@ -228,8 +210,81 @@ def plot_single_profile(data, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesi
     if not loc:
         plt.legend(fontsize=8, frameon=True)
     else:
-        plt.legend(fontsize=8,loc=loc, frameon=True) # typically some (0.8,0.6)
+        plt.legend(fontsize=8,loc=loc, frameon=True)
     plt.tight_layout(pad=2, rect=(0, 0, 1, 1))
     if save:
         plt.savefig(os.path.join(output_dir, label + '_single_profile.pdf'), format="pdf", dpi=1200)
+    plt.show()
+
+
+def plot_relative_mtx(xlx_with_valid_matrix, label='', output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", save=True):
+
+    a = pd.read_excel(xlx_with_valid_matrix, sheetname=1)
+    aa = a.as_matrix()
+
+    plt.figure(figsize=(8, 1.5), dpi=150)
+
+    xlabs = (r'I', r'$\flat$II', r'II', r'$\flat$III', r'III', r'IV', r'$\flat$V', r'V', r'$\flat$VI', r'VI', r'$\flat$VII', r'VII',
+             r'i', r'$\flat$ii', r'ii', r'$\flat$iii', r'iii', r'iv', r'$\flat$v', r'v', r'$\flat$vi', r'vi', r'$\flat$vii', r'vii',
+             r'1', r'$\flat$2', r'2', r'$\flat$3', r'3', r'4', r'$\sharp$4', r'5', r'$\flat$6', r'6', r'$\flat$7', r'7',
+             r'X')
+    ylabs = (r'I', r'i', r'1', 'X')
+
+    ax = plt.imshow(aa, interpolation='nearest', cmap='Reds', origin='lower', aspect='auto', norm=LogNorm())
+    plt.xticks(range(37), xlabs, size=8)
+    plt.yticks(range(4), ylabs, size=8)
+
+    width, height = aa.shape
+
+    for x in xrange(width):
+        for y in xrange(height):
+            if aa[x][y] > 0:
+                if aa[x][y] > 100:
+                    my_color = 'white'
+                else:
+                    my_color = 'black'
+                plt.annotate(str(aa[x][y]), xy=(y, x), horizontalalignment='center', verticalalignment='center', size=7, color=my_color)
+
+    plt.tight_layout()
+    if save:
+        plt.savefig(os.path.join(output_dir, label + '_relative_matrix.pdf'), format="pdf", dpi=1200)
+    plt.show()
+
+
+
+def plot_confusion_mtx(xlx_with_valid_matrix, label='', output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", save=True):
+
+    a = pd.read_excel(xlx_with_valid_matrix, sheetname=0)
+    aa = a.as_matrix()
+
+    plt.figure(figsize=(8, 5.16), dpi=150)
+
+    labs = (r'C', r'D$\flat$', r'D', r'E$\flat$', r'E', r'F', r'G$\flat$', r'G', r'A$\flat$', r'A', r'B$\flat$', r'B',
+            r'C', r'D$\flat$', r'D', r'E$\flat$', r'E', r'F', r'G$\flat$', r'G', r'A$\flat$', r'A', r'B$\flat$', r'B',
+            r'C', r'D$\flat$', r'D', r'E$\flat$', r'E', r'F', r'G$\flat$', r'G', r'A$\flat$', r'A', r'B$\flat$', r'B', r'X')
+
+    plt.imshow(aa, interpolation='nearest', cmap='Reds', origin='lower', aspect='auto', norm=LogNorm())
+    plt.xticks(range(37), labs, size=6)
+    plt.yticks(range(37), labs, size=6)
+    plt.text(5, -3, 'major', size=7)
+    plt.text(17, -3, 'minor', size=7)
+    plt.text(29, -3, 'other', size=7)
+    plt.text(-2.5, 5, 'major', rotation=90, size=7)
+    plt.text(-2.5, 17, 'minor', rotation=90, size=7)
+    plt.text(-2.5, 29, 'other', rotation=90, size=7)
+
+    width, height = aa.shape
+
+    for x in xrange(width):
+        for y in xrange(height):
+            if aa[x][y] > 0:
+                if aa[x][y] > 60:
+                    my_color = 'white'
+                else:
+                    my_color = 'black'
+                plt.annotate(str(aa[x][y]), xy=(y, x - 0.1), horizontalalignment='center', verticalalignment='center', size=6, color=my_color)
+
+    plt.tight_layout()
+    if save:
+        plt.savefig(os.path.join(output_dir, label + '_confusion_matrix.pdf'), format="pdf", dpi=1200)
     plt.show()
