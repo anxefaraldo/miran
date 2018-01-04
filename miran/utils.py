@@ -1,12 +1,14 @@
 # -*- coding: UTF-8 -*-
 
 import os.path
-import numpy as np
 
 
 def change_file_extension(directory, in_ext='.txt', out_ext='.key', recursive=False):
-    """Looks for specific file types in a directory and changes their extension to a new given one."""
+    """
+    Look for specific file types in a directory and
+    change their extension to a new given one.
 
+    """
     number_of_files = 0
     list_of_files = folderfiles(directory, recursive=recursive)
     for item in list_of_files:
@@ -20,12 +22,14 @@ def change_file_extension(directory, in_ext='.txt', out_ext='.key', recursive=Fa
     print('{} files processed'.format(number_of_files))
 
 
+
 def create_dir(dir_name):
     """
-    Creates a new directory.
+    Create a new directory.
 
     If dir_name is a valid abspath it will create it where specified,
-    if dir_name is a NOT a valid abspath but a valid name, it will create a dir in the current directory.
+    if dir_name is NOT a valid abspath but a valid name,
+    it will create a dir in the current directory.
 
     """
     if not os.path.isdir(dir_name):
@@ -51,8 +55,9 @@ def create_dir(dir_name):
         return dir_name
 
 
+
 def folderfiles(folderpath, ext=None, recursive=False):
-    """Returns a list of absolute paths with the filesystem in the specified folder."""
+    """Return a list of absolute paths with the filesystem in the specified folder."""
 
     if recursive:
         def _rlistdir(path):
@@ -79,14 +84,14 @@ def folderfiles(folderpath, ext=None, recursive=False):
                 pass
 
     if not my_files:
-        # raise FileNotFoundError("Did not find any file with the given extension.") PYTHON3
         raise IOError("Did not find any file with the given extension.")
     else:
         return my_files
 
 
+
 def load_settings_as_dict(json_settings):
-    """Loads the key estimation keyconfigs from a json file."""
+    """Load configuration settings from a json file."""
 
     import json
 
@@ -97,8 +102,9 @@ def load_settings_as_dict(json_settings):
         return json.load(f)
 
 
+
 def load_settings_as_vars(json_settings):
-    """Loads the key estimation keyconfigs from a json file."""
+    """Load configuration variables from a json file."""
 
     import json
 
@@ -111,7 +117,9 @@ def load_settings_as_vars(json_settings):
     globals().update(j)
 
 
+
 def preparse_files(searchpath_or_pathlist, ext=None, recursive=False):
+    """Prepare a collection of files to be parsed by other functions."""
 
     if type(searchpath_or_pathlist) is not list:
 
@@ -130,6 +138,7 @@ def preparse_files(searchpath_or_pathlist, ext=None, recursive=False):
         return searchpath_or_pathlist
 
 
+
 def prepend_str_to_filename(directory, matching_substring, string_to_prepend):
     """Prepend a string to an existing filename if it contains a matching substring."""
 
@@ -141,8 +150,19 @@ def prepend_str_to_filename(directory, matching_substring, string_to_prepend):
             os.rename(item, os.path.join(d, string_to_prepend + f))
 
 
+
+def random_filepath(path_or_filelist, ext=None, recursive=False):
+    """Return a random filepath from a folder or a list of valid filepaths."""
+
+    from random import randint
+
+    my_list = preparse_files(path_or_filelist, ext=ext, recursive=recursive)
+    return my_list[randint(0, len(my_list) - 1)]
+
+
+
 def replace_chars(my_str, chars={"&", "<", ">", '"', "'"}, replacement=''):
-    """Replaces characters in a string."""
+    """Replace characters in a string."""
 
     if any(illegal_char in my_str for illegal_char in chars):
         for char in chars:
@@ -151,13 +171,6 @@ def replace_chars(my_str, chars={"&", "<", ">", '"', "'"}, replacement=''):
     return my_str
 
 
-def random_filepath(path_or_filelist, ext=None, recursive=False):
-    """Returns a random filepath from a folder or a list of valid filepaths."""
-
-    from random import randint
-    my_list = preparse_files(path_or_filelist, ext=ext, recursive=recursive)
-    return my_list[randint(0, len(my_list) - 1)]
-
 
 def show_in_finder(filepath):
     """Show a file in OSX's Finder."""
@@ -165,92 +178,6 @@ def show_in_finder(filepath):
     from appscript import app, mactypes
     app("Finder").reveal(mactypes.Alias(filepath).alias)
 
-
-def write_regular_timespans(textfile, duration=120):
-    """
-    This functions takes a textfile with a few time annotations and
-    propagates annotations based on the mean of the available time differences.
-
-    AT THE MOMENT IT ONLY TAKES TAB SEPARATED FIELDS!
-
-    """
-    from numpy import mean, diff
-
-    instants = []
-    label = ''
-    with open(textfile, 'r') as f:
-        for line in f.readlines():
-            instants.append(float(line.split()[0]))
-            if len(line.split()) > 1:
-                if label == '':
-                    label = line[line.find('\t'):]
-
-    # calculate mean inter-instant time
-    avg_interonset = mean(diff(instants))
-
-    while (instants[-1] + avg_interonset) < duration:
-        instants.append(instants[-1] + avg_interonset)
-
-    with open(textfile, 'w') as f:
-        for instant in instants:
-            f.write(str(instant) + label)
-
-    return instants
-
-
-def windowing(window_type, size=4096, beta=0.2):
-    """Returns an array of the specified size with the desired window shape."""
-
-    if window_type == "bartlett":
-        return np.bartlett(size)
-    elif window_type == "blackmann":
-        return np.blackman(size)
-    elif window_type == "hamming":
-        return np.hamming(size)
-    elif window_type == "hann":
-        return np.hanning(size)
-    elif window_type == "kaiser":
-        return np.kaiser(size, beta)
-    elif window_type == "rect":
-        return np.ones(size)
-
-    else:
-        raise ValueError("Not a valid window type")
-
-
-def bin_to_pc(binary, pcp_size=36):
-    """
-    Returns the pitch-class of the specified pcp vector.
-    It assumes (bin[0] == pc9) as implemeted in Essentia.
-
-    """
-    return int(binary / (pcp_size / 12.0))
-
-
-
-def find_mode_flat(mode_array):
-    """Calculates the closest diatonic mode to a given vector."""
-
-
-    from vector import distance
-
-    modes = {'ionian':     np.array([1., 0., 1., 0., 1., 1., 0., 1., 0., 1., 0., 1.]),
-             'dorian':     np.array([1., 0., 1., 1., 0., 1., 0., 1., 0., 1., 1., 0.]),
-             'phrygian':   np.array([1., 1., 0., 1., 0., 1., 0., 1., 1., 0., 1., 0.]),
-             'lydian':     np.array([1., 0., 1., 0., 1., 0., 1., 1., 0., 1., 0., 1.]),
-             'mixolydian': np.array([1., 0., 1., 0., 1., 1., 0., 1., 0., 1., 1., 0.]),
-             'aeolian':    np.array([1., 0., 1., 1., 0., 1., 0., 1., 1., 0., 1., 0.]),
-             'harmonic':   np.array([1., 0., 1., 1., 0., 1., 0., 1., 1., 0., 0., 1.]),
-             'locrian':    np.array([1., 1., 0., 1., 0., 1., 1., 0., 1., 0., 1., 0.]),
-             'pentamaj':   np.array([1., 0., 1., 0., 1., 0., 0., 1., 0., 1., 0., 0.]),
-             'pentamin':   np.array([1., 0., 0., 1., 0., 1., 0., 1., 0., 0., 1., 0.])}
-
-    rank = []
-    for mode in modes.keys():
-        dis = distance(modes[mode], mode_array, dist='cityblock')
-        rank.append((dis,mode))
-    rank.sort(key=lambda tup: tup[0])
-    return rank
 
 
 def strip_filename(filename):

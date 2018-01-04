@@ -9,6 +9,5 @@ Dependencies:
 * scipy
 * future
 * pandas
-* music21
 * madmom
 * librosa

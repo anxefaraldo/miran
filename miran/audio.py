@@ -1,8 +1,30 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import numpy as np
 from subprocess import call
 from miran.utils import preparse_files
+
+
+def windowing(window_type, size=4096, beta=0.2):
+    """Returns an array of the specified size with the desired window shape."""
+
+    if window_type == "bartlett":
+        return np.bartlett(size)
+    elif window_type == "blackmann":
+        return np.blackman(size)
+    elif window_type == "hamming":
+        return np.hamming(size)
+    elif window_type == "hann":
+        return np.hanning(size)
+    elif window_type == "kaiser":
+        return np.kaiser(size, beta)
+    elif window_type == "rect":
+        return np.ones(size)
+
+    else:
+        raise ValueError("Not a valid window type")
+
 
 
 def wav2aiff(input_path, replace=True):
@@ -16,6 +38,7 @@ def wav2aiff(input_path, replace=True):
             call('ffmpeg -i "{}" "{}"'.format(f, fname + '.aif'), shell=True)
             if replace:
                 os.remove(f)
+
 
 
 def trim_to_first_n_secs(input_path, duration=7.5, ext='.mp3'):
@@ -36,6 +59,7 @@ def trim_to_first_n_secs(input_path, duration=7.5, ext='.mp3'):
         fdir, fname = os.path.split(f)
         call('sox "{}" "{}" trim 0 00:{}'.format(f, os.path.join(temp_dir, fname), duration), shell=True)
         print("Cutting {} to first {} seconds".format(fname, duration))
+
 
 
 def audio_to_mp3_96(input_path, ext='.mp3'):

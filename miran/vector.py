@@ -5,7 +5,7 @@ import numpy as np
 
 def crosscorrelation(v, u):
     """
-    Calculates v normalized cross-correlation between two vectors.
+    Calculate the normalized cross-correlation between two vectors.
     Returns the Pearson correlation coefficient.
 
     """
@@ -14,9 +14,10 @@ def crosscorrelation(v, u):
     return (pearsonr(v, u))[0]
 
 
+
 def distance(v, u, dist='euclidean'):
     """
-    Returns the dist between two vectors of equal length.
+    Return the dist between two vectors of equal length.
     Possible distances are shown below.
 
     Function	    Description
@@ -49,27 +50,30 @@ def distance(v, u, dist='euclidean'):
     return eval('ssd.' + dist)(v, u)
 
 
+
 def norm_area(v):
     """
-    Normalizes a v so that the sum of its content is 1,
-    outputting a v with up to 3 decimal points.
+    Normalize a vector so that the sum of its content is 1,
+    outputting a vector with up to 3 decimal points.
 
     """
     return np.divide(v, np.sum(v))
 
 
+
 def norm_peak(v, max_val=1.):
     """
-    Normalizes a vector so that the maximum value equals 'max_val'
+    Normalize a vector so that the maximum value equals 'max_val'.
 
     """
     return np.multiply(v, (max_val / np.max(v)))
 
 
+
 def resize_vector(v, new_size=36, interpolation='linear'):
     """
-    Resizes a vector to a vector of size "new_size.
-    Interpolation patterns can be chosen from one of the following:
+    Resize a vector to a vector of new_size.
+    Interpolation patterns can be chosen from the following:
 
     ‘linear’, ‘nearest’, ‘zero’, ‘slinear’, ‘quadratic’, ‘cubic’
 
@@ -85,15 +89,15 @@ def resize_vector(v, new_size=36, interpolation='linear'):
     return f(z)[:-1]
 
 
+
 def standard_score(v):
     """
-    Returns a v normalized to zero mean and unit standard deviation.
-    Normally referred to as standardazing.
-
-    La suma del standard score es cero
+    Return a vector normalized to zero mean and unit standard deviation.
+    This is normally referred to as standardazing.
 
     """
     return np.divide(np.subtract(v, np.mean(v)), np.std(v))
+
 
 
 def unit_vector(v, order=2):
@@ -116,9 +120,10 @@ def unit_vector(v, order=2):
     return v / vector_norm
 
 
+
 def vector_threshold(pcp, threshold):
     """
-    Zeroes vector elements with values under a certain threshold.
+    Zero vector elements with values under a certain threshold.
     """
     for i in range(len(pcp)):
         if pcp[i] < threshold:
@@ -126,9 +131,11 @@ def vector_threshold(pcp, threshold):
     return pcp
 
 
+
 def sort_vector(v, output='values', sort='ascending'):
     """
-    Returns a new vector with sorted indexes of the incoming pcp vector.
+    Return a new vector with sorted indexes of the incoming pcp vector.
+
     """
     u = np.sort(v)
     if sort == 'descending':
@@ -146,3 +153,29 @@ def sort_vector(v, output='values', sort='ascending'):
         return np.array(idx)
     else:
         raise ValueError("output options are 'values' or 'indexes'.")
+
+
+
+def find_mode_flat(mode_array):
+    """
+    Calculate the closest diatonic mode to a given vector.
+
+    """
+
+    modes = {'ionian':     np.array([1., 0., 1., 0., 1., 1., 0., 1., 0., 1., 0., 1.]),
+             'dorian':     np.array([1., 0., 1., 1., 0., 1., 0., 1., 0., 1., 1., 0.]),
+             'phrygian':   np.array([1., 1., 0., 1., 0., 1., 0., 1., 1., 0., 1., 0.]),
+             'lydian':     np.array([1., 0., 1., 0., 1., 0., 1., 1., 0., 1., 0., 1.]),
+             'mixolydian': np.array([1., 0., 1., 0., 1., 1., 0., 1., 0., 1., 1., 0.]),
+             'aeolian':    np.array([1., 0., 1., 1., 0., 1., 0., 1., 1., 0., 1., 0.]),
+             'harmonic':   np.array([1., 0., 1., 1., 0., 1., 0., 1., 1., 0., 0., 1.]),
+             'locrian':    np.array([1., 1., 0., 1., 0., 1., 1., 0., 1., 0., 1., 0.]),
+             'pentamaj':   np.array([1., 0., 1., 0., 1., 0., 0., 1., 0., 1., 0., 0.]),
+             'pentamin':   np.array([1., 0., 0., 1., 0., 1., 0., 1., 0., 0., 1., 0.])}
+
+    rank = []
+    for mode in modes.keys():
+        dis = distance(modes[mode], mode_array, dist='cityblock')
+        rank.append((dis,mode))
+    rank.sort(key=lambda tup: tup[0])
+    return rank

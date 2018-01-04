@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #  -*- coding: UTF-8 -*-
 
-import sys
+# import sys
 from setuptools import setup, find_packages
 
 
@@ -30,14 +30,14 @@ setup(
     keywords='music analysis mir',
     license='MIT',
     install_requires=[
-        'appscript',
-        'future',
+        #'appscript',
+        # 'future',
         'librosa',
         'madmom',
         'matplotlib',
-        'mido',
-        'music21',
-        'mutagen',
+        #'mido',
+        #'music21',
+        #'mutagen',
         'numpy',
         'openpyxl',
         'pandas',
