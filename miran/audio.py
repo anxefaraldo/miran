@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-# no estaba
-from __future__ import absolute_import, division, print_function
+# from __future__ import absolute_import, division, print_function
 
 import pyo
 from random import randint
@@ -11,6 +10,7 @@ from miran.utils import *
 
 
 def wav2aiff(input_path, replace=True):
+    """Convert a wav audio file into an aiff audio file."""
 
     from subprocess import call
     files = preparse_files(input_path)
@@ -23,7 +23,8 @@ def wav2aiff(input_path, replace=True):
                 os.remove(f)
 
 
-def first_n_secs(input_path, duration=7.5, ext='.mp3'):
+def trim_to_first_n_secs(input_path, duration=7.5, ext='.mp3'):
+    """Create a sound file with the first n seconds of a larger audio file."""
 
     from subprocess import call
 
@@ -45,6 +46,7 @@ def first_n_secs(input_path, duration=7.5, ext='.mp3'):
 
 
 def audio_to_mp3_96(input_path, ext='.mp3'):
+    """Convert any audio file to mp3 at 96 Kbps"""
 
     from subprocess import call
 
