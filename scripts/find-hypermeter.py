@@ -11,12 +11,13 @@ if __name__ == "__main__":
     import madmom as mmm
     from argparse import ArgumentParser
     from miran.defs import AUDIO_FILE_EXTENSIONS
-    from miran.utils import create_dir, folderfiles
+    from miran.utils import create_dir, preparse_files
 
     clock()
     parser = ArgumentParser(description="Create text files with hypermetrical estimations")
     parser.add_argument("input", help="file or dir to analyse for hypermetrical positions.")
     parser.add_argument("-o", "--output_dir", help="dir to write results to")
+    parser.add_argument("-r", "--recursive", action="store_true", help="recursive")
 
     args = parser.parse_args()
 
@@ -29,7 +30,7 @@ if __name__ == "__main__":
         list_of_files = [args.input]
         output_dir = os.path.split(args.input)[0]
     elif os.path.isdir(args.input):
-        list_of_files = folderfiles(args.input)
+        list_of_files = preparse_files(args.input, recursive=args.recursive)
         output_dir = args.input
     else:
         raise NameError("Invalid input. Make sure it is a valid file or dir.")
@@ -47,7 +48,7 @@ if __name__ == "__main__":
     for a_file in list_of_files:
         if any(soundfile_type in a_file for soundfile_type in AUDIO_FILE_EXTENSIONS):
             print("Analysing ... {} ... (this will take some time ;-)) ...".format(a_file))
-            output_file = os.path.join(output_dir, os.path.splitext(os.path.split(a_file)[1])[0] + '.txt')
+            output_file = os.path.join(output_dir, os.path.splitext(os.path.split(a_file)[1])[0] + '.loop')
             activations = mmm.features.beats.RNNDownBeatProcessor()(a_file)
             down_beats = beat_tracker(activations)
             print("Done! Saving results to {}.".format(output_file))
