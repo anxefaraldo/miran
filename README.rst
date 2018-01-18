@@ -12,8 +12,9 @@ The Python modules included facilitate the following operations:
 * Utilities to parse excel spreadsheets, in order to facilitate the parsing and analysis of the data contained in the test collections used for my research.
 * Plotting functions to obtain key distributions, tonality profiles and confusion matrices.
 
+The provided command-line tools automate some common tasks, such as (a) downloading online audio data, (b) performing key detection and (c) evaluation, (d) finding hypermeters in audio files, (e) process large amounts of data using vamp-plugins, or (f) converting between different audio formats.
 
-The MIRAN library depends on the following python libraries:
+MIRAN depends on the following python libraries:
 
 * essentia (Actually a C++ library, with Python bindings.)
 * librosa
