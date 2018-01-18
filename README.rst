@@ -25,3 +25,5 @@ MIRAN depends on the following python libraries:
 * pandas
 * scipy
 * seaborn
+
+Ángel Faraldo (last update, January 18, 2017).
