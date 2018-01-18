@@ -1,5 +1,3 @@
-miran
-=====
 MIRAN in a python library that includes various modules and simple command-line programs to execute recurrent operations regarding automatic key estimation from audio and other tonality related stuff for analyising Electronic Dance Music. 
 As such, it condenses most of the research done during my PhD in the area of computational key estimation:
 
