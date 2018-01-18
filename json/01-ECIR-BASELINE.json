@@ -34,7 +34,7 @@
   "KEY_HARMONICS": 4,
   "KEY_SLOPE": 0.6,
 
-  "KEY_PROFILE": "edma",
+  "KEY_PROFILE": "edmm",
 
   "OPTIONS": {
     "DETUNING_CORRECTION_SCOPE": [

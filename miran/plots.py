@@ -122,12 +122,12 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution", title=None, output_di
     for r in a:
         pmaj = "%.1f" % (total_maj * percentage_factor)
         str_l = len(pmaj) + 1
-        plt.text((total_maj * 0.5) - (str_l * 0.8), -0.25, pmaj + '\%', fontsize=8, color='white')
+        plt.text((total_maj * 0.5) - (str_l * 0.8), -0.25, pmaj + '\%', fontsize=8)
 
     for r in b:
         pmin = "%.1f" % (total_min * percentage_factor)
         str_l = len(pmin) + 1
-        plt.text(total_maj + (total_min * 0.5) - (str_l * 0.8), -0.25, pmin + '\%', fontsize=8)
+        plt.text(total_maj + (total_min * 0.5) - (str_l * 0.8), -0.25, pmin + '\%', fontsize=8 , color='white')
 
     if nokey:
         for r in c:
@@ -228,7 +228,7 @@ def plot_relative_mtx(xlx_with_valid_matrix, label='', output_dir="/Users/angel/
     a = pd.read_excel(xlx_with_valid_matrix, sheetname=1)
     aa = a.as_matrix()
 
-    plt.figure(figsize=(8, 1.5), dpi=150)
+    plt.figure(figsize=(8.2, 1.6), dpi=150)
 
     xlabs = (r'I', r'$\flat$II', r'II', r'$\flat$III', r'III', r'IV', r'$\flat$V', r'V', r'$\flat$VI', r'VI', r'$\flat$VII', r'VII',
              r'i', r'$\flat$ii', r'ii', r'$\flat$iii', r'iii', r'iv', r'$\flat$v', r'v', r'$\flat$vi', r'vi', r'$\flat$vii', r'vii',

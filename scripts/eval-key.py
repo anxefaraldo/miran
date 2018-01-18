@@ -203,6 +203,17 @@ if __name__ == "__main__":
         pd.set_option('max_columns', 100)
         pd.set_option('expand_frame_repr', False)
 
+        latex = "&{0:.4f}&{1:.4f}&\\textit{2:.4f}&&{3:.4f}&{4:.4f}&{5:.4f}&{6:.4f}&\\textit{7:.4f}\\\\".format(true_tonic_mode[0], true_tonic_mode[1],
+                                                                                                               mirex_summary[0], mirex_summary[1],
+                                                                                                               mirex_summary[2], mirex_summary[3],
+                                                                                                               mirex_summary[4], mirex_summary[5])
+
+        latex = latex.replace('0.', '.')
+        latex = latex.replace('textit', 'textit{')
+        latex = latex.replace('&&', '}&&')
+        latex = latex.replace('\\\\', '}\\\\')
+
+
         results = pd.DataFrame(results, index=['reference', 'estimation', 'rel_error', 'mirex']).T
         print('\n')
         print(results)
@@ -229,6 +240,8 @@ if __name__ == "__main__":
         print("{} valid evaluation files".format(total_references))
         print("{} excluded labels.".format(total_references - len(mirex)))
         print("{} sucessfully evaluated files.".format(len(mirex)))
+
+        print(latex)
 
         # WRITE RESULTS TO FILE
         # =====================
