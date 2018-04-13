@@ -15,6 +15,8 @@ from miran.defs import KEY2
 
 
 PRINT_QUALITY = 300
+FORMAT = 'pdf' # 'pdf
+TRANSPARENT = True # 'pdf
 
 def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
                 output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures", cmap='Reds', save=False):
@@ -34,7 +36,7 @@ def plot_chroma(chromagram, name="untitled", sr=44100, hl=2048,
         plt.yticks((0.5, 2.5, 4.5, 5.5, 7.5, 9.5, 11.5), ('c', 'd', 'e', 'f', 'g', 'a', 'b'))
         plt.tight_layout()
         if save:
-            plt.savefig(os.path.join(output_dir, name + '.pdf'), format="pdf", dpi=PRINT_QUALITY)
+            plt.savefig(os.path.join(output_dir, name + '.pdf'), format=FORMAT, dpi=PRINT_QUALITY, transparent=TRANSPARENT)
         plt.show()
 
 
@@ -69,12 +71,13 @@ def plot_bchroma(chromagram, name="untitled", sr=44100, hl=2048,
         plt.ylabel('bass')
         plt.xlabel('time (secs.)')
         if save:
-            plt.savefig(os.path.join(output_dir, name + '.pdf'), format="pdf", dpi=PRINT_QUALITY)
+            plt.savefig(os.path.join(output_dir, name + '.pdf'), format=FORMAT, dpi=PRINT_QUALITY, transparent=TRANSPARENT)
         plt.show()
 
 
 
-def plot_majmin_dist(dataset_dir, name="Key_Distribution", title=None, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/", ext=".txt", nokey=True, save=False):
+def plot_majmin_dist(dataset_dir, name="Key_Distribution", title=None, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesis/figures/",
+                     ext=".txt", nokey=True, save=False):
 
     corpus = folderfiles(dataset_dir, ext=ext)
 
@@ -153,7 +156,7 @@ def plot_majmin_dist(dataset_dir, name="Key_Distribution", title=None, output_di
     plt.legend(fontsize=8, frameon=True)
     plt.tight_layout()
     if save:
-        plt.savefig(os.path.join(output_dir, re.sub(' ', '_', name) + '.pdf'), format="pdf", dpi=PRINT_QUALITY)
+        plt.savefig(os.path.join(output_dir, re.sub(' ', '_', name) + '.pdf'), format=FORMAT, dpi=PRINT_QUALITY, transparent=TRANSPARENT)
     plt.show()
 
 
@@ -189,7 +192,7 @@ def plot_bin_profiles(profile_name, output_dir="/Users/angel/Dropbox/Apps/Texpad
         plt.legend(fontsize=8, loc=loc, frameon=True)  # typically some (0.8,0.6)
 
     plt.tight_layout(pad=2, rect=(0, 0, 1, 1))
-    plt.savefig(os.path.join(output_dir, profile_name + '_profiles.pdf'), format="pdf", dpi=PRINT_QUALITY)
+    plt.savefig(os.path.join(output_dir, profile_name + '_profiles.png'), format=FORMAT, dpi=PRINT_QUALITY, transparent=TRANSPARENT)
     plt.show()
 
 
@@ -219,7 +222,7 @@ def plot_single_profile(data, output_dir="/Users/angel/Dropbox/Apps/Texpad/Thesi
         plt.legend(fontsize=8,loc=loc, frameon=True)
     plt.tight_layout(pad=2, rect=(0, 0, 1, 1))
     if save:
-        plt.savefig(os.path.join(output_dir, label + '_single_profile.pdf'), format="pdf", dpi=PRINT_QUALITY)
+        plt.savefig(os.path.join(output_dir, label + '_single_profile.pdf'), format=FORMAT, dpi=PRINT_QUALITY, transparent=TRANSPARENT)
     plt.show()
 
 
@@ -253,7 +256,7 @@ def plot_relative_mtx(xlx_with_valid_matrix, label='', output_dir="/Users/angel/
 
     plt.tight_layout()
     if save:
-        plt.savefig(os.path.join(output_dir, label + '_relative_matrix.pdf'), format="pdf", dpi=PRINT_QUALITY)
+        plt.savefig(os.path.join(output_dir, label + '_relative_matrix.pdf'), format="pdf", dpi=PRINT_QUALITY, transparent=TRANSPARENT)
     plt.show()
 
 
@@ -292,5 +295,5 @@ def plot_confusion_mtx(xlx_with_valid_matrix, label='', output_dir="/Users/angel
 
     plt.tight_layout()
     if save:
-        plt.savefig(os.path.join(output_dir, label + '_confusion_matrix.pdf'), format="pdf", dpi=PRINT_QUALITY)
+        plt.savefig(os.path.join(output_dir, label + '_confusion_matrix.pdf'), format=FORMAT, dpi=PRINT_QUALITY, transparent=TRANSPARENT)
     plt.show()
