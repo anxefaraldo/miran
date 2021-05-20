@@ -87,7 +87,7 @@ def download_stem(stemid, output_dir=None):
             f.write(mp3file.read())
         print("Saving audio file to", audiofile)
 
-    jsonfile = os.path.join(output_dir, filename) + '.json'
+    jsonfile = os.path.join(output_dir, filename) + '.keyest-configs'
     with open(jsonfile, 'w') as j_out:
         json.dump(json.loads(data), j_out, indent=1)
     print("Saving metadata to", jsonfile)
@@ -145,7 +145,7 @@ def download_track(trackid, output_dir=None, skip_tracks_without_metadata=False)
     print("Saving audio file to", audiofile)
 
     if data is not None:
-        jsonfile = os.path.join(output_dir, filename) + ".json"
+        jsonfile = os.path.join(output_dir, filename) + ".keyest-configs"
         with open(jsonfile, 'w') as j_out:
             json.dump(json.loads(data), j_out, indent=1)
         print("Saving metadata to", jsonfile)
@@ -203,10 +203,10 @@ def get_ids_from_files(searchpath_or_pathlist, ext='.mp3', recursive=False, save
 
 
 
-def metadir_to_pddf(dir_or_listOfFilepaths, ext='.json'):
+def metadir_to_pddf(dir_or_listOfFilepaths, ext='.keyest-configs'):
     """
     Directory with metadata files to pandas dataframe.
-    Takes a dir with json files and creates a pandas dataframe with them.
+    Takes a dir with keyest-configs files and creates a pandas dataframe with them.
     """
 
     list_of_files = preparse_files(dir_or_listOfFilepaths, ext=ext)
@@ -221,7 +221,7 @@ def metadir_to_pddf(dir_or_listOfFilepaths, ext='.json'):
 
 
 def metafile_to_pds(filepath_or_string):
-    """Load a metadata json file as a pandas series."""
+    """Load a metadata keyest-configs file as a pandas series."""
 
     if os.path.isfile(filepath_or_string):
 
@@ -295,7 +295,7 @@ def metafile_to_pds(filepath_or_string):
 
 
 
-def copy_files_in_pddf(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
+def copy_files_in_pddf(pd_col_with_filename, output_dir, ext=('.mp3', '.keyest-configs')):
     """
     Copy a row from a Pandas dataframe to a different location in the hard drive.
     This function assumes that each row represents a file in the filesystem and that
@@ -318,7 +318,7 @@ def copy_files_in_pddf(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
             shutil.copyfile(row, output_file)
 
 
-def move_files_in_pddf(pd_col_with_filename, output_dir, ext=('.mp3', '.json')):
+def move_files_in_pddf(pd_col_with_filename, output_dir, ext=('.mp3', '.keyest-configs')):
     """
     Move a row from a Pandas dataframe to a different location in the hard drive.
     This function assumes that each row represents a file in the filesystem and that

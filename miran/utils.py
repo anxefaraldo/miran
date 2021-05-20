@@ -91,12 +91,12 @@ def folderfiles(folderpath, ext=None, recursive=False):
 
 
 def load_settings_as_dict(json_settings):
-    """Load configuration settings from a json file."""
+    """Load configuration settings from a keyest-configs file."""
 
     import json
 
     if not os.path.isfile(json_settings):
-        print("Not a valid json file!")
+        print("Not a valid keyest-configs file!")
 
     with open(json_settings) as f:
         return json.load(f)
@@ -104,12 +104,12 @@ def load_settings_as_dict(json_settings):
 
 
 def load_settings_as_vars(json_settings):
-    """Load configuration variables from a json file."""
+    """Load configuration variables from a keyest-configs file."""
 
     import json
 
     if not os.path.isfile(json_settings):
-        print("Not a valid json file!")
+        print("Not a valid keyest-configs file!")
 
     with open(json_settings) as f:
         j = json.load(f)

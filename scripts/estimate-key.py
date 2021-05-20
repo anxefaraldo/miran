@@ -23,7 +23,7 @@ if __name__ == "__main__":
     parser.add_argument("output", help="file or dir to write results to")
     parser.add_argument("-a", "--algorithm", help="algorithm to use in the analysis", default="key_angel")
     parser.add_argument("-p", "--profile", help="key profile; all other keyconfigs defaults apply.")
-    parser.add_argument("-s", "--keyconfigs", help="json file with the key estimation keyconfigs")
+    parser.add_argument("-s", "--keyconfigs", help="keyest-configs file with the key estimation keyconfigs")
 
     args = parser.parse_args()
 
